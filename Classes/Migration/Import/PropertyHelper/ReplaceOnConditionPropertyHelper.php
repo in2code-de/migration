@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Migrate\PropertyHelper;
+namespace In2code\In2template\Migration\Import\PropertyHelper;
 
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
@@ -22,7 +22,6 @@ class ReplaceOnConditionPropertyHelper extends AbstractPropertyHelper implements
 
     /**
      * @return void
-     * @throws \Exception
      */
     public function manipulate()
     {
@@ -35,14 +34,14 @@ class ReplaceOnConditionPropertyHelper extends AbstractPropertyHelper implements
      * @return bool
      * @throws \Exception
      */
-    public function shouldMigrate(): bool
+    public function shouldImport(): bool
     {
         $isFitting = true;
         foreach ($this->getConfigurationByKey('conditions') as $field => $values) {
             if (!is_string($field) || !is_array($values)) {
                 throw new \Exception('Possible misconfiguration of configuration of ' . __CLASS__);
             }
-            if (!in_array($this->getPropertyFromRecord($field), $values)) {
+            if (!in_array($this->getPropertyFromOldRecord($field), $values)) {
                 $isFitting = false;
                 break;
             }
@@ -71,7 +70,7 @@ class ReplaceOnConditionPropertyHelper extends AbstractPropertyHelper implements
         if (!empty($newValue) && stristr($newValue, '{')) {
             $standaloneView = $this->getObjectManager()->get(StandaloneView::class);
             $standaloneView->setTemplateSource($newValue);
-            $standaloneView->assignMultiple($this->record);
+            $standaloneView->assignMultiple($this->getOldRecord());
             return $standaloneView->render();
         }
         return $newValue;

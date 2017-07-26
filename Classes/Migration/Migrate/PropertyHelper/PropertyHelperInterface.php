@@ -17,14 +17,23 @@ interface PropertyHelperInterface
     public function __construct(array $record, string $propertyName, string $table);
 
     /**
-     * @return mixed
+     * Function is called before manipulate() (e.g. to do some checks before migration)
+     *
+     * @return void
      */
     public function initialize();
 
     /**
-     * Function to return newRecord
+     * Function to manipulate a record array
      *
-     * @return array
+     * @return void
      */
-    public function returnRecord(): array;
+    public function manipulate();
+
+    /**
+     * Will not call manipulate() if returns false
+     *
+     * @return bool
+     */
+    public function shouldMigrate(): bool;
 }

@@ -173,7 +173,7 @@ class FileHelper
      * @param array $oldRecord
      * @return int
      */
-    protected function tryToIndexFile(int $identifier, string $pathAndName, array $oldRecord): int
+    public function tryToIndexFile(int $identifier, string $pathAndName, array $oldRecord): int
     {
         if ($identifier === 0) {
             $identifier = $this->indexFile($pathAndName);

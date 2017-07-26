@@ -1,22 +1,16 @@
 <?php
 namespace In2code\In2template\Migration;
 
-use In2code\In2template\Migration\DatabaseScript\AddMainTyposcriptTemplateDatabaseScript;
 use In2code\In2template\Migration\DatabaseScript\DatabaseScriptInterface;
-use In2code\In2template\Migration\DatabaseScript\DisableTypoScriptTemplatesDatabaseScript;
-use In2code\In2template\Migration\DatabaseScript\MediaReferencesForContentElementsDatabaseScript;
-use In2code\In2template\Migration\DatabaseScript\ParentCalendarCategoryDatabaseScript;
-use In2code\In2template\Migration\DatabaseScript\RemovePagebrowserAndFilterContentElementsDatabaseScript;
+use In2code\In2template\Migration\DatabaseScript\DeleteFaqSysCategoriesDatabaseScript;
 use In2code\In2template\Migration\Import\AbstractImporter;
-use In2code\In2template\Migration\Import\AppointmentImporter;
-use In2code\In2template\Migration\Import\CalendarCategoriesEnglishImporter;
-use In2code\In2template\Migration\Import\CalendarCategoriesImporter;
+use In2code\In2template\Migration\Import\CreateRelationsFromProductsImporter;
+use In2code\In2template\Migration\Import\CreateRelationsFromSysCategoriesImporter;
+use In2code\In2template\Migration\Import\FaqCategoriesSysCategoryImporter;
+use In2code\In2template\Migration\Import\FaqCategoriesProductImporter;
+use In2code\In2template\Migration\Import\FaqImporter;
 use In2code\In2template\Migration\Import\ImporterInterface;
-use In2code\In2template\Migration\Import\NewsCategoriesImporter;
-use In2code\In2template\Migration\Import\NewsImporter;
-use In2code\In2template\Migration\Migrate\BackendUsergroupMigrator;
-use In2code\In2template\Migration\Migrate\BackendUserMigrator;
-use In2code\In2template\Migration\Migrate\BodytextMigrator;
+use In2code\In2template\Migration\Import\RedirectImporter;
 use In2code\In2template\Migration\Migrate\ContentMigrator;
 use In2code\In2template\Migration\Migrate\MigratorInterface;
 use In2code\In2template\Migration\Migrate\PageMigrator;
@@ -70,21 +64,9 @@ class Starter
      */
     protected $migrationClasses = [
         [
-            'className' => NewsCategoriesImporter::class,
-            'configuration' => [
-                'migrationClassKey' => 'news'
-            ]
-        ],
-        [
-            'className' => NewsImporter::class,
-            'configuration' => [
-                'migrationClassKey' => 'news'
-            ]
-        ],
-        [
             'className' => PageMigrator::class,
             'configuration' => [
-                'migrationClassKey' => 'content'
+                'migrationClassKey' => 'page'
             ]
         ],
         [
@@ -94,71 +76,47 @@ class Starter
             ]
         ],
         [
-            'className' => BodytextMigrator::class,
+            'className' => FaqImporter::class,
             'configuration' => [
-                'migrationClassKey' => 'content'
+                'migrationClassKey' => 'faq'
             ]
         ],
         [
-            'className' => DisableTypoScriptTemplatesDatabaseScript::class,
+            'className' => FaqCategoriesProductImporter::class,
             'configuration' => [
-                'migrationClassKey' => 'database'
+                'migrationClassKey' => 'faq'
             ]
         ],
         [
-            'className' => AddMainTyposcriptTemplateDatabaseScript::class,
+            'className' => FaqCategoriesSysCategoryImporter::class,
             'configuration' => [
-                'migrationClassKey' => 'database'
+                'migrationClassKey' => 'faq'
             ]
         ],
         [
-            'className' => MediaReferencesForContentElementsDatabaseScript::class,
+            'className' => CreateRelationsFromProductsImporter::class,
             'configuration' => [
-                'migrationClassKey' => 'database'
+                'migrationClassKey' => 'faq'
             ]
         ],
         [
-            'className' => RemovePagebrowserAndFilterContentElementsDatabaseScript::class,
+            'className' => CreateRelationsFromSysCategoriesImporter::class,
             'configuration' => [
-                'migrationClassKey' => 'database'
+                'migrationClassKey' => 'faq'
             ]
         ],
         [
-            'className' => ParentCalendarCategoryDatabaseScript::class,
+            'className' => DeleteFaqSysCategoriesDatabaseScript::class,
             'configuration' => [
-                'migrationClassKey' => 'calendar'
+                'migrationClassKey' => 'faq'
             ]
         ],
         [
-            'className' => CalendarCategoriesImporter::class,
+            'className' => RedirectImporter::class,
             'configuration' => [
-                'migrationClassKey' => 'calendar'
+                'migrationClassKey' => 'redirect'
             ]
-        ],
-        [
-            'className' => CalendarCategoriesEnglishImporter::class,
-            'configuration' => [
-                'migrationClassKey' => 'calendar'
-            ]
-        ],
-        [
-            'className' => AppointmentImporter::class,
-            'configuration' => [
-                'migrationClassKey' => 'calendar'
-            ]
-        ],
-        [
-            'className' => BackendUserMigrator::class,
-            'configuration' => [
-                'migrationClassKey' => 'backenduser'
-            ]
-        ],
-        [
-            'className' => BackendUsergroupMigrator::class,
-            'configuration' => [
-                'migrationClassKey' => 'backenduser'
-            ]
-        ],
+        ]
     ];
 
     /**

@@ -3,6 +3,7 @@ namespace In2code\In2template\Migration\Import\PropertyHelper;
 
 use In2code\In2template\Migration\Service\Log;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -94,15 +95,25 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
      */
     public function returnRecord(): array
     {
-        $this->manipulate();
+        if ($this->shouldImport()) {
+            $this->manipulate();
+        }
         return $this->getNewRecord();
     }
 
     /**
      * @return void
      */
-    protected function manipulate()
+    public function manipulate()
     {
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldImport(): bool
+    {
+        return true;
     }
 
     /**
@@ -188,10 +199,15 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
      * @param string $key
      * @return mixed|null
      */
-    protected function getConfigurationByKey(string $key)
+    public function getConfigurationByKey(string $key)
     {
-        if (array_key_exists($key, $this->configuration)) {
-            return $this->configuration[$key];
+        if (is_array($this->configuration)) {
+            if (!stristr($key, '.') && array_key_exists($key, $this->configuration)) {
+                return $this->configuration[$key];
+            }
+            if (stristr($key, '.')) {
+                return ArrayUtility::getValueByPath($this->configuration, $key, '.');
+            }
         }
         return null;
     }

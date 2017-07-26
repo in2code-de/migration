@@ -1,9 +1,12 @@
 <?php
 namespace In2code\In2template\Migration\Migrate;
 
-use In2code\In2template\Migration\Migrate\PropertyHelper\CreateReferenceContentElementsFromTvReferencesPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\CrossReplacePropertyHelper;
+use In2code\In2template\Migration\Migrate\PropertyHelper\ChangeFileRelationPropertyHelper;
+use In2code\In2template\Migration\Migrate\PropertyHelper\CheckifProductPagePropertyHelper;
+use In2code\In2template\Migration\Migrate\PropertyHelper\ProductDescriptionPropertyHelper;
+use In2code\In2template\Migration\Migrate\PropertyHelper\ProductNamePropertyHelper;
 use In2code\In2template\Migration\Migrate\PropertyHelper\ReplaceOnConditionPropertyHelper;
+use In2code\In2template\Migration\Migrate\PropertyHelper\ReplacePropertyHelper;
 
 /**
  * Class PageMigrator
@@ -24,6 +27,9 @@ class PageMigrator extends AbstractMigrator implements MigratorInterface
      * @var array
      */
     protected $mapping = [
+        'tx_udgtemplate_landingpage_footer_page' => 'template_footer_page',
+        'tx_udgtemplate_landingpage_system_page' => 'template_impressum_navigation_page',
+        'tx_udgtemplate_landingpage_global_phone' => 'template_footer_slogan'
     ];
 
     /**
@@ -42,90 +48,149 @@ class PageMigrator extends AbstractMigrator implements MigratorInterface
      * @var array
      */
     protected $propertyHelpers = [
-        '*' => [
-            [
-                'className' => CreateReferenceContentElementsFromTvReferencesPropertyHelper::class
-            ]
-        ],
         'backend_layout' => [
             [
-                // Set pages.backend_layout from pages.tx_templavoila_to
-                'className' => CrossReplacePropertyHelper::class,
+                'className' => ReplaceOnConditionPropertyHelper::class,
                 'configuration' => [
-                    'search' => [
-                        'field' => 'tx_templavoila_to',
-                        'values' => [
-                            '31', // 2 Columns
-                            '1', // 3 Columns
-                            '8' // Homepage
+                    'conditions' => [
+                        'backend_layout' => [
+                            'udg_template__landingpage'
                         ]
                     ],
                     'replace' => [
-                        'field' => 'backend_layout',
-                        'values' => [
-                            'in2template__default',
-                            'in2template__default',
-                            'in2template__homepage'
-                        ]
-                    ],
-                    'defaultValue' => ''
+                        'value' => 'in2template__Landingpage'
+                    ]
                 ]
             ],
             [
-                // Facility layouts
+                'className' => ReplaceOnConditionPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'backend_layout' => [
+                            'udg_template__default'
+                        ]
+                    ],
+                    'replace' => [
+                        'value' => ''
+                    ]
+                ]
+            ],
+            [
+                'className' => CheckifProductPagePropertyHelper::class,
+                'configuration' => [
+                    'replace' => 'in2template__Productpage'
+                ]
+            ],
+            [
+                // Page HOME
                 'className' => ReplaceOnConditionPropertyHelper::class,
                 'configuration' => [
                     'conditions' => [
                         'uid' => [
-                            '105',
-                            '104',
-                            '3874',
-                            '102',
-                            '101',
-                            '100',
-                            '119',
-                            '118',
-                            '48',
-                            '49',
-                            '8421',
-                            '917',
-                            '916',
-                            '915',
-                            '914',
-                            '913',
-                            '912',
-                            '944',
-                            '938'
+                            '8091'
                         ]
                     ],
                     'replace' => [
-                        'value' => 'in2template__facilities'
+                        'value' => 'in2template__Homepage'
                     ]
                 ]
-            ]
+            ],
         ],
         'backend_layout_next_level' => [
             [
-                // Set pages.backend_layout_next_level from pages.tx_templavoila_next_to
-                'className' => CrossReplacePropertyHelper::class,
+                'className' => ReplaceOnConditionPropertyHelper::class,
                 'configuration' => [
-                    'search' => [
-                        'field' => 'tx_templavoila_next_to',
-                        'values' => [
-                            '31', // 2 Columns
-                            '1', // 3 Columns
-                            '8' // Homepage
+                    'conditions' => [
+                        'backend_layout_next_level' => [
+                            'udg_template__landingpage'
                         ]
                     ],
                     'replace' => [
-                        'field' => 'backend_layout_next_level',
-                        'values' => [
-                            'in2template__default',
-                            'in2template__default',
-                            'in2template__homepage'
+                        'value' => 'in2template__Landingpage'
+                    ]
+                ]
+            ],
+            [
+                'className' => ReplaceOnConditionPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'backend_layout_next_level' => [
+                            'udg_template__default'
                         ]
                     ],
-                    'defaultValue' => ''
+                    'replace' => [
+                        'value' => ''
+                    ]
+                ]
+            ],
+            [
+                // Page HOME
+                'className' => ReplaceOnConditionPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'uid' => [
+                            '8091'
+                        ]
+                    ],
+                    'replace' => [
+                        'value' => 'in2template__Subpage'
+                    ]
+                ]
+            ],
+        ],
+        'product_name' => [
+            [
+                'className' => ProductNamePropertyHelper::class
+            ]
+        ],
+        'product_description' => [
+            [
+                'className' => ProductDescriptionPropertyHelper::class
+            ]
+        ],
+        'template_theme' => [
+            [
+                'className' => ReplacePropertyHelper::class,
+                'configuration' => [
+                    'search' => [
+                        '',
+                        'black',
+                        'templateNetbank',
+                        'templateSantander',
+                        'templateBankenvertrieb',
+                        'templateVtb',
+                        'templatePortal'
+                    ],
+                    'replace' => [
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        't-portal'
+                    ],
+                    'startField' => 'tx_udgtemplate_landingpage_theme'
+                ]
+            ]
+        ],
+        'template_logo' => [
+            [
+                'className' => ChangeFileRelationPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'backend_layout' => 'in2template__Landingpage'
+                    ],
+                    'from' => [
+                        'tablenames' => 'pages',
+                        'fieldname' => 'image',
+                        'uid_foreign' => '{uid}'
+                    ],
+                    'to' => [
+                        'tablenames' => 'pages',
+                        'fieldname' => 'template_logo',
+                        'uid_foreign' => '{uid}'
+                    ]
                 ]
             ]
         ]

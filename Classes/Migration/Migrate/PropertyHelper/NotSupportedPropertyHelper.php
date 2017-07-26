@@ -11,18 +11,16 @@ class NotSupportedPropertyHelper extends AbstractPropertyHelper implements Prope
      * @return void
      * @throws \Exception
      */
-    protected function manipulate()
+    public function manipulate()
     {
-        if ($this->isaConditionMatching()) {
-            $newProperties = $this->getConfigurationByKey('properties');
-            $this->record = $newProperties + $this->record;
-        }
+        $newProperties = $this->getConfigurationByKey('properties');
+        $this->record = $newProperties + $this->record;
     }
 
     /**
      * @return bool
      */
-    protected function isaConditionMatching(): bool
+    public function shouldMigrate(): bool
     {
         foreach ($this->getConfigurationByKey('conditions') as $condition) {
             $matching = true;

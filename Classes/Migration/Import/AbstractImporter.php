@@ -67,9 +67,26 @@ abstract class AbstractImporter
     protected $propertyHelpers = [];
 
     /**
+     * Filter selection of old records like " and pid = 123"
+     *
      * @var string
      */
     protected $additionalWhere = '';
+
+    /**
+     * Group selection of old records like "url"
+     *
+     * @var string
+     */
+    protected $groupBy = '';
+
+    /**
+     * Per default the query will try to order by "pid,uid" (if fields are existing). This value can be overwritten.
+     *  like "uid DESC"
+     *
+     * @var string
+     */
+    protected $orderByOverride = '';
 
     /**
      * @var string
@@ -295,18 +312,21 @@ abstract class AbstractImporter
         return (array)$this->getDatabase()->exec_SELECTgetRows(
             '*',
             $this->tableNameOld,
-            $this->buildWhereClause(),
-            '',
-            'pid, uid'
+            $this->getWhereClause(),
+            $this->getGroupByString(),
+            $this->getOrderByString()
         );
     }
 
     /**
      * @return string
      */
-    protected function buildWhereClause(): string
+    protected function getWhereClause(): string
     {
-        $whereClause = 'deleted=0';
+        $whereClause = '1';
+        if ($this->databaseHelper->isFieldExistingInTable($this->tableNameOld, 'deleted')) {
+            $whereClause = 'deleted=0';
+        }
         if (is_numeric($this->configuration['limitToRecord']) && $this->configuration['limitToRecord'] > 0) {
             $whereClause .= ' and uid=' . (int)$this->configuration['limitToRecord'];
         }
@@ -330,6 +350,32 @@ abstract class AbstractImporter
         }
         $whereClause .= $this->additionalWhere;
         return $whereClause;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getGroupByString(): string
+    {
+        return $this->groupBy;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getOrderByString(): string
+    {
+        $orderByString = '';
+        if ($this->databaseHelper->isFieldExistingInTable($this->tableNameOld, 'pid')) {
+            $orderByString .= 'pid,';
+        }
+        if ($this->databaseHelper->isFieldExistingInTable($this->tableNameOld, 'uid')) {
+            $orderByString .= 'uid,';
+        }
+        if (!empty($this->orderByOverride)) {
+            $orderByString = $this->orderByOverride;
+        }
+        return rtrim($orderByString, ',');
     }
 
     /**

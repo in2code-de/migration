@@ -58,7 +58,7 @@ abstract class AbstractFlexFormHelper implements FlexFormHelperInterface
     {
         $flexFormService = $this->getObjectManager()->get(FlexFormService::class);
         return $flexFormService->convertFlexFormContentToArray(
-            $this->propertyHelper->getPropertyFromRecord('tx_templavoila_flex')
+            $this->propertyHelper->getPropertyFromRecord('pi_flexform')
         );
     }
 

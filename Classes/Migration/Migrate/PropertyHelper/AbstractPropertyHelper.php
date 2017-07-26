@@ -75,15 +75,25 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
      */
     public function returnRecord(): array
     {
-        $this->manipulate();
+        if ($this->shouldMigrate()) {
+            $this->manipulate();
+        }
         return $this->getRecord();
     }
 
     /**
      * @return void
      */
-    protected function manipulate()
+    public function manipulate()
     {
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldMigrate(): bool
+    {
+        return true;
     }
 
     /**

@@ -27,14 +27,23 @@ interface PropertyHelperInterface
     );
 
     /**
+     * Function is called before manipulate() (e.g. to do some checks before import)
+     *
      * @return mixed
      */
     public function initialize();
 
     /**
-     * Function to return newRecord
+     * Function to manipulate a record array before importing
      *
-     * @return array
+     * @return void
      */
-    public function returnRecord(): array;
+    public function manipulate();
+
+    /**
+     * Will not call manipulate() if returns false
+     *
+     * @return bool
+     */
+    public function shouldImport(): bool;
 }

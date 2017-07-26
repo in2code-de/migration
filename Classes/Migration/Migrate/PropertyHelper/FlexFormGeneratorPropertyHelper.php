@@ -23,7 +23,7 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  *                      ],
  *                      'flexFormTemplate' => 'EXT:in2template/Resources/Private/Migration/FlexForms/Contact.xml',
  *                      'overwriteValues' => [
- *                          'list_type' => 'users_pi1'
+ *                          'header' => 'This is the new header for this tt_content record'
  *                      ],
  *                      'additionalMapping' => [
  *                          [
@@ -78,13 +78,11 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
      * @return void
      * @throws \Exception
      */
-    protected function manipulate()
+    public function manipulate()
     {
-        if ($this->conditionFits()) {
-            $this->setProperty($this->buildFlexFormString());
-            $this->propertiesFromOverwriteValuesConfiguration();
-            $this->log->addMessage('New FlexForm value set for content.uid ' . $this->getPropertyFromRecord('uid'));
-        }
+        $this->setProperty($this->buildFlexFormString());
+        $this->propertiesFromOverwriteValuesConfiguration();
+        $this->log->addMessage('New FlexForm value set for content.uid ' . $this->getPropertyFromRecord('uid'));
     }
 
     /**
@@ -102,7 +100,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
                 'helper' => $this->getFromHelperClasses()
             ]
         );
-        return $standaloneView->render();
+        return (string)$standaloneView->render();
     }
 
     /**
@@ -191,7 +189,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
      *
      * @return bool
      */
-    protected function conditionFits(): bool
+    public function shouldMigrate(): bool
     {
         foreach ($this->getConfigurationByKey('condition') as $field => $value) {
             if (stristr($value, 'flexForm:')) {

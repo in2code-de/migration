@@ -32,6 +32,14 @@ abstract class AbstractMigrator
     protected $mapping = [];
 
     /**
+     * Fill properties with hard values - example (always fill header_layout with 1):
+     *      'header_layout' => 1
+     *
+     * @var array
+     */
+    protected $values = [];
+
+    /**
      * PropertyHelpers are called after initial build via mapping
      *
      *      "newProperty" => [
@@ -144,6 +152,7 @@ abstract class AbstractMigrator
     protected function updateRow(array $row): array
     {
         $row = $this->updateRowFromMapping($row);
+        $row = $this->updateRowFromValues($row);
         $row = $this->updateRowFromPropertyHelpers($row);
         $row = $this->genericChanges($row);
         return $row;
@@ -175,6 +184,15 @@ abstract class AbstractMigrator
             $row[$newPropertyName] = $newProperty;
         }
         return $row;
+    }
+
+    /**
+     * @param array $row
+     * @return array
+     */
+    protected function updateRowFromValues(array $row): array
+    {
+        return $this->values + $row;
     }
 
     /**
