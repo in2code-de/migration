@@ -233,3 +233,7 @@ be filled automaticly
 ./vendor/bin/typo3cms mainmigration:migratenews --dryrun=1 --limittopage=1 --recursive=false
 ./vendor/bin/typo3cms mainmigration:migratenews --dryrun=0 --limittorecord=123
 ```
+
+## Todos
+* Extract to an own extension
+* Add a fully functional generic importer - e.g. tt_news to tx_news
