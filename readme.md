@@ -10,6 +10,22 @@ E.g:
 * Migration tt_content (TemplaVoila to Gridelements)
 
 ## Introduction
+
+### What's the roadmap on TYPO3 update and migration projects?
+
+If your migration comes along with a TYPO3 update (like from 6.2 to 8.7 or so), you should go this way:
+* Make your new page work with some testpages in a new TYPO3
+* Add the functions you need to your small test instance (like news, powermail, etc...)
+* Of course I would recommend to store the complete configuration (TypoScript, TSConfig etc...) in an extension 
+* Import your old database
+* Make a db compare (I would recommend the package typo3_console for this to do this from CLI)
+* Make your update wizard steps (I would also recommend the package typo3_console for this to do this from CLI)
+* Dump your new database
+* Start with adding your own Migrators and Importers
+* And then have fun with migrating, rolling back database, update your scripts, migrate again, and so on
+
+### Hands on
+
 CommandController commands can be added with a defined key - in this case "faq":
 
 ```
