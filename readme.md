@@ -250,6 +250,13 @@ be filled automaticly
 ./vendor/bin/typo3cms mainmigration:migratenews --dryrun=0 --limittorecord=123
 ```
 
+## Additional CommandControllers
+
+- DataHandlerCommandController
+  - handleCommand() Do TYPO3 pageactions (normally known from backend) via console. Move, delete, copy complete pages and trees without runtimelimit from CLI
+- HelpCommandController
+  - getListsOfSubPagesCommand() Simple show a commaseparated list of subpages to a page (helpful for further database commands)
+
 ## Todos
 * Extract to an own extension
 * Add a fully functional generic importer - e.g. tt_news to tx_news
