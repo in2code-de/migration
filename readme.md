@@ -1,13 +1,13 @@
 # TYPO3 Migration and Importer Boilerplate
 
 ## Description
-This extension (with example key in2template) is a kickstarter extension (boilerplate) 
-to import or migrate TYPO3 stuff. 
+This extension (with extension key **migration**) is a kickstarter extension (boilerplate)
+to import or migrate TYPO3 stuff within the same database.
 Boilerplate means in this case, take the extension and change it to your needs.
 
 E.g: 
-* Import tt_news to news
-* Migration tt_content (TemplaVoila to Gridelements)
+* **Import** from an old to a new table (like from tt_news to news)
+* **Migrate** existing records an an existing table (like in tt_content from TemplaVoila to Gridelements)
 
 ## Introduction
 
@@ -23,31 +23,12 @@ If your migration comes along with a TYPO3 update (like from 6.2 to 8.7 or so), 
 * Dump your new database
 * Start with adding your own Migrators and Importers
 * And then have fun with migrating, rolling back database, update your scripts, migrate again, and so on
+* See also https://www.slideshare.net/einpraegsam/typo3-migration-in-komplexen-upgrade-und-relaunchprojekten-85961416
 
 ### Hands on
 
-CommandController commands can be added with a defined key - in this case "faq":
-
-```
-    /**
-     * Migrate existing faq.
-     *
-     * @param bool $dryrun Test how many records could be imported (with "--dryrun=0")
-     * @param string $limitToRecord 0=disable, 12=enable(all tables), table:123(only table.uid=123)
-     * @param int $limitToPage 0=disable, 12=enable(all records with pid=12)
-     * @param bool $recursive true has only an effect if limitToPage is set
-     * @return void
-     */
-    public function migrateFaqCommand($dryrun = true, $limitToRecord = '0', $limitToPage = 0, $recursive = false)
-    {
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $starter = $this->objectManager->get(Starter::class, $this->output, 'faq');
-        $starter->start($dryrun, $limitToRecord, $limitToPage, $recursive);
-    }
-    
-```
-
 In the starter class some importers or migrators are related to the key "faq":
+
 ```
 protected $migrationClasses = [
     [
@@ -86,9 +67,9 @@ protected $migrationClasses = [
 Example Importer class:
 ```
 <?php
-namespace In2code\In2template\Migration\Import;
+namespace In2code\Migration\Migration\Import;
 
-use In2code\In2template\Migration\Import\PropertyHelper\ReplaceCssClassesInHtmlStringPropertyHelper;
+use In2code\Migration\Migration\Import\PropertyHelper\ReplaceCssClassesInHtmlStringPropertyHelper;
 
 /**
  * Class FaqImporter
@@ -167,9 +148,9 @@ class FaqImporter extends AbstractImporter implements ImporterInterface
 Example for an individual PropertyHelper class:
 ```
 <?php
-namespace In2code\In2template\Migration\Import\PropertyHelper;
+namespace In2code\Migration\Migration\Import\PropertyHelper;
 
-use In2code\In2template\Migration\Utility\StringUtility;
+use In2code\Migration\Migration\Utility\StringUtility;
 
 /**
  * Class ReplaceCssClassesInHtmlStringPropertyHelper
@@ -236,18 +217,18 @@ In your Migrator or Importer class you can define which record should be changed
 Normally you can choose via class properties:
 * if tables should be truncated or not
 * if the where clause should be extended to find old records
-* change ordering
+* change orderings
 * if uid should be kept
 * etc...
 
 If you extend your new tables with fields like _migrated, _migrated_uid and _migrated_table, they will
-be filled automaticly
+be filled automaticly with useful values
 
 ## Example CLI calls
 ```
-./vendor/bin/typo3cms mainmigration:migratefaq --dryrun=0
-./vendor/bin/typo3cms mainmigration:migratenews --dryrun=1 --limittopage=1 --recursive=false
-./vendor/bin/typo3cms mainmigration:migratenews --dryrun=0 --limittorecord=123
+./vendor/bin/typo3cms migrate:start --key=content --dryrun=0
+./vendor/bin/typo3cms migrate:start --key=page --dryrun=1 --limit-to-page=1 --recursive=0
+./vendor/bin/typo3cms migrate:start --key=news --dryrun=0 --limit-to-record=123
 ```
 
 ## Additional CommandControllers
@@ -256,16 +237,20 @@ be filled automaticly
   - handleCommand() Do TYPO3 pageactions (normally known from backend) via console. Move, delete, copy complete pages and trees without runtimelimit from CLI
 - HelpCommandController
   - getListsOfSubPagesCommand() Simple show a commaseparated list of subpages to a page (helpful for further database commands)
-
-## Todos
-
-* Extract to an own extension
-* Add a fully functional generic importer - e.g. tt_news to tx_news
+- ImportExportCommandController
+  - exportCommand() T3D Export with xml
+  - importCommand() T3D Import with xml
 
 ## Changelog
 
 | Version    | Date       | State      | Description                                                                  |
 | ---------- | ---------- | ---------- | ---------------------------------------------------------------------------- |
+| 2.0.0      | 2018-09-07 | Task       | Use extkey migration, add ImportExportCommandController, some improvements   |
 | 1.1.1      | 2018-09-07 | Task       | Add Changelog                                                                |
 | 1.1.0      | 2017-07-28 | Task       | Add DataHandler and Help CommandControllers                                  |
 | 1.0.0      | 2017-07-26 | Task       | Initial release                                                              |
+
+## Future Todos
+
+* Rewrite all database queries with doctrine methods to enable migration extension also for TYPO3 9.x
+* Add a fully functional generic importer - e.g. tt_news to tx_news
