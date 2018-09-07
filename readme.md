@@ -14,90 +14,69 @@ E.g:
 ### What's the roadmap on TYPO3 update and migration projects?
 
 If your migration comes along with a TYPO3 update (like from 6.2 to 8.7 or so), you should go this way:
-* Make your new page work with some testpages in a new TYPO3
-* Add the functions you need to your small test instance (like news, powermail, etc...)
+* Start with a clean database and a new TYPO3 and build your functions in it with some testpages
+* Add additional functions you need to your small test instance (like news, powermail, own content elements, etc...)
 * Of course I would recommend to store the complete configuration (TypoScript, TSConfig etc...) in an extension 
 * Import your old database
-* Make a db compare (I would recommend the package typo3_console for this to do this from CLI)
-* Make your update wizard steps (I would also recommend the package typo3_console for this to do this from CLI)
+* Make a db compare (I would recommend the package **typo3_console** for this to do this from CLI)
+* Make your update wizard steps (I would also recommend the package **typo3_console** for this to do this from CLI)
 * Dump your new database
+* Add a fork of this extension with key **migration** to your project (require-dev e.g. via composer)
 * Start with adding your own Migrators and Importers
 * And then have fun with migrating, rolling back database, update your scripts, migrate again, and so on
+* If you are finished and have a good result, you simply can remove the extension
 * See also https://www.slideshare.net/einpraegsam/typo3-migration-in-komplexen-upgrade-und-relaunchprojekten-85961416
 
-### Hands on
 
-In the starter class some importers or migrators are related to the key "faq":
+
+## Hands on
+
+### First migration
+
+Let's say we want only a very small migration. CSS classes in tt_content.bodytext should be changed with some new
+classes. Go into the file `\In2code\Migration\Migration\Starter` and clean the property $migrationClasses. In the first
+step we only want a migration (because we want to manipulate existing values in an existing table - in this case
+tt_content).
 
 ```
 protected $migrationClasses = [
     [
-        'className' => FaqImporter::class,
+        'className' => ContentMigrator::class,
         'configuration' => [
-            'migrationClassKey' => 'faq'
-        ]
-    ],
-    [
-        'className' => FaqCategoriesProductImporter::class,
-        'configuration' => [
-            'migrationClassKey' => 'faq'
-        ]
-    ],
-    [
-        'className' => FaqCategoriesSysCategoryImporter::class,
-        'configuration' => [
-            'migrationClassKey' => 'faq'
-        ]
-    ],
-    [
-        'className' => CreateRelationsFromProductsImporter::class,
-        'configuration' => [
-            'migrationClassKey' => 'faq'
-        ]
-    ],
-    [
-        'className' => DeleteFaqSysCategoriesDatabaseScript::class,
-        'configuration' => [
-            'migrationClassKey' => 'faq'
+            'migrationClassKey' => 'content'
         ]
     ]
 ];
 ```
 
-Example Importer class:
+Example Content Migration class:
 ```
 <?php
-namespace In2code\Migration\Migration\Import;
+namespace In2code\Migration\Migration\Migrate;
 
-use In2code\Migration\Migration\Import\PropertyHelper\ReplaceCssClassesInHtmlStringPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\ReplaceCssClassesInHtmlStringPropertyHelper;
 
 /**
- * Class FaqImporter
+ * Class ContentMigrator
  */
-class FaqImporter extends AbstractImporter implements ImporterInterface
+class ContentMigrator extends AbstractMigrator implements MigratorInterface
 {
 
     /**
-     * Table name where to migrate to
+     * Table to migrate
      *
      * @var string
      */
-    protected $tableName = 'tx_in2faq_domain_model_question';
+    protected $tableName = 'tt_content';
 
     /**
-     * Table name from migrate to
+     * Hardcode some values in tt_content
      *
-     * @var string
-     */
-    protected $tableNameOld = 'tx_udgmvfaq_domain_model_question';
-
-    /**
      * @var array
      */
-    protected $mapping = [
-        'question' => 'question',
-        'answer' => 'answer',
-        'crdate' => 'crdate'
+    protected $values = [
+        'linkToTop' => 0, // reset linkToTop
+        'date' => 0
     ];
 
     /**
@@ -116,27 +95,19 @@ class FaqImporter extends AbstractImporter implements ImporterInterface
      * @var array
      */
     protected $propertyHelpers = [
-        'answer' => [
+        'bodytext' => [
             [
                 'className' => ReplaceCssClassesInHtmlStringPropertyHelper::class,
                 'configuration' => [
                     'search' => [
                         'btn',
-                        'btn-neg',
                         'btn-green',
-                        'btn-blue',
-                        'contenttable-2',
-                        'contenttable-3',
-                        'ul-check'
+                        'btn-blue'
                     ],
                     'replace' => [
                         'c-button',
-                        'c-button--white',
                         'c-button--green',
-                        '',
-                        'u-table-transparent',
-                        'u-table-blue',
-                        'u-list-check'
+                        'c-button--blue'
                     ]
                 ]
             ]
@@ -176,7 +147,7 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
     public function initialize()
     {
         if (!is_array($this->getConfigurationByKey('search')) || !is_array($this->getConfigurationByKey('replace'))) {
-            throw new \Exception('configuration search and replace is missing');
+            throw new \Exception('configuration search and replace is missing', 1525355698);
         }
     }
 
@@ -208,6 +179,117 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
     }
 }
 ```
+
+Start migration from CLI:
+
+`./vendor/bin/typo3cms migrate:start --key=content --dryrun=0`
+
+
+
+### First import
+
+Let's say we want to simply copy some values from an old table to a new one with an individual mapping. In this
+example I use tt_news and tx_news_domain_model_news. Go into the file `\In2code\Migration\Migration\Starter`
+and add the importer to the property $migrationClasses.
+
+
+```
+protected $migrationClasses = [
+    [
+        'className' => NewsImporter::class,
+        'configuration' => [
+            'migrationClassKey' => 'news'
+        ]
+    ]
+];
+```
+
+Example Content Importer class:
+```
+<?php
+namespace In2code\Migration\Migration\Import;
+
+/**
+ * Class NewsImporter
+ */
+class NewsImporter extends AbstractImporter implements ImporterInterface
+{
+
+    /**
+     * New table should be truncated before each importer run
+     *
+     * @var bool
+     */
+    protected $truncate = true;
+
+    /**
+     * Use new values for .uid property
+     *
+     * @var bool
+     */
+    protected $keepIdentifiers = false;
+
+    /**
+     * Table to import to
+     *
+     * @var string
+     */
+    protected $tableName = 'tx_news_domain_model_news';
+
+    /**
+     * Table to import from
+     *
+     * @var string
+     */
+    protected $tableNameOld = 'tt_news';
+
+    /**
+     * Copy from old.fieldname to new.fieldname
+     *
+     * @var array
+     */
+    protected $mapping = [
+        'title' => 'title',
+        'short' => 'teaser',
+        'bodytext' => 'bodytext'
+    ];
+
+    /**
+     * Hardcode some properties
+     *
+     * @var array
+     */
+    protected $values = [
+        'pid' => 123 // store news into this page
+    ];
+
+    /**
+     * PropertyHelpers are called after initial build via mapping
+     *
+     *      "newProperty" => [
+     *          [
+     *              "className" => class1::class,
+     *              "configuration => ["red"]
+     *          ],
+     *          [
+     *              "className" => class2::class
+     *          ]
+     *      ]
+     *
+     * @var array
+     */
+    protected $propertyHelpers = [
+        // your own magic
+    ];
+}
+```
+
+Start import from CLI:
+
+`./vendor/bin/typo3cms migrate:start --key=news --dryrun=0`
+
+
+
 
 ## Some notes
 * Migration: This means migrate existing records in an existing table
