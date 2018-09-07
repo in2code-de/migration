@@ -258,5 +258,14 @@ be filled automaticly
   - getListsOfSubPagesCommand() Simple show a commaseparated list of subpages to a page (helpful for further database commands)
 
 ## Todos
+
 * Extract to an own extension
 * Add a fully functional generic importer - e.g. tt_news to tx_news
+
+## Changelog
+
+| Version    | Date       | State      | Description                                                                  |
+| ---------- | ---------- | ---------- | ---------------------------------------------------------------------------- |
+| 1.1.1      | 2018-09-07 | Task       | Add Changelog                                                                |
+| 1.1.0      | 2017-07-28 | Task       | Add DataHandler and Help CommandControllers                                  |
+| 1.0.0      | 2017-07-26 | Task       | Initial release                                                              |
