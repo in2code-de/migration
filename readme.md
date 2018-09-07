@@ -7,7 +7,7 @@ Boilerplate means in this case, take the extension and change it to your needs.
 
 E.g: 
 * **Import** from an old to a new table (like from tt_news to news)
-* **Migrate** existing records an an existing table (like in tt_content from TemplaVoila to Gridelements)
+* **Migrate** existing records in an existing table (like in tt_content from TemplaVoila to Gridelements)
 
 ## Introduction
 
@@ -303,7 +303,7 @@ Normally you can choose via class properties:
 * if uid should be kept
 * etc...
 
-If you extend your new tables with fields like _migrated, _migrated_uid and _migrated_table, they will
+If you extend your new tables with fields like `_migrated`, `_migrated_uid` and `_migrated_table`, they will
 be filled automaticly with useful values
 
 ## Example CLI calls
@@ -313,7 +313,7 @@ be filled automaticly with useful values
 ./vendor/bin/typo3cms migrate:start --key=news --dryrun=0 --limit-to-record=123
 ```
 
-## Additional CommandControllers
+## Additional useful CommandControllers in this extension
 
 - DataHandlerCommandController
   - handleCommand() Do TYPO3 pageactions (normally known from backend) via console. Move, delete, copy complete pages and trees without runtimelimit from CLI
