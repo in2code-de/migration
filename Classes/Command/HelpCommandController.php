@@ -1,7 +1,6 @@
 <?php
-namespace In2code\In2template\Command;
+namespace In2code\Migration\Command;
 
-use In2code\In2template\Utility\ObjectUtility;
 use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 
@@ -40,6 +39,7 @@ class HelpCommandController extends CommandController
      *
      * @param int $startPid
      * @return string
+     * @cli
      */
     public function getListsOfSubPagesCommand($startPid)
     {

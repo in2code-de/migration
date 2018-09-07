@@ -1,7 +1,7 @@
 <?php
-namespace In2code\In2template\Migration\DatabaseScript;
+namespace In2code\Migration\Migration\DatabaseScript;
 
-use In2code\In2template\Migration\Service\Log;
+use In2code\Migration\Migration\Service\Log;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Cli\ConsoleOutput;

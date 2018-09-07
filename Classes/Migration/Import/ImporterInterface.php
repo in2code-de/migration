@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Import;
+namespace In2code\Migration\Migration\Import;
 
 /**
  * Interface ImporterInterface

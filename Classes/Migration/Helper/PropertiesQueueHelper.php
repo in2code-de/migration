@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Helper;
+namespace In2code\Migration\Migration\Helper;
 
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\SingletonInterface;

@@ -1,10 +1,10 @@
 <?php
-namespace In2code\In2template\Migration\Import;
+namespace In2code\Migration\Migration\Import;
 
-use In2code\In2template\Migration\Helper\DatabaseHelper;
-use In2code\In2template\Migration\Helper\NormalizeHelper;
-use In2code\In2template\Migration\Import\PropertyHelper\PropertyHelperInterface;
-use In2code\In2template\Migration\Service\Log;
+use In2code\Migration\Migration\Helper\DatabaseHelper;
+use In2code\Migration\Migration\Helper\NormalizeHelper;
+use In2code\Migration\Migration\Import\PropertyHelper\PropertyHelperInterface;
+use In2code\Migration\Migration\Service\Log;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -150,10 +150,18 @@ abstract class AbstractImporter
     public function startMigration(array $configuration): array
     {
         $this->configuration = $configuration;
+        $this->initialize();
         $this->truncateTable();
         $records = $this->importRecords();
         $this->finalMessage($records);
         return $records;
+    }
+
+    /**
+     * @return void
+     */
+    protected function initialize()
+    {
     }
 
     /**
@@ -260,7 +268,7 @@ abstract class AbstractImporter
         foreach ($this->propertyHelpers as $propertyName => $helpersConfig) {
             foreach ($helpersConfig as $helperConfig) {
                 if (!class_exists($helperConfig['className'])) {
-                    throw new \Exception('Class ' . $helperConfig['className'] . ' does not exists');
+                    throw new \Exception('Class ' . $helperConfig['className'] . ' does not exist');
                 }
                 if (is_subclass_of($helperConfig['className'], $this->helperInterface)) {
                     /** @var PropertyHelperInterface $helperClass */

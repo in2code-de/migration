@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Service;
+namespace In2code\Migration\Migration\Service;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Extbase\Mvc\Cli\ConsoleOutput;

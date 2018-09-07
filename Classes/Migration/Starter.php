@@ -1,42 +1,17 @@
 <?php
-namespace In2code\In2template\Migration;
+namespace In2code\Migration\Migration;
 
-use In2code\In2template\Migration\DatabaseScript\DatabaseScriptInterface;
-use In2code\In2template\Migration\DatabaseScript\DeleteFaqSysCategoriesDatabaseScript;
-use In2code\In2template\Migration\Import\AbstractImporter;
-use In2code\In2template\Migration\Import\CreateRelationsFromProductsImporter;
-use In2code\In2template\Migration\Import\CreateRelationsFromSysCategoriesImporter;
-use In2code\In2template\Migration\Import\FaqCategoriesSysCategoryImporter;
-use In2code\In2template\Migration\Import\FaqCategoriesProductImporter;
-use In2code\In2template\Migration\Import\FaqImporter;
-use In2code\In2template\Migration\Import\ImporterInterface;
-use In2code\In2template\Migration\Import\RedirectImporter;
-use In2code\In2template\Migration\Migrate\ContentMigrator;
-use In2code\In2template\Migration\Migrate\MigratorInterface;
-use In2code\In2template\Migration\Migrate\PageMigrator;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Cli\ConsoleOutput;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
+use In2code\Migration\Migration\Import\CalendarImporter;
+use In2code\Migration\Migration\Migrate\CalendarCategoriesMigrator;
+use In2code\Migration\Migration\Migrate\ContentMigrator;
+use In2code\Migration\Migration\Migrate\NewsMigrator;
+use In2code\Migration\Migration\Migrate\PageMigrator;
 
 /**
  * Class Starter
  */
-class Starter
+class Starter extends AbstractStarter
 {
-
-    /**
-     * @var array
-     */
-    protected $interfaces = [
-        ImporterInterface::class,
-        MigratorInterface::class,
-        DatabaseScriptInterface::class
-    ];
-
-    /**
-     * @var string
-     */
-    protected $migrationClassKey = '';
 
     /**
      * Define your Migrators and Importers here (Orderings will be respected)
@@ -76,120 +51,22 @@ class Starter
             ]
         ],
         [
-            'className' => FaqImporter::class,
+            'className' => NewsMigrator::class,
             'configuration' => [
-                'migrationClassKey' => 'faq'
+                'migrationClassKey' => 'news'
             ]
         ],
         [
-            'className' => FaqCategoriesProductImporter::class,
+            'className' => CalendarImporter::class,
             'configuration' => [
-                'migrationClassKey' => 'faq'
+                'migrationClassKey' => 'calendar'
             ]
         ],
         [
-            'className' => FaqCategoriesSysCategoryImporter::class,
+            'className' => CalendarCategoriesMigrator::class,
             'configuration' => [
-                'migrationClassKey' => 'faq'
-            ]
-        ],
-        [
-            'className' => CreateRelationsFromProductsImporter::class,
-            'configuration' => [
-                'migrationClassKey' => 'faq'
-            ]
-        ],
-        [
-            'className' => CreateRelationsFromSysCategoriesImporter::class,
-            'configuration' => [
-                'migrationClassKey' => 'faq'
-            ]
-        ],
-        [
-            'className' => DeleteFaqSysCategoriesDatabaseScript::class,
-            'configuration' => [
-                'migrationClassKey' => 'faq'
-            ]
-        ],
-        [
-            'className' => RedirectImporter::class,
-            'configuration' => [
-                'migrationClassKey' => 'redirect'
+                'migrationClassKey' => 'calendarcategories'
             ]
         ]
     ];
-
-    /**
-     * @var ConsoleOutput|null
-     */
-    protected $output = null;
-
-    /**
-     * ImporterStarter constructor.
-     *
-     * @param ConsoleOutput $output
-     * @param string $migrationClassKey
-     */
-    public function __construct(ConsoleOutput $output, string $migrationClassKey)
-    {
-        $this->output = $output;
-        $this->migrationClassKey = $migrationClassKey;
-    }
-
-    /**
-     * Run through $this->migrationClasses and call migrators or importers and prove the configuration
-     *
-     * @param bool $dryrun
-     * @param int|string $limitToRecord
-     * @param int $limitToPage
-     * @param bool $recursive
-     * @return void
-     * @throws \Exception
-     */
-    public function start(bool $dryrun, $limitToRecord, int $limitToPage, bool $recursive)
-    {
-        $localConfiguration = [
-            'dryrun' => $dryrun,
-            'limitToRecord' => $limitToRecord,
-            'limitToPage' => $limitToPage,
-            'recursive' => $recursive
-        ];
-        foreach ($this->migrationClasses as $migrationConfig) {
-            if (!class_exists($migrationConfig['className'])) {
-                throw new \Exception('Class ' . $migrationConfig['className'] . ' does not exists');
-            }
-            if ($this->isSubclassOfAllowedInterfaces($migrationConfig['className'])) {
-                $migrationConfig['configuration'] = (array)$migrationConfig['configuration'] + $localConfiguration;
-                if ($this->migrationClassKey === $migrationConfig['configuration']['migrationClassKey']) {
-                    /** @var AbstractImporter $importerClass */
-                    $class = $this->getObjectManager()->get($migrationConfig['className'], $this->output);
-                    $class->startMigration($migrationConfig['configuration']);
-                }
-            } else {
-                throw new \Exception('Class ' . __CLASS__ . ' does not implement one of the needed interfaces');
-            }
-        }
-    }
-
-    /**
-     * @param string $className
-     * @return bool
-     */
-    protected function isSubclassOfAllowedInterfaces(string $className): bool
-    {
-        foreach ($this->interfaces as $interfaceName) {
-            if (is_subclass_of($className, $interfaceName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @return ObjectManager
-     */
-    protected function getObjectManager(): ObjectManager
-    {
-        return GeneralUtility::makeInstance(ObjectManager::class);
-    }
 }

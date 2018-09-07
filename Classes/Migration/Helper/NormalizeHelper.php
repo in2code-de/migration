@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Helper;
+namespace In2code\Migration\Migration\Helper;
 
 /**
  * Class NormalizeHelper

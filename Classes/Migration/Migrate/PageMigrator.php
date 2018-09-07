@@ -1,12 +1,7 @@
 <?php
-namespace In2code\In2template\Migration\Migrate;
+namespace In2code\Migration\Migration\Migrate;
 
-use In2code\In2template\Migration\Migrate\PropertyHelper\ChangeFileRelationPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\CheckifProductPagePropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\ProductDescriptionPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\ProductNamePropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\ReplaceOnConditionPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\ReplacePropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\AddValueByPidPropertyHelper;
 
 /**
  * Class PageMigrator
@@ -20,17 +15,6 @@ class PageMigrator extends AbstractMigrator implements MigratorInterface
      * @var string
      */
     protected $tableName = 'pages';
-
-    /**
-     * Simply copy values from one to another column
-     *
-     * @var array
-     */
-    protected $mapping = [
-        'tx_udgtemplate_landingpage_footer_page' => 'template_footer_page',
-        'tx_udgtemplate_landingpage_system_page' => 'template_impressum_navigation_page',
-        'tx_udgtemplate_landingpage_global_phone' => 'template_footer_slogan'
-    ];
 
     /**
      * PropertyHelpers are called after initial build via mapping
@@ -48,148 +32,703 @@ class PageMigrator extends AbstractMigrator implements MigratorInterface
      * @var array
      */
     protected $propertyHelpers = [
-        'backend_layout' => [
+        'subsiteheadline' => [
             [
-                'className' => ReplaceOnConditionPropertyHelper::class,
+                'className' => AddValueByPidPropertyHelper::class,
                 'configuration' => [
-                    'conditions' => [
-                        'backend_layout' => [
-                            'udg_template__landingpage'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => 'in2template__Landingpage'
+                    'mapping' => [
+                        11065 => 'Mathematisch-Naturwissenschaftliche Fakultät',
+                        11297 => 'Wirtschafts- und Sozialwissenschaftliche Fakultät',
+                        114069 => 'Mathematisch-Naturwissenschaftliche Fakultät / Medizinische Fakultät',
+                        11446 => 'Philosophische Fakultät',
+                        114949 => 'Wirtschafts- und Sozialwissenschaftliche Fakultät',
+                        120386 => 'Dezernat II',
+                        120409 => 'Dezernat IV',
+                        120528 => 'Commitment Forschung',
+                        1472 => 'Zentrum für Evaluation und Qualitätsmanagement (ZEQ)',
+                        1473 => 'Mathematisch-Naturwissenschaftliche Fakultät / Medizinische Fakultät',
+                        1474 => 'Mathematisch-Naturwissenschaftliche Fakultät / Medizinische Fakultät',
+                        1721 => 'Evangelisch-Theologische Fakultät',
+                        173 => 'Zentrum für Datenverarbeitung (ZDV)',
+                        177 => 'Dezernat IV',
+                        178 => 'Dezernat VII',
+                        179 => 'Dezernat VIII',
+                        180 => 'Dezernat V',
+                        181 => 'Dezernat I',
+                        182 => 'Dezernat III',
+                        2077 => 'Controlling und Innenrevision',
+                        2221 => 'Katholisch-Theologische Fakultät',
+                        2222 => 'Juristische Fakultät',
+                        2224 => 'Medizinische Fakultät',
+                        23522 => 'Mathematisch-Naturwissenschaftliche Fakultät / Philosophische Fakultät',
+                        24819 => 'Forum Scientiarum',
+                        26032 => 'Quantitative Biology Center (QBIC)',
+                        26902 => 'Botanischer Garten',
+                        29437 => 'Center for Light-Matter Interaction, Sensors & Analytics (LISA+)',
+                        324 => 'Universitätsbibliothek',
+                        33500 => 'Isotopenlabor',
+                        3360 => 'Collegium Musicum',
+                        35356 => 'LEAD Graduate School & Research Network',
+                        35567 => 'Zentrum für Islamische Theologie',
+                        39235 => 'Exzellenzinitiative',
+                        45050 => 'Zentrum für Gender- und Diversityforschung (ZGD)',
+                        7335 => 'Mathematisch-Naturwissenschaftliche Fakultät / Medizinische Fakultät',
+                        7403 => 'Internationales Zentrum für Ethik in den Wissenschaften (IZEW)',
+                        74166 => 'China Centrum Tübingen (CCT)',
+                        7507 => 'Hochschulkommunikation',
+                        7924 => 'Mathematisch-Naturwissenschaftliche Fakultät / Medizinische Fakultät',
+                        89470 => 'Leibniz Kolleg',
+                        96342 => 'Medizinische Fakultät',
+                        60878 => 'Tübingen School of Education (TüSE)'
                     ]
-                ]
-            ],
-            [
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        'backend_layout' => [
-                            'udg_template__default'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => ''
-                    ]
-                ]
-            ],
-            [
-                'className' => CheckifProductPagePropertyHelper::class,
-                'configuration' => [
-                    'replace' => 'in2template__Productpage'
-                ]
-            ],
-            [
-                // Page HOME
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        'uid' => [
-                            '8091'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => 'in2template__Homepage'
-                    ]
-                ]
-            ],
-        ],
-        'backend_layout_next_level' => [
-            [
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        'backend_layout_next_level' => [
-                            'udg_template__landingpage'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => 'in2template__Landingpage'
-                    ]
-                ]
-            ],
-            [
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        'backend_layout_next_level' => [
-                            'udg_template__default'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => ''
-                    ]
-                ]
-            ],
-            [
-                // Page HOME
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        'uid' => [
-                            '8091'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => 'in2template__Subpage'
-                    ]
-                ]
-            ],
-        ],
-        'product_name' => [
-            [
-                'className' => ProductNamePropertyHelper::class
-            ]
-        ],
-        'product_description' => [
-            [
-                'className' => ProductDescriptionPropertyHelper::class
-            ]
-        ],
-        'template_theme' => [
-            [
-                'className' => ReplacePropertyHelper::class,
-                'configuration' => [
-                    'search' => [
-                        '',
-                        'black',
-                        'templateNetbank',
-                        'templateSantander',
-                        'templateBankenvertrieb',
-                        'templateVtb',
-                        'templatePortal'
-                    ],
-                    'replace' => [
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        't-portal'
-                    ],
-                    'startField' => 'tx_udgtemplate_landingpage_theme'
                 ]
             ]
         ],
-        'template_logo' => [
+        'subsitesubheadline' => [
             [
-                'className' => ChangeFileRelationPropertyHelper::class,
+                'className' => AddValueByPidPropertyHelper::class,
                 'configuration' => [
-                    'conditions' => [
-                        'backend_layout' => 'in2template__Landingpage'
-                    ],
-                    'from' => [
-                        'tablenames' => 'pages',
-                        'fieldname' => 'image',
-                        'uid_foreign' => '{uid}'
-                    ],
-                    'to' => [
-                        'tablenames' => 'pages',
-                        'fieldname' => 'template_logo',
-                        'uid_foreign' => '{uid}'
+                    'mapping' => [
+                        12258 => 'Abteilung für Religionswissenschaft',
+                        12479 => 'AG Maier',
+                        12756 => 'AG Nachtsheim',
+                        41775 => 'Algorithmen der Bioinformatik',
+                        4282 => 'Alte Geschichte',
+                        11059 => 'Alte Kirchengeschichte',
+                        9783 => 'Altes Testament',
+                        37680 => 'Altes Testament I',
+                        37679 => 'Altes Testament II',
+                        82287 => 'Angewandte Geowissenschaften',
+                        9376 => 'Angewandte Kognitionspsychologie und Medienpsychologie',
+                        19454 => 'Bankwirtschaft',
+                        179 => 'Bau, Sicherheit und Umwelt',
+                        19398 => 'Betriebliche Finanzwirtschaft',
+                        17660 => 'Bibliothek',
+                        37646 => 'Biblisch-Archäologisches Institut',
+                        9785 => 'Biblische Einleitung und Zeitgeschichte',
+                        21607 => 'Biologische Psychologie',
+                        4935 => 'Chemisches Zentralinstitut',
+                        25369 => 'Cognitive Modeling',
+                        33661 => 'Cognitive Science Center',
+                        88434 => 'Competence Center Archaeometry Baden-Wuerttemberg',
+                        27593 => 'Department of Finance',
+                        1474 => 'Department of Molecular Biology',
+                        31 => 'Deutsches Seminar',
+                        10344 => 'Diagnostik und Kognitive Neuropsychologie',
+                        9130 => 'Dogmatik',
+                        9134 => 'Dogmatik, Dogmengeschichte und Ökumenische Theologie',
+                        18867 => 'Econometrics, Statistics and Empirical Economics',
+                        30 => 'Englisches Seminar',
+                        9377 => 'Entwicklungspsychologie',
+                        5992 => 'Ethnologie',
+                        69839 => 'Evang. Institut für berufsorientierte Religionspädagogik',
+                        19913 => 'Evolutionäre Kognition (Kognitionswissenschaft)',
+                        69761 => 'Experimentelle Kognitionswissenschaften',
+                        11459 => 'Fachbereich Altertums- und Kunstwissenschaften',
+                        1691 => 'Fachbereich Asien-Orient-Wissenschaften',
+                        433 => 'Fachbereich Biologie',
+                        3816 => 'Fachbereich Chemie',
+                        11823 => 'Fachbereich Geowissenschaften',
+                        1001 => 'Fachbereich Geschichtswissenschaft',
+                        11824 => 'Fachbereich Informatik (Wilhelm-Schickard-Institut)',
+                        13644 => 'Fachbereich Mathematik',
+                        11456 => 'Fachbereich Neuphilologie',
+                        13167 => 'Fachbereich Pharmazie und Biochemie',
+                        11455 => 'Fachbereich Philosophie – Rhetorik – Medien',
+                        2225 => 'Fachbereich Physik',
+                        11828 => 'Fachbereich Psychologie',
+                        11306 => 'Fachbereich Wirtschaftswissenschaft',
+                        3292 => 'Fachbibliothek Mathematik und Physik',
+                        178 => 'Finanzen',
+                        19129 => 'Finanzwissenschaft',
+                        120386 => 'Forschung',
+                        21605 => 'Forschungsmethoden und Mathematische Psychologie',
+                        10936 => 'Fundamentaltheologie',
+                        82284 => 'Geographie',
+                        4277 => 'Geschichtl. Landeskunde und Historische Hilfswissenschaften',
+                        99319 => 'Geschichtsdidaktik und Public History',
+                        4484 => 'Hector-Institut für Empirische Bildungsforschung',
+                        31422 => 'Human-Computer Interaction',
+                        114069 => 'IFIB - Interfakultäres Institut für Biochemie',
+                        7924 => 'IFIB – Interfakultäres Institut für Biochemie',
+                        5990 => 'Indologie & Vergleichende Religionswissenschaft',
+                        3062 => 'Institut für Angewandte Physik',
+                        4950 => 'Institut für Anorganische Chemie',
+                        3065 => 'Institut für Astronomie & Astrophysik',
+                        3331 => 'Institut für die Kulturen des Alten Orients',
+                        4283 => 'Institut für Erziehungswissenschaft',
+                        441 => 'Institut für Evolution und Ökologie',
+                        12251 => 'Institut für Klassische Archäologie',
+                        49 => 'Institut für Medienwissenschaft',
+                        12244 => 'Institut für Neurobiologie',
+                        15799 => 'Institut für Ökumenische und Interreligiöse Forschung',
+                        3827 => 'Institut für Organische Chemie',
+                        3828 => 'Institut für Physikalische und Theoretische Chemie',
+                        725 => 'Institut für Politikwissenschaft',
+                        3295 => 'Institut für Soziologie',
+                        11043 => 'Institut für Sportwissenschaft',
+                        3063 => 'Institut für Theoretische Physik',
+                        1473 => 'Interfaculty Institute for Cell Biology',
+                        7335 => 'Interfakultäres Institut für Mikrobiologie und Infektionsmedizin',
+                        18237 => 'International Business',
+                        19527 => 'International Business Taxation',
+                        19758 => 'International Economics',
+                        19605 => 'International Macroeconomics and Finance',
+                        180 => 'International Office',
+                        19719 => 'Internationale Rechnungslegung und Wirtschaftsprüfung',
+                        18345 => 'Internationale Volkswirtschaftslehre',
+                        24959 => 'Internationale Wirtschaftsbeziehungen und Arbeitsmärkte',
+                        5988 => 'Japanologie',
+                        89362 => 'Jun.-Prof. Dr. Kristina Peuschel',
+                        22568 => 'Juniorprofessur Allgemeine Psychologie',
+                        62513 => 'Kath. Institut für berufsorientierte Religionspädagogik',
+                        37626 => 'Kirchengeschichte I',
+                        37625 => 'Kirchengeschichte II',
+                        37622 => 'Kirchenordnung',
+                        9787 => 'Kirchenrecht',
+                        9607 => 'Klinische Psychologie und Psychotherapie',
+                        16229 => 'Kognition und Sprache',
+                        9347 => 'Kognition und Wahrnehmung',
+                        14045 => 'Kommunikationsnetze',
+                        17425 => 'Koreanistik',
+                        12248 => 'Kunsthistorisches Institut',
+                        13806 => 'Lehrstuhl für Kognitive Neurowissenschaft',
+                        35340 => 'Lehrstuhl für Literatur des 18. und 19. Jahrhunderts',
+                        12245 => 'Lehrstuhl für Tierphysiologie',
+                        11046 => 'Lehrstuhl Prof. Dr. Annette Gerok-Reiter',
+                        13193 => 'Lehrstuhl Prof. Dr. Frauke Berndt',
+                        15492 => 'Lehrstuhl Prof. Dr. Georg Braungart',
+                        5976 => 'Lehrstuhl Prof. Dr. Klaus Ridder',
+                        8950 => 'Liturgiewissenschaft',
+                        24722 => 'Logik und Sprachtheorie',
+                        3235 => 'Ludwig-Uhland-Institut für Empirische Kulturwissenschaft',
+                        18394 => 'Managerial Accounting',
+                        19026 => 'Marketing',
+                        82281 => 'Mineralogie & Geodynamik',
+                        10323 => 'Mittlere und Neuere Kirchengeschichte',
+                        5179 => 'Moraltheologie',
+                        1698 => 'Musikwissenschaftliches Institut',
+                        4280 => 'Neuere Geschichte',
+                        8833 => 'Neues Testament',
+                        37639 => 'Neues Testament I',
+                        37638 => 'Neues Testament II',
+                        37628 => 'Neues Testament III',
+                        21474 => 'Neuronale Informationsverarbeitung',
+                        69747 => 'Ökonomische Bildung und Wirtschaftsdidaktik',
+                        5989 => 'Orient- und Islamwissenschaft',
+                        4278 => 'Osteuropäische Geschichte und Landeskunde',
+                        82278 => 'Paläobiologie',
+                        23011 => 'PD Dr. Christian Fortmann',
+                        177 => 'Personal und Innere Dienste',
+                        18463 => 'Personal und Organisation',
+                        6275 => 'Pharmakologie',
+                        6273 => 'Pharmazeutische Biologie',
+                        47660 => 'Pharmazeutische Biotechnologie/NMI',
+                        6274 => 'Pharmazeutische Chemie',
+                        6276 => 'Pharmazeutische Technologie',
+                        1695 => 'Philologisches Seminar',
+                        7932 => 'Philosophische Grundfragen der Theologie',
+                        1274 => 'Philosophisches Seminar',
+                        3064 => 'Physikalisches Institut',
+                        11381 => 'Praktische Theologie',
+                        37560 => 'Praktische Theologie I',
+                        37557 => 'Praktische Theologie II',
+                        37556 => 'Praktische Theologie III',
+                        21782 => 'Prof. Dr. Anna Mühlherr',
+                        23015 => 'Prof. Dr. Britta Stolterfoht',
+                        23012 => 'Prof. Dr. Claudia Maienborn',
+                        23008 => 'Prof. Dr. Doreen Bryant',
+                        16371 => 'Prof. Dr. Dorothee Kimmich',
+                        62499 => 'Prof. Dr. Eckart Goebel',
+                        23013 => 'Prof. Dr. Irene Rapp',
+                        33354 => 'Prof. Dr. Jörg Robert',
+                        23007 => 'Prof. Dr. Katrin Axel-Tober',
+                        17796 => 'Prof. Dr. Marcell Schweitzer',
+                        111274 => 'Prof. Dr. Sigrid G. Köhler',
+                        42177 => 'Promotionsverbund "Die andere Ästhetik"',
+                        70800 => 'Quantitative Proteomics',
+                        13774 => 'Religionspädagogik',
+                        37543 => 'Religionswissenschaft und Judaistik',
+                        29 => 'Romanisches Seminar',
+                        8605 => 'Schola Cantorum',
+                        22525 => 'Schulpsychologie',
+                        27 => 'Seminar für Allgemeine Rhetorik',
+                        5991 => 'Sinologie',
+                        28 => 'Slavisches Seminar',
+                        13250 => 'Soziale Kognition und Entscheidungsforschung',
+                        21827 => 'STÄRKE home',
+                        18314 => 'Statistics, Econometrics and Quantitative Methods',
+                        55602 => 'Strategie und Organisation',
+                        63295 => 'Strategie und Unternehmensführung',
+                        120409 => 'Studierende',
+                        182 => 'Studium und Lehre',
+                        30761 => 'Symbolisches Rechnen',
+                        37585 => 'Systematische Theologie I',
+                        37576 => 'Systematische Theologie II',
+                        37572 => 'Systematische Theologie III',
+                        13776 => 'Theologische Ethik II',
+                        7996 => 'Theologische Ethik/Sozialethik',
+                        32388 => 'Theoretische Informatik',
+                        69756 => 'Theorie des maschinellen Lernens',
+                        23522 => 'Tübinger Interfakultäres Zentrum für Archäologie (TZA)',
+                        1139 => 'Universitätsarchiv',
+                        181 => 'Universitätsentwicklung, Struktur und Recht',
+                        82275 => 'Urgeschichte und Naturwissenschaftliche Archäologie',
+                        12253 => 'Ur- und Frühgeschichte und Archäologie des Mittelalters',
+                        119657 => 'Visuelle und Kognitive Neurowissenschaften',
+                        18721 => 'Wirtschaftsgeschichte',
+                        18567 => 'Wirtschaftsinformatik',
+                        18672 => 'Wirtschaftstheorie',
+                        17606 => 'Wiwi-IT / PC-Labor',
+                        4279 => 'Zeitgeschichte',
+                        229 => 'Zentrum für Bioinformatik (ZBIT)',
+                        432 => 'Zentrum für Molekularbiologie der Pflanzen (ZMBP)',
+                        84557 => 'Paläoanthropologie',
+                        84555 => 'Geoarchäologie',
+                        84549 => 'Archäozoologie',
+                        84544 => 'Archäobotanik',
+                        84505 => 'Strukturgeologie',
+                        84502 => 'Petrologie und Mineralische Rohstoffe',
+                        84501 => 'Isotopengeochemie',
+                        84498 => 'Geologie & Geodynamik',
+                        84497 => 'Experimentelle Mineralogie',
+                        84496 => 'Angewandte Mineralogie',
+                        84483 => 'Wirbeltierpaläontologie',
+                        84480 => 'Terrestrische Paläoklimatologie',
+                        84475 => 'Mikropaläontologie',
+                        84472 => 'Invertebraten Paläontologie',
+                        84469 => 'Biogeologie',
+                        84437 => 'Umweltsystemanalyse',
+                        84434 => 'Umwelttoxikologie',
+                        84431 => 'Umwelt und Ingenieurgeophysik',
+                        84427 => 'Umweltphysik',
+                        84423 => 'Sedimentgeologie',
+                        84422 => 'Geophysik',
+                        84420 => 'Geomikrobiologie',
+                        84415 => 'Umweltanalytik',
+                        84410 => 'Umweltmineralogie',
+                        84402 => 'Hydrogeochemie',
+                        84390 => 'Hydrogeologie',
+                        83672 => 'Wirtschaftsgeographie',
+                        83670 => 'Stadt und Regionalentwicklung',
+                        83668 => 'Soil Science & Geomorphology',
+                        83666 => 'Geoinformatik / GIS',
+                        83663 => 'Geoökologie',
+                        26023 => 'Computergrafik'
+                    ]
+                ]
+            ]
+        ],
+        'mainmenuroot' => [
+            [
+                'className' => AddValueByPidPropertyHelper::class,
+                'configuration' => [
+                    'mapping' => [
+                        12258 => 1,
+                        12479 => 1,
+                        12756 => 1,
+                        41775 => 1,
+                        4282 => 1,
+                        11059 => 1,
+                        9783 => 1,
+                        37680 => 1,
+                        37679 => 1,
+                        82287 => 1,
+                        9376 => 1,
+                        19454 => 1,
+                        19398 => 1,
+                        17660 => 1,
+                        37646 => 1,
+                        9785 => 1,
+                        21607 => 1,
+                        4935 => 1,
+                        25369 => 1,
+                        33661 => 1,
+                        88434 => 1,
+                        27593 => 1,
+                        1474 => 1,
+                        31 => 1,
+                        10344 => 1,
+                        9130 => 1,
+                        9134 => 1,
+                        18867 => 1,
+                        30 => 1,
+                        9377 => 1,
+                        5992 => 1,
+                        69839 => 1,
+                        19913 => 1,
+                        69761 => 1,
+                        433 => 1,
+                        3816 => 1,
+                        11823 => 1,
+                        11824 => 1,
+                        13644 => 1,
+                        13167 => 1,
+                        2225 => 1,
+                        11828 => 1,
+                        11306 => 1,
+                        19129 => 1,
+                        21605 => 1,
+                        10936 => 1,
+                        82284 => 1,
+                        4277 => 1,
+                        99319 => 1,
+                        4484 => 1,
+                        31422 => 1,
+                        114069 => 1,
+                        7924 => 1,
+                        5990 => 1,
+                        3062 => 1,
+                        4950 => 1,
+                        3065 => 1,
+                        3331 => 1,
+                        4283 => 1,
+                        441 => 1,
+                        12251 => 1,
+                        49 => 1,
+                        12244 => 1,
+                        15799 => 1,
+                        3827 => 1,
+                        3828 => 1,
+                        725 => 1,
+                        3295 => 1,
+                        11043 => 1,
+                        3063 => 1,
+                        1473 => 1,
+                        7335 => 1,
+                        18237 => 1,
+                        19527 => 1,
+                        19758 => 1,
+                        19605 => 1,
+                        19719 => 1,
+                        18345 => 1,
+                        24959 => 1,
+                        5988 => 1,
+                        89362 => 1,
+                        22568 => 1,
+                        62513 => 1,
+                        37626 => 1,
+                        37625 => 1,
+                        37622 => 1,
+                        9787 => 1,
+                        9607 => 1,
+                        16229 => 1,
+                        9347 => 1,
+                        14045 => 1,
+                        17425 => 1,
+                        12248 => 1,
+                        13806 => 1,
+                        35340 => 1,
+                        12245 => 1,
+                        11046 => 1,
+                        13193 => 1,
+                        15492 => 1,
+                        5976 => 1,
+                        8950 => 1,
+                        24722 => 1,
+                        3235 => 1,
+                        18394 => 1,
+                        19026 => 1,
+                        82281 => 1,
+                        10323 => 1,
+                        5179 => 1,
+                        1698 => 1,
+                        4280 => 1,
+                        8833 => 1,
+                        37639 => 1,
+                        37638 => 1,
+                        37628 => 1,
+                        21474 => 1,
+                        69747 => 1,
+                        5989 => 1,
+                        4278 => 1,
+                        82278 => 1,
+                        23011 => 1,
+                        18463 => 1,
+                        6275 => 1,
+                        6273 => 1,
+                        47660 => 1,
+                        6274 => 1,
+                        6276 => 1,
+                        1695 => 1,
+                        7932 => 1,
+                        1274 => 1,
+                        3064 => 1,
+                        11381 => 1,
+                        37560 => 1,
+                        37557 => 1,
+                        37556 => 1,
+                        21782 => 1,
+                        23015 => 1,
+                        23012 => 1,
+                        23008 => 1,
+                        16371 => 1,
+                        62499 => 1,
+                        23013 => 1,
+                        33354 => 1,
+                        23007 => 1,
+                        17796 => 1,
+                        111274 => 1,
+                        70800 => 1,
+                        13774 => 1,
+                        37543 => 1,
+                        29 => 1,
+                        22525 => 1,
+                        27 => 1,
+                        5991 => 1,
+                        28 => 1,
+                        13250 => 1,
+                        18314 => 1,
+                        55602 => 1,
+                        63295 => 1,
+                        30761 => 1,
+                        37585 => 1,
+                        37576 => 1,
+                        37572 => 1,
+                        13776 => 1,
+                        7996 => 1,
+                        32388 => 1,
+                        69756 => 1,
+                        23522 => 1,
+                        82275 => 1,
+                        12253 => 1,
+                        119657 => 1,
+                        18721 => 1,
+                        18567 => 1,
+                        18672 => 1,
+                        17606 => 1,
+                        4279 => 1,
+                        229 => 1,
+                        432 => 1,
+                        102014 => 1,
+                        11065 => 1,
+                        11297 => 1,
+                        11446 => 1,
+                        114949 => 1,
+                        1721 => 1,
+                        173 => 1,
+                        2221 => 1,
+                        2222 => 1,
+                        2224 => 1,
+                        24819 => 1,
+                        26023 => 1,
+                        324 => 1,
+                        35567 => 1,
+                        39235 => 1,
+                        45050 => 1,
+                        60878 => 1,
+                        7403 => 1,
+                        74166 => 1,
+                        83663 => 1,
+                        83666 => 1,
+                        83668 => 1,
+                        83670 => 1,
+                        83672 => 1,
+                        84390 => 1,
+                        84402 => 1,
+                        84410 => 1,
+                        84415 => 1,
+                        84420 => 1,
+                        84422 => 1,
+                        84423 => 1,
+                        84427 => 1,
+                        84431 => 1,
+                        84434 => 1,
+                        84437 => 1,
+                        84469 => 1,
+                        84472 => 1,
+                        84475 => 1,
+                        84480 => 1,
+                        84483 => 1,
+                        84496 => 1,
+                        84497 => 1,
+                        84498 => 1,
+                        84501 => 1,
+                        84502 => 1,
+                        84505 => 1,
+                        84560 => 1,
+                        93692 => 1,
+                        96342 => 1
+                    ]
+                ]
+            ]
+        ],
+        'leftmenuroot' => [
+            [
+                'className' => AddValueByPidPropertyHelper::class,
+                'configuration' => [
+                    'mapping' => [
+                        102014 => 1,
+                        84560 => 1,
+                        179 => 1,
+                        11459 => 1,
+                        1691 => 1,
+                        1001 => 1,
+                        11456 => 1,
+                        11455 => 1,
+                        3292 => 1,
+                        178 => 1,
+                        120386 => 1,
+                        180 => 1,
+                        177 => 1,
+                        42177 => 1,
+                        8605 => 1,
+                        21827 => 1,
+                        120409 => 1,
+                        182 => 1,
+                        181 => 1,
+                        10007 => 1,
+                        10120 => 1,
+                        104823 => 1,
+                        1056 => 1,
+                        10675 => 1,
+                        109533 => 1,
+                        11100 => 1,
+                        1171 => 1,
+                        1172 => 1,
+                        120528 => 1,
+                        12218 => 1,
+                        1368 => 1,
+                        1472 => 1,
+                        14835 => 1,
+                        15614 => 1,
+                        15621 => 1,
+                        15631 => 1,
+                        16713 => 1,
+                        17090 => 1,
+                        17421 => 1,
+                        17487 => 1,
+                        1889 => 1,
+                        2077 => 1,
+                        2274 => 1,
+                        23115 => 1,
+                        24909 => 1,
+                        26032 => 1,
+                        26034 => 1,
+                        26305 => 1,
+                        26902 => 1,
+                        27344 => 1,
+                        29437 => 1,
+                        2965 => 1,
+                        3128 => 1,
+                        3129 => 1,
+                        3130 => 1,
+                        32659 => 1,
+                        32660 => 1,
+                        3283 => 1,
+                        33500 => 1,
+                        3360 => 1,
+                        339 => 1,
+                        34380 => 1,
+                        3439 => 1,
+                        35356 => 1,
+                        35359 => 1,
+                        3575 => 1,
+                        36840 => 1,
+                        38025 => 1,
+                        38028 => 1,
+                        38263 => 1,
+                        39724 => 1,
+                        39962 => 1,
+                        4221 => 1,
+                        42232 => 1,
+                        42237 => 1,
+                        42269 => 1,
+                        4281 => 1,
+                        43390 => 1,
+                        44293 => 1,
+                        4477 => 1,
+                        4480 => 1,
+                        4481 => 1,
+                        4482 => 1,
+                        4483 => 1,
+                        45125 => 1,
+                        4671 => 1,
+                        47 => 1,
+                        47024 => 1,
+                        48287 => 1,
+                        51 => 1,
+                        52 => 1,
+                        54268 => 1,
+                        55042 => 1,
+                        56763 => 1,
+                        58241 => 1,
+                        58851 => 1,
+                        59336 => 1,
+                        59736 => 1,
+                        60344 => 1,
+                        61726 => 1,
+                        62 => 1,
+                        65670 => 1,
+                        742 => 1,
+                        743 => 1,
+                        745 => 1,
+                        746 => 1,
+                        7507 => 1,
+                        76581 => 1,
+                        78705 => 1,
+                        78848 => 1,
+                        81006 => 1,
+                        8349 => 1,
+                        8896 => 1,
+                        89470 => 1,
+                        89702 => 1,
+                        8989 => 1,
+                        92766 => 1,
+                        93696 => 1,
+                        95173 => 1,
+                        11 => 1,
+                        28729 => 1,
+                        10 => 1,
+                        12822 => 1,
+                        61078 => 1,
+                        41670 => 1,
+                        32824 => 1,
+                        15837 => 1,
+                        21781 => 1,
+                        23006 => 1,
+                        31477 => 1,
+                        48745 => 1,
+                        77591 => 1,
+                        110233 => 1
+                    ]
+                ]
+            ]
+        ],
+        'headline_stop' => [
+            [
+                'className' => AddValueByPidPropertyHelper::class,
+                'configuration' => [
+                    'mapping' => [
+                        44293 => 1,
+                        38263 => 1
+                    ]
+                ]
+            ]
+        ],
+        'heredity' => [
+            [
+                'className' => AddValueByPidPropertyHelper::class,
+                'configuration' => [
+                    'mapping' => [
+                        173 => 1,
+                        324 => 1,
+                        3295 => 1,
+                        20954 => 1,
+                        20958 => 1,
+                        4607 => 1,
+                        19912 => 1,
+                        3292 => 1
+                    ]
+                ]
+            ]
+        ],
+        'heredity_stop' => [
+            [
+                'className' => AddValueByPidPropertyHelper::class,
+                'configuration' => [
+                    'mapping' => [
+                        3439 => 1
                     ]
                 ]
             ]

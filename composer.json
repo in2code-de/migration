@@ -1,5 +1,5 @@
 {
-  "name": "in2code/importerboilerplate",
+  "name": "in2code/migration",
   "description": "Boilerplate for any kind of TYPO3 migrations",
   "keywords": ["typo3", "migration", "import", "templavoila", "gridelements", "news"],
   "homepage": "https://github.com/einpraegsam/ImporterBoilerplate",

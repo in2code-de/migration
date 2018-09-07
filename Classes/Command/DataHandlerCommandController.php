@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Command;
+namespace In2code\Migration\Command;
 
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -20,11 +20,14 @@ class DataHandlerCommandController extends CommandController
      * @param int $targetPid Where to paste the result. 1 => first subpage in 1, -1 => after 1
      * @param int $recursion Recursion depth. 0 => Just current page, 1 => Current and subpages, etc...
      * @return void
+     * @SuppressWarnings(PHPMD.Superglobals)
+     * @cli
      */
     public function handleCommand($startPid, $action = 'copy', $targetPid = 1, $recursion = 0)
     {
         $command = [];
         $command['pages'][(int)$startPid][$action] = (int)$targetPid;
+        /** @var DataHandler $dataHandler */
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->BE_USER = $GLOBALS['BE_USER'];
         $dataHandler->BE_USER->user['admin'] = 1;

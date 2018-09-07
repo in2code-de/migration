@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Migrate\PropertyHelper;
+namespace In2code\Migration\Migration\Migrate\PropertyHelper;
 
 /**
  * Interface PropertyHelperInterface

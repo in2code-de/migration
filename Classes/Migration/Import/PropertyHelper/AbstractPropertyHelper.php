@@ -1,7 +1,7 @@
 <?php
-namespace In2code\In2template\Migration\Import\PropertyHelper;
+namespace In2code\Migration\Migration\Import\PropertyHelper;
 
-use In2code\In2template\Migration\Service\Log;
+use In2code\Migration\Migration\Service\Log;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

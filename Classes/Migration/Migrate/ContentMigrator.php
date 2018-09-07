@@ -1,14 +1,30 @@
 <?php
-namespace In2code\In2template\Migration\Migrate;
+namespace In2code\Migration\Migration\Migrate;
 
-use In2code\In2template\Migration\Migrate\PropertyHelper\FlexFormGeneratorPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\FlexFormHelper\GetFaqCategoriesFlexFormHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\HideOnPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\NotSupportedPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\ReplaceCssClassesInHtmlStringPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\ReplaceOnConditionPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\ReplacePropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\VideoPluginPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\CreateFormsAndPagesAndFieldsPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\FlexFormHelper\GetConfirmationSettingsFlexFormHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\FlexFormHelper\GetFormUidFlexFormHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\FlexFormHelper\GetReceiverEmailFlexFormHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\FlexFormHelper\GetReceiverEmailSubjectFlexFormHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\FlexFormHelper\GetRedirectPidFlexFormHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\IncreasePropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\RemoveEmptyLinesPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\RemoveFileRelationsPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\SetLayoutAndFrameClassForBorderColumnPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\UpdateNewsFlexFormPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\AddAccordeonContentElementPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\AddCssClassesPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\ConvertBulletspointsToHtmlPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\ConvertUploadsToTextMediaPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\FlexFormGeneratorPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\ReplaceCssClassesInHtmlStringPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\ReplaceOnConditionPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\ReplaceOnNewsPluginPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\ReplacePropertyHelper;
+use In2code\Migration\Utility\DatabaseUtility;
+use In2code\Powermail\Domain\Model\Field;
+use In2code\Powermail\Domain\Model\Form;
+use In2code\Powermail\Domain\Model\Page;
 
 /**
  * Class ContentMigrator
@@ -24,13 +40,13 @@ class ContentMigrator extends AbstractMigrator implements MigratorInterface
     protected $tableName = 'tt_content';
 
     /**
-     * Simply copy values from one to another column
+     * Hardcode some values in tt_content
      *
      * @var array
      */
-    protected $mapping = [
-        'tx_slider_content_slider_items' => 'tx_in2template_slider_content_items',
-        'tx_slider_content_slider_uid' => 'tx_in2template_slider_content_uid'
+    protected $values = [
+        'linkToTop' => 0,
+        'date' => 0
     ];
 
     /**
@@ -49,159 +65,385 @@ class ContentMigrator extends AbstractMigrator implements MigratorInterface
      * @var array
      */
     protected $propertyHelpers = [
-        'deleted' => [
+        '_dummy' => [
             [
-                // Remove content with unsupported colPos
-                'className' => ReplaceOnConditionPropertyHelper::class,
+                // Mailform to powermail converting: Create form, field, page
+                'className' => CreateFormsAndPagesAndFieldsPropertyHelper::class
+            ],
+        ],
+        'pi_flexform' => [
+            [
+                'className' => FlexFormGeneratorPropertyHelper::class,
+                'configuration' => [
+                    'condition' => [
+                        'CType' => 'gridelements_pi1',
+                        'tx_gridelements_backend_layout' => '2cols'
+                    ],
+                    'flexFormTemplate' => 'EXT:migration/Resources/Private/FlexForms/GridElements_50_50.xml'
+                ]
+            ],
+            [
+                // News in Main column - set itemsPerPage
+                'className' => UpdateNewsFlexFormPropertyHelper::class,
                 'configuration' => [
                     'conditions' => [
-                        'colPos' => [
-                            '10', // Megadropdown
-                            '30' // Toolbar
-                        ]
+                        'CType' => ['list'],
+                        'list_type' => ['news_pi1'],
+                        'colPos' => ['0']
                     ],
-                    'replace' => [
-                        'value' => 1
+                    'mapping' => [
+                        'settings.list.paginate.itemsPerPage' => '8',
+                        'settings.limit' => '',
+                        'settings.hidePagination' => ''
                     ]
                 ]
-            ]
-        ],
-        'colPos' => [
+            ],
             [
+                // News in Border column - set limit
+                'className' => UpdateNewsFlexFormPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'CType' => ['list'],
+                        'list_type' => ['news_pi1'],
+                        'colPos' => ['2', '3']
+                    ],
+                    'mapping' => [
+                        'settings.list.paginate.itemsPerPage' => '3',
+                        'settings.limit' => '',
+                        'settings.hidePagination' => ''
+                    ]
+                ]
+            ],
+            [
+                // News from cal
+                'className' => FlexFormGeneratorPropertyHelper::class,
+                'configuration' => [
+                    'condition' => [
+                        'CType' => 'list',
+                        'list_type' => 'cal_controller'
+                    ],
+                    'overwriteValues' => [
+                        'list_type' => 'news_pi1',
+                        'layout' => 100,
+                        'frame_class' => 22
+                    ],
+                    'flexFormTemplate' => 'EXT:migration/Resources/Private/FlexForms/NewsEvents.xml'
+                ]
+            ],
+            [
+                // Mailform to powermail converting: Create plugin
+                'className' => FlexFormGeneratorPropertyHelper::class,
+                'configuration' => [
+                    'condition' => [
+                        'CType' => 'mailform'
+                    ],
+                    'flexFormTemplate' => 'EXT:migration/Resources/Private/FlexForms/Powermail.xml',
+                    'helpers' => [
+                        [
+                            'className' => GetFormUidFlexFormHelper::class,
+                            'configuration' => [
+                                'variableName' => 'formUid' // get it via {helper.formUid}
+                            ]
+                        ],
+                        [
+                            'className' => GetReceiverEmailFlexFormHelper::class,
+                            'configuration' => [
+                                'variableName' => 'receiverEmail' // get it via {helper.receiverEmail}
+                            ]
+                        ],
+                        [
+                            'className' => GetReceiverEmailSubjectFlexFormHelper::class,
+                            'configuration' => [
+                                'variableName' => 'subject' // get it via {helper.subject}
+                            ]
+                        ],
+                        [
+                            'className' => GetRedirectPidFlexFormHelper::class,
+                            'configuration' => [
+                                'variableName' => 'redirectPid' // get it via {helper.redirectPid}
+                            ]
+                        ],
+                        [
+                            'className' => GetConfirmationSettingsFlexFormHelper::class,
+                            'configuration' => [
+                                'variableName' => 'confirmationPage' // get it via {helper.confirmationPage}
+                            ]
+                        ],
+                    ]
+                ]
+            ],
+        ],
+        'header_layout' => [
+            [
+                // convert not allowed header_layouts to default
                 'className' => ReplacePropertyHelper::class,
                 'configuration' => [
                     'search' => [
-                        '20', // Slider
-                        '0', // Seiteninhalt
+                        '0',
+                        '1',
+                        '2',
+                        '3',
+                        '4',
+                        '5',
+                        '6',
+                        '100',
                     ],
                     'replace' => [
-                        1, // Header
-                        0, // Content
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        100,
                     ],
-                ]
-            ],
-        ],
-        'CType' => [
-            [
-                // CSC => FSC (convert to textmedia)
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    // Replace only if this condition matches
-                    'conditions' => [
-                        'CType' => [
-                            'text',
-                            'textpic',
-                            'image',
-                            'media',
-                            'header',
-                            'table',
-                            'bullets'
-                        ]
-                    ],
-                    // Replace in current field "CType"
-                    'replace' => [
-                        'value' => 'textmedia'
-                    ]
-                ]
-            ],
-            [
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        'CType' => [
-                            'in2template_isotope'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => 'mv_animation'
-                    ]
-                ]
-            ],
-            [
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        'CType' => [
-                            'mv_quicklinks'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => 'quicklinks'
-                    ]
-                ]
-            ]
-        ],
-        'list_type' => [
-            //[
-            //    'className' => ReplacePropertyHelper::class,
-            //    'configuration' => [
-            //        'search' => [
-            //            'udgmvexpertsearch_expertsearch',
-            //        ],
-            //        'replace' => [
-            //            'in2mvadpsearch_pi2',
-            //        ]
-            //    ]
-            //],
-            [
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        'CType' => [
-                            'list'
-                        ],
-                        'list_type' => [
-                            'udgmvfaq_faq'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => 'in2faq_pi1'
-                    ]
-                ]
-            ],
-            [
-                'className' => ReplaceOnConditionPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        'CType' => [
-                            'list'
-                        ],
-                        'list_type' => [
-                            'udgmvdocuments_documents'
-                        ]
-                    ],
-                    'replace' => [
-                        'value' => 'in2mvdocumentsearch_pi1'
-                    ]
+                    'default' => 0
                 ]
             ]
         ],
         'bodytext' => [
             [
+                // Add css classes to UL elements to have some visible arrows
+                'className' => AddCssClassesPropertyHelper::class,
+                'configuration' => [
+                    'tags' => [
+                        'ul'
+                    ],
+                    'addClass' => [
+                        'ut-list',
+                        'ut-list--link-list'
+                    ],
+                    'condition' => [
+                        'CType' => [
+                            'textpic',
+                            'text',
+                            'textmedia'
+                        ]
+                    ]
+                ]
+            ],
+            [
+                // Add bodytext links from uploads CType
+                'className' => ConvertUploadsToTextMediaPropertyHelper::class
+            ],
+            [
+                'className' => ConvertBulletspointsToHtmlPropertyHelper::class,
+                'configuration' => [
+                    'class' => 'ut-list ut-list--link-list'
+                ]
+            ],
+            [
+                // Change table classes
                 'className' => ReplaceCssClassesInHtmlStringPropertyHelper::class,
                 'configuration' => [
+                    'condition' => [
+                        'CType' => [
+                            'textpic',
+                            'text',
+                            'textmedia'
+                        ]
+                    ],
+                    'tags' => [
+                        'table'
+                    ],
                     'search' => [
-                        'btn',
-                        'btn-neg',
-                        'btn-green',
-                        'btn-blue',
-                        'contenttable-2',
-                        'contenttable-3',
-                        'ul-check'
+                        'csc-frame-frame3',
+                        'csc-frame-frame4',
+                        'csc-frame-frame5',
+                        'csc-frame-frame6',
+                        'csc-frame-frame7',
+                        'csc-frame-frame8',
                     ],
                     'replace' => [
-                        'c-button',
-                        'c-button--white',
-                        'c-button--green',
+                        '', // "Ohne Formatierung"
+                        'ut-table--striped', // Transparent/Striped
+                        'ut-table--color-primary-3', // Anthrazit normal
                         '',
-                        'u-table-transparent',
-                        'u-table-blue',
-                        'u-list-check'
+                        '',
+                        'ut-table--color-primary-3',
+                    ]
+                ]
+            ],
+            [
+                // Clean bodytext if header or image content
+                'className' => ReplaceOnConditionPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'CType' => [
+                            'header',
+                            'image',
+                            'mailform'
+                        ]
+                    ],
+                    'replace' => [
+                        'value' => ''
+                    ]
+                ]
+            ],
+            [
+                'className' => RemoveFileRelationsPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'CType' => [
+                            'header',
+                            'text',
+                            'div',
+                            'uploads',
+                            'bullets',
+                        ]
+                    ]
+                ]
+            ],
+            [
+                // try to remove <p>&nbsp;</p> and \n from tt_content.bodytext
+                'className' => RemoveEmptyLinesPropertyHelper::class
+            ]
+        ],
+        'list_type' => [
+            [
+                // Mailform instead of powermail
+                'className' => ReplaceOnConditionPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'CType' => [
+                            'mailform'
+                        ]
+                    ],
+                    'replace' => [
+                        'value' => 'powermail_pi1'
                     ]
                 ]
             ]
         ],
-        'accordion_foldable' => [
+        'CType' => [
+            [
+                // Use textpic as main CType
+                'className' => ReplaceOnConditionPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'CType' => [
+                            'uploads',
+                            'bullets',
+                            'text',
+                            'textmedia',
+                            'header',
+                            'image'
+                        ]
+                    ],
+                    'replace' => [
+                        'value' => 'textpic'
+                    ]
+                ]
+            ],
+            [
+                // Mailform instead of powermail
+                'className' => ReplaceOnConditionPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'CType' => [
+                            'mailform'
+                        ]
+                    ],
+                    'replace' => [
+                        'value' => 'list'
+                    ]
+                ]
+            ]
+        ],
+        'layout' => [
+            [
+                // Select layout "Dekorierte Boxen" or "Box mit Bild" (if CE contains images) for CE in border column
+                'className' => SetLayoutAndFrameClassForBorderColumnPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'colPos' => [
+                            '2',
+                            //'3'
+                        ]
+                    ],
+                    'values' => [
+                        'layout' => 'decorated-box',
+                        'frame_class' => 'redbordertop-grey-box'
+                    ],
+                    'valuesImage' => [
+                        'layout' => 'box-picture',
+                        'frame_class' => 'grey-box-imagetop'
+                    ],
+                    'valuesImageBelow' => [
+                        'layout' => 'box-picture',
+                        'frame_class' => 'grey-box-imagebottom'
+                    ]
+                ]
+            ],
+            [
+                // Set layout to "Liste - 100%" for News list
+                'className' => ReplaceOnNewsPluginPropertyHelper::class,
+                'configuration' => [
+                    'condition' => 'list', // list or detail
+                    'replace' => 100
+                ]
+            ],
+            [
+                // Set layout to "Liste - 100%" for News detail
+                'className' => ReplaceOnNewsPluginPropertyHelper::class,
+                'configuration' => [
+                    'condition' => 'detail', // list or detail
+                    'replace' => 1000
+                ]
+            ],
+            [
+                // Convert grey boxes
+                'className' => ReplaceOnConditionPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'frame_class' => [
+                            'custom-102',
+                            'custom-113',
+                            'custom-114',
+                            'custom-115',
+                            'custom-116',
+                            'custom-117',
+                            'custom-118',
+                        ]
+                    ],
+                    'replace' => [
+                        'value' => 'colorvariants'
+                    ]
+                ]
+            ],
+        ],
+        'frame_class' => [
+            [
+                // Convert grey box
+                'className' => ReplaceOnConditionPropertyHelper::class,
+                'configuration' => [
+                    'conditions' => [
+                        'frame_class' => [
+                            'custom-102',
+                            'custom-113',
+                            'custom-114',
+                            'custom-115',
+                            'custom-116',
+                            'custom-117',
+                            'custom-118',
+                        ]
+                    ],
+                    'replace' => [
+                        'value' => 'components'
+                    ]
+                ]
+            ],
+            [
+                // Set frame_class to "Box: Grau" for News
+                'className' => ReplaceOnNewsPluginPropertyHelper::class,
+                'configuration' => [
+                    'condition' => 'list', // list or detail
+                    'replace' => 5
+                ]
+            ],
+        ],
+        'imageorient' => [
             [
                 'className' => ReplacePropertyHelper::class,
                 'configuration' => [
@@ -209,306 +451,144 @@ class ContentMigrator extends AbstractMigrator implements MigratorInterface
                         '0',
                         '1',
                         '2',
+                        '8',
+                        '9',
+                        '10',
+                        '17',
+                        '18',
+                        '25',
+                        '26',
                     ],
                     'replace' => [
-                        '',
-                        'js-accordion',
-                        'js-accordion-mobile'
-                    ],
-                    'startField' => 'foldable'
-                ]
-            ],
-            [
-                'className' => ReplacePropertyHelper::class,
-                'configuration' => [
-                    'search' => [
-                        'accordion_panel',
-                        'accordion_panel_group',
-                        'unfold_element'
-                    ],
-                    'replace' => [
-                        'js-accordion',
-                        'js-accordion',
-                        'js-show-more'
-                    ],
-                    'startField' => 'tx_gridelements_backend_layout'
-                ]
-            ],
-        ],
-        'text_column_count' => [
-            [
-                'className' => ReplacePropertyHelper::class,
-                'configuration' => [
-                    'search' => [
-                        '30',
-                        '31',
-                        '0',
-                    ],
-                    'replace' => [
-                        'u-two-text-columns',
-                        'u-three-text-columns',
-                        '',
-                    ],
-                    'startField' => 'section_frame'
-                ]
-            ],
-        ],
-        'pi_flexform' => [
-            [
-                'className' => VideoPluginPropertyHelper::class,
-            ],
-            //[
-            //    'className' => NotSupportedPropertyHelper::class,
-            //    'configuration' => [
-            //        'conditions' => [
-            //            [
-            //                'CType' => 'list',
-            //                'list_type' => 'in2mvadpsearch_pi2'
-            //            ]
-            //        ],
-            //        'properties' => [
-            //            'pi_flexform' => ''
-            //        ]
-            //    ]
-            //],
-            [
-                // Build FlexForm for FAQ plugin
-                'className' => FlexFormGeneratorPropertyHelper::class,
-                'configuration' => [
-                    'condition' => [
-                        'CType' => 'list',
-                        'list_type' => 'in2faq_pi1'
-                    ],
-                    'flexFormTemplate' => 'EXT:in2template/Resources/Private/Migration/FlexForms/Faq.xml',
-                    'helpers' => [
-                        [
-                            'className' => GetFaqCategoriesFlexFormHelper::class,
-                            'configuration' => [
-                                'variableName' => 'categories'
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            [
-                // Clear FlexForm for documentsearch plugin
-                'className' => FlexFormGeneratorPropertyHelper::class,
-                'configuration' => [
-                    'condition' => [
-                        'CType' => 'list',
-                        'list_type' => 'in2mvdocumentsearch_pi1'
-                    ],
-                    'flexFormTemplate' => 'EXT:in2template/Resources/Private/Migration/FlexForms/Empty.xml'
-                ]
-            ],
-        ],
-        'hide_on' => [
-            [
-                'className' => HideOnPropertyHelper::class,
-                'configuration' => [
-                    'fieldName' => 'tx_udgtemplate_hide_breakpoint'
-                ]
-            ]
-        ],
-        'tx_gridelements_backend_layout' => [
-            [
-                'className' => ReplacePropertyHelper::class,
-                'configuration' => [
-                    'search' => [
-                        'accordion_panel',
-                        'accordion_panel_group',
-                        'calculator',
-                        'container',
-                        'grid_12',
-                        'grid_2_8_2',
-                        'grid_3_3_3_3',
-                        'grid_4_4_4',
-                        'grid_4_8',
-                        'grid_6_6',
-                        'grid_8_4',
-                        'grid_9_3',
-                        'grid_footer',
-                        'grid_megadropdown',
-                        'slider_panel',
-                        'slider_panel_group',
-                        'teaser_blue',
-                        'unfold_element',
-                        'in2grids_100',
-                        'in2grids_50_50',
-                        'in2grids_33_33_33',
-                        'in2grids_66_33',
-                        'in2grids_33_66',
-                        'in2grids_25_25_25_25',
-                        'in2grids_75_25',
-                        'in2grids_25_75',
-                        'in2grids_16_66_16'
-
-                    ],
-                    'replace' => [
-                        'in2grids_100',
-                        'in2grids_100',
-                        'calculator',
-                        'in2grids_100',
-                        'in2grids_100',
-                        'in2grids_16_66_16',
-                        'in2grids_25_25_25_25',
-                        'in2grids_33_33_33',
-                        'in2grids_33_66',
-                        'in2grids_50_50',
-                        'in2grids_75_25',
-                        'in2grids_75_25',
-                        'grid_footer',
-                        'grid_megadropdown',
-                        'slider_panel',
-                        'slider_panel_group',
-                        'teaser_blue',
-                        'in2grids_100',
-                        'in2grids_100',
-                        'in2grids_50_50',
-                        'in2grids_33_33_33',
-                        'in2grids_66_33',
-                        'in2grids_33_66',
-                        'in2grids_25_25_25_25',
-                        'in2grids_75_25',
-                        'in2grids_25_75',
-                        'in2grids_16_66_16'
+                        0,
+                        0,
+                        0,
+                        1,
+                        1,
+                        1,
+                        17,
+                        18,
+                        26,
+                        25,
                     ]
                 ]
             ]
         ],
-        'image_hover' => [
+        'sorting' => [
+            [
+                'className' => IncreasePropertyHelper::class,
+                'configuration' => [
+                    'valueToAdd' => 1000000000,
+                    'condition' => [
+                        'colPos' => '3'
+                    ]
+                ]
+            ]
+        ],
+        'colPos' => [
+            [
+                // Move all CE in colPos=3 into an accordeon grid container
+                'className' => AddAccordeonContentElementPropertyHelper::class,
+                'configuration' => [
+                    'values' => [
+                        'colPos' => 2,
+                        'sorting' => 1000000,
+                        'CType' => 'gridelements_pi1',
+                        'tx_gridelements_backend_layout' => 'accordion'
+                    ],
+                    'condition' => [
+                        'colPos' => '3',
+                        'CType' => 'textpic'
+                    ]
+                ]
+            ],
             [
                 'className' => ReplacePropertyHelper::class,
                 'configuration' => [
                     'search' => [
                         '0',
-                        '1',
-                        '2'
+                        '2',
+                        '3'
                     ],
                     'replace' => [
-                        '',
-                        'container',
-                        'gradient'
-                    ]
-                ]
-            ]
-        ],
-        'uid' => [
-            [
-                'className' => NotSupportedPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        [
-                            'tx_gridelements_backend_layout' => 'calculator'
-                        ]
-                    ],
-                    'properties' => [
-                        'CType' => 'textmedia',
-                        'list_type' => '',
-                        'bodytext' => '###INSERT_CALCULATOR###',
-                        'header' => 'Calculator marker for extended application',
-                        'header_layout' => 100
-                    ]
-                ]
-            ],
-            [
-                'className' => NotSupportedPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        [
-                            'tx_gridelements_backend_layout' => 'grid_footer'
-                        ],
-                        [
-                            'tx_gridelements_backend_layout' => 'grid_megadropdown'
-                        ],
-                        [
-                            'tx_gridelements_backend_layout' => 'slider_panel'
-                        ],
-                        [
-                            'tx_gridelements_backend_layout' => 'slider_panel_group'
-                        ],
-                        [
-                            'tx_gridelements_backend_layout' => 'teaser_blue'
-                        ]
-                    ],
-                    'properties' => [
-                        'CType' => 'textmedia',
-                        'list_type' => '',
-                        'bodytext' =>
-                            '<p style="background: red; color: white;">This element is not supported any more!</p>',
-                        'header' => 'This element is not supported any more',
-                        'header_layout' => 100
-                    ]
-                ]
-            ],
-            [
-                'className' => NotSupportedPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        [
-                            'CType' => 'list',
-                            'list_type' => 'udgmvproducts_product'
-                        ]
-                    ],
-                    'properties' => [
-                        'CType' => 'textmedia',
-                        'list_type' => '',
-                        'bodytext' =>
-                            '<p style="background: red; color: white;">This element is not supported any more!</p>',
-                        'header' => 'This element is not supported any more',
-                        'header_layout' => 100
-                    ]
-                ]
-            ],
-            [
-                'className' => NotSupportedPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        [
-                            'CType' => 'menu'
-                        ],
-                        [
-                            'CType' => 'menu_18'
-                        ],
-                        [
-                            'CType' => 'menu_pages'
-                        ],
-                        [
-                            'CType' => 'menu_sitemap'
-                        ],
-                        [
-                            'CType' => 'menu_subpages'
-                        ]
-                    ],
-                    'properties' => [
-                        'CType' => 'textmedia',
-                        'list_type' => '',
-                        'bodytext' =>
-                            '<p style="background: red; color: white;">This element is not supported any more!</p>',
-                        'header' => 'This element is not supported any more',
-                        'header_layout' => 100
-                    ]
-                ]
-            ],
-            [
-                'className' => NotSupportedPropertyHelper::class,
-                'configuration' => [
-                    'conditions' => [
-                        [
-                            'CType' => 'list',
-                            'list_type' => 'udgmvexpertsearch_expertsearch'
-                        ]
-                    ],
-                    'properties' => [
-                        'CType' => 'textmedia',
-                        'list_type' => '',
-                        'bodytext' =>
-                            '<p style="background: red; color: white;">This element is not supported any more!</p>',
-                        'header' => 'This element is not supported any more',
-                        'header_layout' => 100
+                        0,
+                        2,
+                        2
                     ]
                 ]
             ]
         ]
     ];
+
+    /**
+     * @return void
+     */
+    protected function initialize()
+    {
+        $this->clearBackendLayout();
+        $this->removeSubheaderInOtherContentTypes();
+        $this->removePowermailMigratedRecords();
+        $this->cleanLocalization();
+    }
+
+    /**
+     * @return void
+     */
+    protected function clearBackendLayout()
+    {
+        $this->getDatabase()->exec_UPDATEquery(
+            'pages',
+            'uid>1',
+            ['backend_layout' => '', 'backend_layout_next_level' => '']
+        );
+    }
+
+    /**
+     * @return void
+     */
+    protected function removeSubheaderInOtherContentTypes()
+    {
+        $this->getDatabase()->exec_UPDATEquery(
+            $this->tableName,
+            'CType != "header" and deleted=0',
+            ['subheader' => '']
+        );
+    }
+
+    /**
+     * Delete forms, pages and fields and powermail-ce from the last migration
+     *
+     * @return void
+     */
+    protected function removePowermailMigratedRecords()
+    {
+        $this->getDatabase()->exec_DELETEquery(Form::TABLE_NAME, '_migrated=1');
+        $this->getDatabase()->exec_DELETEquery(Page::TABLE_NAME, '_migrated=1');
+        $this->getDatabase()->exec_DELETEquery(Field::TABLE_NAME, '_migrated=1');
+        $this->getDatabase()->exec_DELETEquery(
+            'tt_content',
+            'colPos=' . CreateFormsAndPagesAndFieldsPropertyHelper::COLPOSNEWCONTENT
+        );
+    }
+
+    /**
+     * @return void
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    protected function cleanLocalization()
+    {
+        // 1. set localized content elements to hidden if parent ce are also hidden
+        $sql = 'update tt_content c
+          left join tt_content c2 on c.uid = c2.l18n_parent
+          set c2.hidden = c.hidden
+          where c2.sys_language_uid > 0 and c.sys_language_uid = 0 and c.hidden = 1;';
+        $connection = DatabaseUtility::getConnectionForTable('tt_content');
+        $connection->query($sql)->execute();
+
+        // 2. break relation between localized ce and parents
+        $this->getDatabase()->exec_UPDATEquery($this->tableName, 'deleted=0', ['l18n_parent' => 0]);
+
+        // 3. set "all languages" to default language for ce
+        $this->getDatabase()->exec_UPDATEquery($this->tableName, 'sys_language_uid=-1', ['sys_language_uid' => 0]);
+    }
 }

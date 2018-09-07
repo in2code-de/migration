@@ -1,7 +1,7 @@
 <?php
-namespace In2code\In2template\Migration\Migrate\PropertyHelper;
+namespace In2code\Migration\Migration\Migrate\PropertyHelper;
 
-use In2code\In2template\Migration\Migrate\PropertyHelper\FlexFormHelper\FlexFormHelperInterface;
+use In2code\Migration\Migration\Migrate\PropertyHelper\FlexFormHelper\FlexFormHelperInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Service\FlexFormService;
@@ -40,7 +40,7 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  *                          [
  *                              'className' => GetFacilityFromTypoScriptFlexFormHelper::class,
  *                              'configuration' => [
- *                                  'variableName' => 'facility'
+ *                                  'variableName' => 'facility' // get it via {helper.facility}
  *                              ]
  *                          ]
  *                      ]
@@ -87,6 +87,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
 
     /**
      * @return string
+     * @throws \Exception
      */
     protected function buildFlexFormString(): string
     {

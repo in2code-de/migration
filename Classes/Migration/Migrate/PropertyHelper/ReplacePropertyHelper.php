@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Migrate\PropertyHelper;
+namespace In2code\Migration\Migration\Migrate\PropertyHelper;
 
 /**
  * Class ReplacePropertyHelper
@@ -35,8 +35,10 @@ class ReplacePropertyHelper extends AbstractPropertyHelper implements PropertyHe
      */
     public function initialize()
     {
-        if ($this->getConfigurationByKey('search') === null || $this->getConfigurationByKey('replace') === null) {
-            throw new \Exception('configuration search, replace or default is missing');
+        if (!is_array($this->getConfigurationByKey('search'))
+            || !is_array($this->getConfigurationByKey('replace'))
+            || count($this->getConfigurationByKey('search')) !== count($this->getConfigurationByKey('replace'))) {
+            throw new \Exception('configuration is wrong', 1525771174);
         }
     }
 
@@ -47,11 +49,11 @@ class ReplacePropertyHelper extends AbstractPropertyHelper implements PropertyHe
     {
         $value = $this->getValue();
         if (in_array($value, $this->getConfigurationByKey('search'))) {
-            $value = str_replace(
-                $this->getConfigurationByKey('search'),
-                $this->getConfigurationByKey('replace'),
-                $value
-            );
+            foreach ($this->getConfigurationByKey('search') as $key => $search) {
+                if ($value === $search) {
+                    $value = $this->getConfigurationByKey('replace')[$key];
+                }
+            }
             $this->setProperty($value);
         } elseif ($this->getConfigurationByKey('default') !== null) {
             $value = $this->getConfigurationByKey('default');

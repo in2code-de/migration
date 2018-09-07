@@ -1,10 +1,10 @@
 <?php
-namespace In2code\In2template\Migration\Migrate;
+namespace In2code\Migration\Migration\Migrate;
 
-use In2code\In2template\Migration\Helper\DatabaseHelper;
-use In2code\In2template\Migration\Helper\PropertiesQueueHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\PropertyHelperInterface;
-use In2code\In2template\Migration\Service\Log;
+use In2code\Migration\Migration\Helper\DatabaseHelper;
+use In2code\Migration\Migration\Helper\PropertiesQueueHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\PropertyHelperInterface;
+use In2code\Migration\Migration\Service\Log;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -67,6 +67,13 @@ abstract class AbstractMigrator
     ];
 
     /**
+     * Turn off update process (useful if a migrator is used as a container for another db entry script)
+     *
+     * @var bool
+     */
+    protected $doNotUpdate = false;
+
+    /**
      * Enforce migration of _migrated=1 records
      *
      * @var bool
@@ -106,12 +113,41 @@ abstract class AbstractMigrator
     /**
      * @param array $configuration
      * @return array
+     * @throws \Exception
      */
     public function startMigration(array $configuration): array
     {
         $this->configuration = $configuration;
+        $this->initialize();
         $records = $this->updateRecords();
         $this->finalMessage($records);
+        return $records;
+    }
+
+    /**
+     * Initialize function will be called before records are read from the database. This is helpful for prefix
+     * operations
+     *
+     * @return void
+     */
+    protected function initialize()
+    {
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function updateRecords(): array
+    {
+        $records = $this->getRecords();
+        foreach ($records as &$record) {
+            $this->log->addNote(
+                'Start migrating ' . $this->tableName . ' (pid' . $record['pid'] . ' / uid' . $record['uid'] . ') ...'
+            );
+            $record = $this->updateRow($record);
+            $this->updateRecord($record);
+        }
         return $records;
     }
 
@@ -130,24 +166,9 @@ abstract class AbstractMigrator
     }
 
     /**
-     * @return array
-     */
-    protected function updateRecords(): array
-    {
-        $records = $this->getRecords();
-        foreach ($records as &$record) {
-            $this->log->addNote(
-                'Start migrating ' . $this->tableName . ' (pid' . $record['pid'] . ' / uid' . $record['uid'] . ') ...'
-            );
-            $record = $this->updateRow($record);
-            $this->updateRecord($record);
-        }
-        return $records;
-    }
-
-    /**
      * @param array $row
      * @return array
+     * @throws \Exception
      */
     protected function updateRow(array $row): array
     {
@@ -205,7 +226,7 @@ abstract class AbstractMigrator
         foreach ($this->propertyHelpers as $propertyName => $helpersConfig) {
             foreach ($helpersConfig as $helperConfig) {
                 if (!class_exists($helperConfig['className'])) {
-                    throw new \Exception('Class ' . $helperConfig['className'] . ' does not exists');
+                    throw new \Exception('Class ' . $helperConfig['className'] . ' does not exist');
                 }
                 if (is_subclass_of($helperConfig['className'], $this->helperInterface)) {
                     /** @var PropertyHelperInterface $helperClass */
@@ -265,11 +286,15 @@ abstract class AbstractMigrator
             throw new \Exception('Record of table ' . $this->tableName . ' can not be updated without UID field');
         }
         if (!$this->configuration['dryrun']) {
-            $queueHelper = $this->getObjectManager()->get(PropertiesQueueHelper::class);
-            $row = $queueHelper->updatePropertiesWithPropertiesFromQueue($this->tableName, (int)$row['uid'], $row);
+            if ($this->doNotUpdate === false) {
+                $queueHelper = $this->getObjectManager()->get(PropertiesQueueHelper::class);
+                $row = $queueHelper->updatePropertiesWithPropertiesFromQueue($this->tableName, (int)$row['uid'], $row);
 
-            $this->getDatabase()->exec_UPDATEquery($this->tableName, 'uid=' . (int)$row['uid'], $row);
-            $this->log->addMessage('Record updated', $row, $this->tableName);
+                $this->getDatabase()->exec_UPDATEquery($this->tableName, 'uid=' . (int)$row['uid'], $row);
+                $this->log->addMessage('Record updated', $row, $this->tableName);
+            } else {
+                $this->log->addNote('Not updated by configuration', $row, $this->tableName);
+            }
         } else {
             $this->log->addMessage('Record could be updated', $row, $this->tableName);
         }

@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Migrate\PropertyHelper;
+namespace In2code\Migration\Migration\Migrate\PropertyHelper;
 
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
@@ -27,7 +27,8 @@ class ReplaceOnConditionPropertyHelper extends AbstractPropertyHelper implements
     public function manipulate()
     {
         $newValue = $this->getNewValue();
-        $this->log->addMessage($this->propertyName . ' changed from ' . $this->getProperty() . ' to ' . $newValue);
+        $property = substr($this->getProperty(), 0, 100);
+        $this->log->addMessage($this->propertyName . ' changed from ' . $property . ' to ' . $newValue);
         $this->setProperty($newValue);
     }
 

@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Migrate\PropertyHelper\FceHelper;
+namespace In2code\Migration\Migration\Migrate\PropertyHelper\FceHelper;
 
 /**
  * Interface FceHelperInterface

@@ -1,7 +1,7 @@
 <?php
-namespace In2code\In2template\Migration\Helper;
+namespace In2code\Migration\Migration\Helper;
 
-use In2code\In2template\Migration\Service\Log;
+use In2code\Migration\Migration\Service\Log;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -95,6 +95,9 @@ class DatabaseHelper
             $this->log->addNote(
                 'record already exists, skipped entry (' . $this->buildWhereClauseFromPropertiesArray($row) . ')'
             );
+            if (!empty($existingRow['uid'])) {
+                $uid = (int)$existingRow['uid'];
+            }
         }
         return $uid;
     }

@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\Migrate\PropertyHelper\FlexFormHelper;
+namespace In2code\Migration\Migration\Migrate\PropertyHelper\FlexFormHelper;
 
 /**
  * Interface FlexFormHelperInterface
@@ -12,7 +12,7 @@ interface FlexFormHelperInterface
     public function initialize();
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getVariable(): string;
+    public function getVariable();
 }

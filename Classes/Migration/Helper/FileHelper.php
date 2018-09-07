@@ -1,7 +1,7 @@
 <?php
-namespace In2code\In2template\Migration\Helper;
+namespace In2code\Migration\Migration\Helper;
 
-use In2code\In2template\Migration\Service\Log;
+use In2code\Migration\Migration\Service\Log;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -168,8 +168,8 @@ class FileHelper
     /**
      * If no sys_file record found, check if file exists and try to index it to create sys_file entry
      *
-     * @param string $pathAndName
      * @param int $identifier
+     * @param string $pathAndName
      * @param array $oldRecord
      * @return int
      */

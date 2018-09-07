@@ -1,7 +1,7 @@
 <?php
-namespace In2code\In2template\Migration\Migrate\PropertyHelper;
+namespace In2code\Migration\Migration\Migrate\PropertyHelper;
 
-use In2code\In2template\Migration\Service\Log;
+use In2code\Migration\Migration\Service\Log;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -120,7 +120,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
     {
         $record = $this->getRecord();
         $property = '';
-        if (!empty($record[$propertyName])) {
+        if (array_key_exists($propertyName, $record)) {
             $property = $record[$propertyName];
         }
         return $property;
@@ -140,7 +140,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
      */
     public function getProperty(): string
     {
-        return $this->getPropertyFromRecord($this->getPropertyName());
+        return (string)$this->getPropertyFromRecord($this->getPropertyName());
     }
 
     /**
@@ -171,7 +171,11 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
                 return $this->configuration[$key];
             }
             if (stristr($key, '.')) {
-                return ArrayUtility::getValueByPath($this->configuration, $key, '.');
+                try {
+                    return ArrayUtility::getValueByPath($this->configuration, $key, '.');
+                } catch (\Exception $exception) {
+                    unset($exception);
+                }
             }
         }
         return null;

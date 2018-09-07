@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3FlexForms>
+	<data>
+		<sheet index="sDEF">
+			<language index="lDEF">
+				<field index="settings.orderDirection">
+					<value index="vDEF">asc</value>
+				</field>
+				<field index="settings.categoryConjunction">
+					<value index="vDEF"></value>
+				</field>
+				<field index="settings.categories">
+					<value index="vDEF"></value>
+				</field>
+				<field index="settings.includeSubCategories">
+					<value index="vDEF">0</value>
+				</field>
+				<field index="settings.timeRestriction">
+					<value index="vDEF">now</value>
+				</field>
+				<field index="settings.timeRestrictionHigh">
+					<value index="vDEF"></value>
+				</field>
+				<field index="settings.startingpoint">
+					<value index="vDEF"></value>
+				</field>
+				<field index="settings.eventRestriction">
+					<value index="vDEF">1</value>
+				</field>
+				<field index="settings.completeMonth">
+					<value index="vDEF">0</value>
+				</field>
+				<field index="switchableControllerActions">
+					<value index="vDEF">News-&gt;list;News-&gt;detail</value>
+				</field>
+			</language>
+		</sheet>
+		<sheet index="additional">
+			<language index="lDEF">
+				<field index="settings.detailPid">
+					<value index="vDEF"></value>
+				</field>
+				<field index="settings.listPid">
+					<value index="vDEF"></value>
+				</field>
+				<field index="settings.backPid">
+					<value index="vDEF"></value>
+				</field>
+				<field index="settings.limit">
+					<value index="vDEF"></value>
+				</field>
+				<field index="settings.list.paginate.itemsPerPage">
+					<value index="vDEF"></value>
+				</field>
+			</language>
+		</sheet>
+	</data>
+</T3FlexForms>

@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2template\Migration\DatabaseScript;
+namespace In2code\Migration\Migration\DatabaseScript;
 
 /**
  * Interface DatabaseScriptInterface

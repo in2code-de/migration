@@ -1,9 +1,9 @@
 <?php
-namespace In2code\In2template\Migration\Migrate\PropertyHelper\FceHelper;
+namespace In2code\Migration\Migration\Migrate\PropertyHelper\FceHelper;
 
-use In2code\In2template\Migration\Migrate\PropertyHelper\AbstractPropertyHelper;
-use In2code\In2template\Migration\Migrate\PropertyHelper\PropertyHelperInterface;
-use In2code\In2template\Migration\Service\Log;
+use In2code\Migration\Migration\Migrate\PropertyHelper\AbstractPropertyHelper;
+use In2code\Migration\Migration\Migrate\PropertyHelper\PropertyHelperInterface;
+use In2code\Migration\Migration\Service\Log;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
