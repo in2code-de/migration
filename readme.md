@@ -4,16 +4,18 @@
 This extension (with extension key **migration**) is a kickstarter extension (boilerplate)
 to import or migrate TYPO3 stuff within the same database.
 Boilerplate means in this case, take the extension and change it to your needs.
+The main task is to create easy migrations with just a few lines of code.
 
 E.g: 
-* **Import** from an old to a new table (like from tt_news to news)
+* **Import** from an old to a new table (like from tt_news to tx_news_domain_model_news)
 * **Migrate** existing records in an existing table (like in tt_content from TemplaVoila to Gridelements)
 
 ## Introduction
 
-### What's the roadmap on TYPO3 update and migration projects?
+### Possible roadmap for TYPO3 update and migration projects
 
 If your migration comes along with a TYPO3 update (like from 6.2 to 8.7 or so), you should go this way:
+
 * Start with a clean database and a new TYPO3 and build your functions in it with some testpages
 * Add additional functions you need to your small test instance (like news, powermail, own content elements, etc...)
 * Of course I would recommend to store the complete configuration (TypoScript, TSConfig etc...) in an extension 
@@ -25,7 +27,7 @@ If your migration comes along with a TYPO3 update (like from 6.2 to 8.7 or so), 
 * Start with adding your own Migrators and Importers
 * And then have fun with migrating, rolling back database, update your scripts, migrate again, and so on
 * If you are finished and have a good result, you simply can remove the extension
-* See also https://www.slideshare.net/einpraegsam/typo3-migration-in-komplexen-upgrade-und-relaunchprojekten-85961416
+* See also https://www.slideshare.net/einpraegsam/typo3-migration-in-komplexen-upgrade-und-relaunchprojekten-113908250
 
 
 
@@ -204,7 +206,7 @@ protected $migrationClasses = [
 ];
 ```
 
-Example Content Importer class:
+Example News Importer class:
 ```
 <?php
 namespace In2code\Migration\Migration\Import;
@@ -279,7 +281,7 @@ class NewsImporter extends AbstractImporter implements ImporterInterface
      * @var array
      */
     protected $propertyHelpers = [
-        // your own magic
+        // your own magic to manipulate values with your own classes
     ];
 }
 ```
@@ -304,12 +306,20 @@ Normally you can choose via class properties:
 * etc...
 
 If you extend your new tables with fields like `_migrated`, `_migrated_uid` and `_migrated_table`, they will
-be filled automaticly with useful values
+be filled automaticly with useful values - just test
 
 ## Example CLI calls
 ```
+# Migrate and import everything which is tagged to "content"
 ./vendor/bin/typo3cms migrate:start --key=content --dryrun=0
+
+# Migrate and import everything which is tagged to "page" but test it (dryrun) and do it only for page with uid=1 and no subpages
 ./vendor/bin/typo3cms migrate:start --key=page --dryrun=1 --limit-to-page=1 --recursive=0
+
+# Migrate and import everything which is tagged to "content". Use only page with uid=123 and all subpages
+./vendor/bin/typo3cms migrate:start --key=content --dryrun=0 --limit-to-page=123 --recursive=99
+
+# Migrate and import everything which is tagged to "news" but only for the record uid=123
 ./vendor/bin/typo3cms migrate:start --key=news --dryrun=0 --limit-to-record=123
 ```
 
