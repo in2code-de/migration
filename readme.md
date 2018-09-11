@@ -118,7 +118,11 @@ class ContentMigrator extends AbstractMigrator implements MigratorInterface
 }
 ```
 
-Example for an individual PropertyHelper class:
+Example for an individual PropertyHelper class. Function `shouldImport()` decices if the current record should be
+manipulated or not. Function `manipulate()` is the main method which contains the magic.
+A call of `$this-setProperty($newValue)` within manipulate the value of the current field.
+An `initialize()` is always called before `manipulate()` for your very first tasks.
+
 ```
 <?php
 namespace In2code\Migration\Migration\Import\PropertyHelper;
