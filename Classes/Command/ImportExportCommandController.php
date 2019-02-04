@@ -66,7 +66,7 @@ class ImportExportCommandController extends CommandController
         $this->export->setCharset(ObjectUtility::getLanguageService()->charSet);
 
         // Define all tables as static so no relations will get exportet
-        $this->export->relStaticTables = ['_ALL'];
+        // $this->export->relStaticTables = ['_ALL'];
 
         #   Set which tables relations we will allow:
         $this->export->relOnlyTables = $tables;    // exclusively includes. See comment in the class
