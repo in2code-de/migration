@@ -43,17 +43,17 @@ class ImportExportCommandController extends CommandController
      * Export data to a t3d typo3 export file (Format: XML)
      *
      *      Example cli command to store export in file.xml:
-     *      ./vendor/bin/typo3 importexport:export --pid=113441 --recursiveLevels=2 > file.xml
+     *      ./vendor/bin/typo3 importexport:export 123 > ~/Desktop/file.xml
      *
      * @param int $pid The page id to start from
      * @param int $recursiveLevels Define if the export should be recursive and how many levels
      * @param array $tables Add table names here which are THE ONLY ones which will be included into export AND if
      *     found as relations.
-     * @return string
+     * @return void
      * @throws Exception
      * @cli
      */
-    public function exportCommand(int $pid, int $recursiveLevels = 0, array $tables = []): string
+    public function exportCommand(int $pid, int $recursiveLevels = 0, array $tables = [])
     {
         if (empty($tables)) {
             $tables[] = '_ALL';
@@ -128,7 +128,8 @@ class ImportExportCommandController extends CommandController
             throw new Exception(implode(PHP_EOL, $this->export->errorLog), 1452878761);
         }
 
-        return $this->export->compileMemoryToFileContent('xml');
+        $content = $this->export->compileMemoryToFileContent('xml');
+        $this->outputLine($content);
     }
 
     /**
@@ -166,7 +167,7 @@ class ImportExportCommandController extends CommandController
         if (VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) >= 8006000) {
             throw new \LogicException(
                 'NOTE: You can simply use the command controller of the impexp system extension ' .
-                '- example call (with xml-file and PID to import in): ' .
+                '- example call (with xml-file (relative path) and PID to import in): ' .
                 './vendor/bin/typo3 impexp:import fileadmin/_temp_/file.xml 123',
                 1526472483
             );
