@@ -44,6 +44,7 @@ class ImportExportCommandController extends CommandController
      *
      *      Example cli command to store export in file.xml:
      *      ./vendor/bin/typo3 importexport:export 123 > ~/Desktop/file.xml
+     *      ./vendor/bin/typo3 importexport:export 123 --recursive-levels=99 > ~/Desktop/file2.xml
      *
      * @param int $pid The page id to start from
      * @param int $recursiveLevels Define if the export should be recursive and how many levels
@@ -63,6 +64,7 @@ class ImportExportCommandController extends CommandController
         $this->makeBeUserAdmin();
 
         $this->export->init(true);
+        $this->export->maxFileSize = 100000000;
         $this->export->setCharset(ObjectUtility::getLanguageService()->charSet);
 
         // Define all tables as static so no relations will get exportet
