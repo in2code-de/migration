@@ -1,8 +1,8 @@
 {
   "name": "in2code/migration",
-  "description": "Boilerplate for any kind of TYPO3 migrations",
+  "description": "Boilerplate for any kind of TYPO3 migrations and imports",
   "keywords": ["typo3", "migration", "import", "templavoila", "gridelements", "news"],
-  "homepage": "https://github.com/einpraegsam/ImporterBoilerplate",
+  "homepage": "https://github.com/einpraegsam/migration",
   "authors": [
     {
       "name": "Alex Kellner",
@@ -12,15 +12,15 @@
   "type": "typo3-cms-extension",
   "license": "GPL-3.0",
   "require": {
-    "helhum/typo3-console": ">=4.0.0"
+    "typo3/cms-core": ">=8.7.0 <9.0.0"
   },
   "replace": {
-    "importerboilerplate": "self.version",
-    "typo3-ter/importerboilerplate": "self.version"
+    "migration": "self.version",
+    "typo3-ter/migration": "self.version"
   },
   "autoload": {
     "psr-4": {
-      "In2code\\In2template\\": "Classes/"
+      "In2code\\Migration\\": "Classes/"
     }
   }
 }
