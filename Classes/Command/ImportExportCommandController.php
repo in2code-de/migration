@@ -50,11 +50,12 @@ class ImportExportCommandController extends CommandController
      * @param int $recursiveLevels Define if the export should be recursive and how many levels
      * @param array $tables Add table names here which are THE ONLY ones which will be included into export AND if
      *     found as relations.
+     * @param bool $stopOnFailure If there are errors, stop and show them. Otherwise go on with exporting.
      * @return void
      * @throws Exception
      * @cli
      */
-    public function exportCommand(int $pid, int $recursiveLevels = 0, array $tables = [])
+    public function exportCommand(int $pid, int $recursiveLevels = 0, array $tables = [], bool $stopOnFailure = true)
     {
         if (empty($tables)) {
             $tables[] = '_ALL';
@@ -126,7 +127,7 @@ class ImportExportCommandController extends CommandController
 
         $this->resetBackendUser();
 
-        if (!empty($this->export->errorLog)) {
+        if ($stopOnFailure === true && !empty($this->export->errorLog)) {
             throw new Exception(implode(PHP_EOL, $this->export->errorLog), 1452878761);
         }
 
