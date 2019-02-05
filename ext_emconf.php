@@ -14,6 +14,9 @@ $EM_CONF[$_EXTKEY] = [
     'state' => 'stable',
     'author_company' => 'in2code GmbH',
     'version' => '2.0.0',
+    'autoload' => [
+        'psr-4' => ['In2code\\Migration\\' => 'Classes']
+    ],
     'constraints' => [
         'depends' => [
             'typo3' => '8.7.0-8.99.99'

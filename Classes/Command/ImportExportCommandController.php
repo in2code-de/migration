@@ -1,7 +1,7 @@
 <?php
 namespace In2code\Migration\Command;
 
-use Helhum\Typo3Console\Mvc\Controller\CommandController;
+use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 use In2code\Migration\Utility\ObjectUtility;
 use TYPO3\CMS\Backend\Tree\View\PageTreeView;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
