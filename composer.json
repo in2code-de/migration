@@ -12,7 +12,8 @@
   "type": "typo3-cms-extension",
   "license": "GPL-3.0",
   "require": {
-    "typo3/cms-core": ">=8.7.0 <9.0.0"
+    "typo3/cms-core": ">=8.7.0 <9.0.0",
+    "ext-json": "*"
   },
   "replace": {
     "migration": "self.version",

@@ -74,4 +74,28 @@ class DatabaseUtility
         }
         return $found;
     }
+
+    /**
+     * @param int $storage
+     * @param string $identifier
+     * @return string
+     * @throws DBALException
+     */
+    public static function getFilePathAndNameByStorageAndIdentifier(int $storage, string $identifier): string
+    {
+        return self::getPathFromStorage($storage) . ltrim($identifier, '/');
+    }
+
+    /**
+     * @param int $storage
+     * @return string
+     * @throws DBALException
+     */
+    protected static function getPathFromStorage(int $storage): string
+    {
+        $sql = 'select ExtractValue(configuration, \'//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="basePath"]/value\') path from sys_file_storage where uid = "' . $storage . '"';
+        $connection = self::getConnectionForTable('sys_file_storage');
+        $path = $connection->executeQuery($sql)->fetchColumn(0);
+        return (string)$path;
+    }
 }
