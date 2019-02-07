@@ -6,6 +6,7 @@ use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
 use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\TcaUtility;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -168,7 +169,8 @@ class ExportService
      */
     protected function getRecordsFromPageAndTable(int $pageIdentifier, string $tableName): array
     {
-        $queryBuilder = DatabaseUtility::getQueryBuilderForTable($tableName, true);
+        $queryBuilder = DatabaseUtility::getQueryBuilderForTable($tableName);
+        $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
         return (array)$queryBuilder
             ->select('*')
             ->from($tableName)

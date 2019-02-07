@@ -1,6 +1,7 @@
 <?php
 namespace In2code\Migration\Command;
 
+use Doctrine\DBAL\DBALException;
 use In2code\Migration\Service\ExportService;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 
@@ -35,6 +36,7 @@ class ExportJsonCommandController extends CommandController
      * @param int $recursive
      * @return void
      * @cli
+     * @throws DBALException
      */
     public function exportCommand(int $pid, int $recursive = 99)
     {

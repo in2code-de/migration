@@ -13,6 +13,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class DatabaseUtility
 {
     /**
+     * Cache existing fields
+     *
+     * @var array
+     */
+    protected static $fieldsExisting = [];
+
+    /**
      * @param string $tableName
      * @param bool $removeRestrictions
      * @return QueryBuilder
@@ -64,13 +71,18 @@ class DatabaseUtility
     public static function isFieldExistingInTable(string $fieldName, string $tableName): bool
     {
         $found = false;
-        $connection = self::getConnectionForTable($tableName);
-        $queryResult = $connection->query('describe ' . $tableName . ';')->fetchAll();
-        foreach ($queryResult as $fieldProperties) {
-            if ($fieldProperties['Field'] === $fieldName) {
-                $found = true;
-                break;
+        if (isset(self::$fieldsExisting[$tableName][$fieldName]) === false) {
+            $connection = self::getConnectionForTable($tableName);
+            $queryResult = $connection->query('describe ' . $tableName . ';')->fetchAll();
+            foreach ($queryResult as $fieldProperties) {
+                if ($fieldProperties['Field'] === $fieldName) {
+                    $found = true;
+                    break;
+                }
             }
+            self::$fieldsExisting[$tableName][$fieldName] = $found;
+        } else {
+            $found = self::$fieldsExisting[$tableName][$fieldName];
         }
         return $found;
     }
