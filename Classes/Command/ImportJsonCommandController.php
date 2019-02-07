@@ -63,7 +63,7 @@ class ImportJsonCommandController extends CommandController
      */
     protected function checkTarget(int $pid)
     {
-        if ($this->isPageExisting($pid) === false) {
+        if ($pid > 0 && $this->isPageExisting($pid) === false) {
             throw new \LogicException('Target page with uid ' . $pid . ' is not existing', 1549535363);
         }
     }
