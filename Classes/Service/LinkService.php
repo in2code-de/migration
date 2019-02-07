@@ -3,7 +3,6 @@ namespace In2code\Migration\Service;
 
 use In2code\Migration\Utility\DatabaseUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
  * Class LinkService
