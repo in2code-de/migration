@@ -36,7 +36,8 @@ class LinkService
             'shortcut'
         ],
         'tt_content' => [
-            'records'
+            'records',
+            'tx_gridelements_container'
         ]
     ];
 
