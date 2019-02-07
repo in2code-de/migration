@@ -46,8 +46,12 @@ class FileUtility
     protected static function createFolderIfNotExists(string $pathAndFilename)
     {
         $path = self::getPathFromPathAndFilename($pathAndFilename);
-        if (!is_dir($path) && !GeneralUtility::mkdir($path)) {
-            throw new \UnexpectedValueException('Folder ' . $path . ' could not be created', 1549533300);
+        if (!is_dir($path)) {
+            try {
+                GeneralUtility::mkdir_deep($path);
+            } catch (\Exception $exception) {
+                throw new \UnexpectedValueException('Folder ' . $path . ' could not be created', 1549533300);
+            }
         }
     }
 
