@@ -24,6 +24,7 @@ class ExportJsonCommandController extends CommandController
         'sys_template',
         'sys_note',
         'sys_history',
+        'sys_file_storage',
         'tx_extensionmanager_domain_model_extension',
         'tx_extensionmanager_domain_model_repository'
     ];

@@ -42,9 +42,9 @@ class ImportService
     protected $jsonArray = [];
 
     /**
-     * @var ImportMappingService
+     * @var MappingService
      */
-    protected $importMappingService = null;
+    protected $mappingService = null;
 
     /**
      * ImportService constructor.
@@ -55,7 +55,7 @@ class ImportService
      */
     public function __construct(string $file, int $pid, array $excludedTables = [], bool $overwriteFiles = false)
     {
-        $this->importMappingService = ObjectUtility::getObjectManager()->get(ImportMappingService::class);
+        $this->mappingService = ObjectUtility::getObjectManager()->get(MappingService::class);
         $this->file = $file;
         $this->pid = $pid;
         $this->excludedTables = $excludedTables;
@@ -75,6 +75,7 @@ class ImportService
         $this->importFileRecords();
         $this->importFileReferenceRecords();
         $this->importImages();
+        $this->updateLinks();
         return true;
     }
 
@@ -119,7 +120,7 @@ class ImportService
                     $properties['identifier'],
                     (int)$properties['storage']
                 );
-                $this->importMappingService->setIdentifierMapping($newUid, (int)$properties['uid'], 'sys_file');
+                $this->mappingService->setNew($newUid, (int)$properties['uid'], 'sys_file');
             } else {
                 $this->insertRecord($properties, 'sys_file');
             }
@@ -148,6 +149,15 @@ class ImportService
     }
 
     /**
+     * @return void
+     */
+    protected function updateLinks()
+    {
+        $linkService = ObjectUtility::getObjectManager()->get(LinkService::class, $this->mappingService);
+        $linkService->updateLinksAndRecordsInNewRecords();
+    }
+
+    /**
      * Insert a record to the database and pass the new identifier to the mapping service
      *
      * @param array $properties
@@ -157,10 +167,14 @@ class ImportService
      */
     protected function insertRecord(array $properties, string $tableName)
     {
+        $oldIdentifier = (int)$properties['uid'];
         $connection = DatabaseUtility::getConnectionForTable($tableName);
-        $connection->insert($tableName, $this->prepareProperties($properties, $tableName));
-        $newIdentifier = $connection->lastInsertId($tableName);
-        $this->importMappingService->setIdentifierMapping((int)$newIdentifier, (int)$properties['uid'], $tableName);
+        $properties = $this->prepareProperties($properties, $tableName);
+        $connection->insert($tableName, $properties);
+        $newIdentifier = (int)$connection->lastInsertId($tableName);
+        if ($oldIdentifier > 0) {
+            $this->mappingService->setNew($newIdentifier, $oldIdentifier, $tableName);
+        }
     }
 
     /**
@@ -208,7 +222,7 @@ class ImportService
             $properties['tstamp'] = time();
         }
         if (DatabaseUtility::isFieldExistingInTable('pid', $tableName) === true) {
-            $newPid = $this->importMappingService->getNewPidFromOldPid((int)$properties['pid']);
+            $newPid = $this->mappingService->getNewPidFromOldPid((int)$properties['pid']);
             if ($newPid > 0) {
                 $properties['pid'] = $newPid;
             }
@@ -228,9 +242,9 @@ class ImportService
     protected function preparePropertiesForSysFileReference(array $properties): array
     {
         $properties['uid_local']
-            = $this->importMappingService->getNewFromOld((int)$properties['uid_local'], 'sys_file');
+            = $this->mappingService->getNewFromOld((int)$properties['uid_local'], 'sys_file');
         $properties['uid_foreign']
-            = $this->importMappingService->getNewFromOld((int)$properties['uid_foreign'], $properties['tablenames']);
+            = $this->mappingService->getNewFromOld((int)$properties['uid_foreign'], $properties['tablenames']);
         return $properties;
     }
 
@@ -240,11 +254,17 @@ class ImportService
     protected function setJson()
     {
         $content = file_get_contents($this->file);
-        $this->jsonArray = json_decode($content, true);
+        $array = json_decode($content, true);
+        if ($array === null) {
+            throw new \LogicException('No json configuration found in given file', 1549546231);
+        }
+        $this->jsonArray = $array;
         $this->setPidForFirstPage();
     }
 
     /**
+     * Overwrite pid of the very first page in jsonArray and store the new pid in the mapping service
+     *
      * @return void
      */
     protected function setPidForFirstPage()
@@ -252,9 +272,9 @@ class ImportService
         foreach ($this->jsonArray['records']['pages'] as &$properties) {
             $oldPid = (int)$properties['pid'];
             $properties['pid'] = $this->pid;
+            $this->mappingService->setNewPid($this->pid, $oldPid);
             break;
         }
-        $this->importMappingService->setIdentifierMapping($this->pid, $oldPid, 'pages');
     }
 
     /**
