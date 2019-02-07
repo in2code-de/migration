@@ -72,6 +72,7 @@ class ImportService
     {
         $this->importPages();
         $this->importRecords();
+        $this->importFileRecords();
         $this->importFileReferenceRecords();
         $this->importImages();
         return true;
@@ -94,12 +95,33 @@ class ImportService
      */
     protected function importRecords()
     {
-        $excludedTables = ['pages', 'sys_file_reference'] + $this->excludedTables;
+        $excludedTables = ['pages', 'sys_file', 'sys_file_reference'] + $this->excludedTables;
         foreach (array_keys($this->jsonArray['records']) as $tableName) {
             if (in_array($tableName, $excludedTables) === false) {
                 foreach ($this->jsonArray['records'][$tableName] as $properties) {
                     $this->insertRecord($properties, $tableName);
                 }
+            }
+        }
+    }
+
+    /**
+     * Import records from table sys_file but only if they are not yet existing
+     *
+     * @return void
+     * @throws DBALException
+     */
+    protected function importFileRecords()
+    {
+        foreach ($this->jsonArray['records']['sys_file'] as $properties) {
+            if ($this->isFileRecordAlradyExisting($properties['identifier'], (int)$properties['storage'])) {
+                $newUid = $this->findFileUidByStorageAndIdentifier(
+                    $properties['identifier'],
+                    (int)$properties['storage']
+                );
+                $this->importMappingService->setIdentifierMapping($newUid, (int)$properties['uid'], 'sys_file');
+            } else {
+                $this->insertRecord($properties, 'sys_file');
             }
         }
     }
@@ -139,6 +161,32 @@ class ImportService
         $connection->insert($tableName, $this->prepareProperties($properties, $tableName));
         $newIdentifier = $connection->lastInsertId($tableName);
         $this->importMappingService->setIdentifierMapping((int)$newIdentifier, (int)$properties['uid'], $tableName);
+    }
+
+    /**
+     * @param string $identifier
+     * @param int $storage
+     * @return bool
+     */
+    protected function isFileRecordAlradyExisting(string $identifier, int $storage): bool
+    {
+        return $this->findFileUidByStorageAndIdentifier($identifier, $storage) > 0;
+    }
+
+    /**
+     * @param string $identifier
+     * @param int $storage
+     * @return int
+     */
+    protected function findFileUidByStorageAndIdentifier(string $identifier, int $storage): int
+    {
+        $queryBuilder = DatabaseUtility::getQueryBuilderForTable('sys_file');
+        return (int)$queryBuilder
+            ->select('uid')
+            ->from('sys_file')
+            ->where('storage=' . $storage . ' and identifier="' . $identifier . '"')
+            ->execute()
+            ->fetchColumn(0);
     }
 
     /**

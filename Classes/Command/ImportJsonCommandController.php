@@ -2,6 +2,7 @@
 namespace In2code\Migration\Command;
 
 use In2code\Migration\Service\ImportService;
+use In2code\Migration\Utility\DatabaseUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 
 /**
@@ -47,11 +48,38 @@ class ImportJsonCommandController extends CommandController
             $this->overwriteFiles
         );
         try {
+            $this->checkTarget($pid);
             $importService->import();
             $message = 'success!';
         } catch (\Exception $exception) {
-            $message = $exception->getMessage() . ' (' . $exception->getCode() . ')';
+            $message = $exception->getMessage() . ' (Errorcode ' . $exception->getCode() . ')';
         }
         $this->outputLine($message);
+    }
+
+    /**
+     * @param int $pid
+     * @return void
+     */
+    protected function checkTarget(int $pid)
+    {
+        if ($this->isPageExisting($pid) === false) {
+            throw new \LogicException('Target page with uid ' . $pid . ' is not existing', 1549535363);
+        }
+    }
+
+    /**
+     * @param int $pid
+     * @return bool
+     */
+    protected function isPageExisting(int $pid): bool
+    {
+        $queryBuilder = DatabaseUtility::getQueryBuilderForTable('pages', true);
+        return (int)$queryBuilder
+                ->select('uid')
+                ->from('pages')
+                ->where('uid=' . (int)$pid)
+                ->execute()
+                ->fetchColumn(0) > 0;
     }
 }
