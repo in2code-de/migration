@@ -22,4 +22,42 @@ class FileUtility
         }
         return '';
     }
+
+    /**
+     * @param string $filename relative filename like "fileadmin/file.jpg"
+     * @param string $content base64 encoded content of the file
+     * @param bool $overwrite overwrite existing files
+     * @return bool
+     */
+    public static function writeFileFromBase64Code(string $filename, string $content, bool $overwrite = false): bool
+    {
+        $file = GeneralUtility::getFileAbsFileName($filename);
+        self::createFolderIfNotExists($file);
+        if ($overwrite === true || is_file($file) === false) {
+            return GeneralUtility::writeFile($file, base64_decode($content));
+        }
+        return false;
+    }
+
+    /**
+     * @param string $pathAndFilename
+     * @return void
+     */
+    protected static function createFolderIfNotExists(string $pathAndFilename)
+    {
+        $path = self::getPathFromPathAndFilename($pathAndFilename);
+        if (!is_dir($path) && !GeneralUtility::mkdir($path)) {
+            throw new \UnexpectedValueException('Folder ' . $path . ' could not be created', 1549533300);
+        }
+    }
+
+    /**
+     * @param string $pathAndFilename
+     * @return string
+     */
+    protected static function getPathFromPathAndFilename($pathAndFilename)
+    {
+        $pathInfo = pathinfo($pathAndFilename);
+        return $pathInfo['dirname'];
+    }
 }

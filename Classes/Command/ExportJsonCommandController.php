@@ -31,6 +31,7 @@ class ExportJsonCommandController extends CommandController
     /**
      * Own export command to export whole pagetrees with all records to a file which contains a json and can be
      * imported again with a different import command.
+     * Example CLI call: ./vendor/bin/typo3cms exportjson:export 123 > /home/user/export.json
      *
      * @param int $pid
      * @param int $recursive
@@ -40,6 +41,7 @@ class ExportJsonCommandController extends CommandController
      */
     public function exportCommand(int $pid, int $recursive = 99)
     {
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
         $exportService = $this->objectManager->get(ExportService::class, $pid, $recursive, $this->excludedTables);
         $this->outputLine($exportService->export());
     }

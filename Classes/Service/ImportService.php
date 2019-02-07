@@ -3,6 +3,7 @@ namespace In2code\Migration\Service;
 
 use Doctrine\DBAL\DBALException;
 use In2code\Migration\Utility\DatabaseUtility;
+use In2code\Migration\Utility\FileUtility;
 use In2code\Migration\Utility\ObjectUtility;
 
 /**
@@ -31,6 +32,11 @@ class ImportService
     protected $excludedTables = [];
 
     /**
+     * @var bool
+     */
+    protected $overwriteFiles = false;
+
+    /**
      * @var array
      */
     protected $jsonArray = [];
@@ -45,13 +51,15 @@ class ImportService
      * @param string $file
      * @param int $pid
      * @param array $excludedTables
+     * @param bool $overwriteFiles
      */
-    public function __construct(string $file, int $pid, array $excludedTables = [])
+    public function __construct(string $file, int $pid, array $excludedTables = [], bool $overwriteFiles = false)
     {
         $this->importMappingService = ObjectUtility::getObjectManager()->get(ImportMappingService::class);
         $this->file = $file;
         $this->pid = $pid;
         $this->excludedTables = $excludedTables;
+        $this->overwriteFiles = $overwriteFiles;
         $this->checkFile();
         $this->setJson();
     }
@@ -64,6 +72,8 @@ class ImportService
     {
         $this->importPages();
         $this->importRecords();
+        $this->importFileReferenceRecords();
+        $this->importImages();
         return true;
     }
 
@@ -73,8 +83,8 @@ class ImportService
      */
     protected function importPages()
     {
-        foreach ($this->jsonArray['records']['pages'] as $pageProperties) {
-            $this->insertRecord($pageProperties, 'pages');
+        foreach ($this->jsonArray['records']['pages'] as $properties) {
+            $this->insertRecord($properties, 'pages');
         }
     }
 
@@ -84,13 +94,34 @@ class ImportService
      */
     protected function importRecords()
     {
-        $excludedTables = ['pages'] + $this->excludedTables;
+        $excludedTables = ['pages', 'sys_file_reference'] + $this->excludedTables;
         foreach (array_keys($this->jsonArray['records']) as $tableName) {
             if (in_array($tableName, $excludedTables) === false) {
                 foreach ($this->jsonArray['records'][$tableName] as $properties) {
                     $this->insertRecord($properties, $tableName);
                 }
             }
+        }
+    }
+
+    /**
+     * @return void
+     * @throws DBALException
+     */
+    protected function importFileReferenceRecords()
+    {
+        foreach ($this->jsonArray['records']['sys_file_reference'] as $properties) {
+            $this->insertRecord($this->preparePropertiesForSysFileReference($properties), 'sys_file_reference');
+        }
+    }
+
+    /**
+     * @return void
+     */
+    protected function importImages()
+    {
+        foreach ($this->jsonArray['files'] as $properties) {
+            FileUtility::writeFileFromBase64Code($properties['path'], $properties['base64'], $this->overwriteFiles);
         }
     }
 
@@ -139,6 +170,19 @@ class ImportService
                 unset($properties[$field]);
             }
         }
+        return $properties;
+    }
+
+    /**
+     * @param array $properties
+     * @return array
+     */
+    protected function preparePropertiesForSysFileReference(array $properties): array
+    {
+        $properties['uid_local']
+            = $this->importMappingService->getNewFromOld((int)$properties['uid_local'], 'sys_file');
+        $properties['uid_foreign']
+            = $this->importMappingService->getNewFromOld((int)$properties['uid_foreign'], $properties['tablenames']);
         return $properties;
     }
 
