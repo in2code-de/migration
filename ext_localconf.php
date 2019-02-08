@@ -17,9 +17,7 @@ call_user_func(
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] =
             \In2code\Migration\Command\ImportExportCommandController::class;
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] =
-            \In2code\Migration\Command\ExportJsonCommandController::class;
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'][] =
-            \In2code\Migration\Command\ImportJsonCommandController::class;
+            \In2code\Migration\Command\PortCommandController::class;
 
         unset($extKey);
     },

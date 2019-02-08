@@ -1,31 +1,66 @@
 <?php
 namespace In2code\Migration\Command;
 
+use Doctrine\DBAL\DBALException;
+use In2code\Migration\Service\ExportService;
 use In2code\Migration\Service\ImportService;
 use In2code\Migration\Utility\DatabaseUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\CommandController;
 
 /**
- * Class ImportJsonCommandController
+ * Class PortCommandController
+ * offers own json based import and export commands for TYPO3 page-trees to fit the need to insert huge page trees into
+ * existing TYPO3 instances.
  */
-class ImportJsonCommandController extends CommandController
+class PortCommandController extends CommandController
 {
 
     /**
-     * Define which tables shouldn't be imported (pages is the only table that must be included)
+     * Excluded tables for im- and export
      *
      * @var array
      */
     protected $excludedTables = [
+        'be_groups',
+        'be_users',
+        'sys_language',
+        'sys_log',
+        'sys_news',
+        'sys_domain',
+        'sys_template',
+        'sys_note',
+        'sys_history',
+        'sys_file_storage',
+        'tx_extensionmanager_domain_model_extension',
+        'tx_extensionmanager_domain_model_repository',
         'sys_category_record_mm'
     ];
 
     /**
-     * Check if the file is already existing (compare path and name) and decide of it should be overwritten or not
+     * Import: Check if the file is already existing (compare path and name - no size or date)
+     * and decide of it should be overwritten or not
      *
      * @var bool
      */
     protected $overwriteFiles = false;
+
+    /**
+     * Own export command to export whole pagetrees with all records to a file which contains a json and can be
+     * imported again with a different import command.
+     * Example CLI call: ./vendor/bin/typo3cms exportjson:export 123 > /home/user/export.json
+     *
+     * @param int $pid
+     * @param int $recursive
+     * @return void
+     * @cli
+     * @throws DBALException
+     */
+    public function exportCommand(int $pid, int $recursive = 99)
+    {
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
+        $exportService = $this->objectManager->get(ExportService::class, $pid, $recursive, $this->excludedTables);
+        $this->outputLine($exportService->export());
+    }
 
     /**
      * Importer command to import json export files into a current database. New uids will be inserted for records.
