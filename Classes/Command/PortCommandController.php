@@ -47,7 +47,7 @@ class PortCommandController extends CommandController
     /**
      * Own export command to export whole pagetrees with all records to a file which contains a json and can be
      * imported again with a different import command.
-     * Example CLI call: ./vendor/bin/typo3cms exportjson:export 123 > /home/user/export.json
+     * Example CLI call: ./vendor/bin/typo3cms port:export 123 > /home/user/export.json
      *
      * @param int $pid
      * @param int $recursive
@@ -66,7 +66,7 @@ class PortCommandController extends CommandController
      * Importer command to import json export files into a current database. New uids will be inserted for records.
      * Note: At the moment only sys_file_reference is supported as mm table (e.g. no sys_category_record_mm support)
      *
-     * Example CLI call: ./vendor/bin/typo3cms importjson:import /home/user/export.json 123
+     * Example CLI call: ./vendor/bin/typo3cms port:import /home/user/export.json 123
      *
      * @param string $file Absolute path to a json export file
      * @param int $pid Page identifier to import new tree into (can also be 0 for an import into root)
