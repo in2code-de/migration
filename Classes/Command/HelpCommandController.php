@@ -38,12 +38,13 @@ class HelpCommandController extends CommandController
      * Returns a list of the current pid and all sub-pids (could be useful for further database operations)
      *
      * @param int $startPid
-     * @return string
+     * @return void
      * @cli
      */
     public function getListsOfSubPagesCommand($startPid)
     {
         $queryGenerator = $this->objectManager->get(QueryGenerator::class);
-        return $queryGenerator->getTreeList($startPid, 20, 0, 1);
+        $list = $queryGenerator->getTreeList($startPid, 20, 0, 1);
+        $this->outputLine($list);
     }
 }
