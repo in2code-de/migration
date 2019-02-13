@@ -38,7 +38,7 @@ class PortCommandController extends CommandController
 
     /**
      * Import: Check if the file is already existing (compare path and name - no size or date)
-     * and decide of it should be overwritten or not
+     * and decide if it should be overwritten or not
      *
      * @var bool
      */

@@ -11,8 +11,13 @@ class LinkService
 {
 
     /**
-     * Define in which fields there are links that should be replaced with a newer mapping (like bodytext with links
-     * like <a href="t3://page?uid=123">link</a>
+     * Define in which fields there are links that should be replaced with a newer mapping.
+     *
+     * Example content (like tt_content.bodytext) with links
+     * like
+     * ... <a href="t3://page?uid=123">link</a> ...
+     * and images in rte like
+     * ... <img src="fileadmin/image.png" data-htmlarea-file-uid="16279" data-htmlarea-file-table="sys_file" /> ...
      *
      * @var array
      */
@@ -23,6 +28,9 @@ class LinkService
         ],
         'sys_file_reference' => [
             'link'
+        ],
+        'tx_news_domain_model_news' => [
+            'bodytext'
         ]
     ];
 
@@ -123,6 +131,7 @@ class LinkService
     {
         $value = $this->updatePageLinks($value);
         $value = $this->updateFileLinks($value);
+        $value = $this->updateRteImages($value);
         return $value;
     }
 
@@ -159,6 +168,22 @@ class LinkService
     }
 
     /**
+     * Search for data-htmlarea-file-uid="123"
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function updateRteImages(string $value): string
+    {
+        $value = preg_replace_callback(
+            '~(data-htmlarea-file-uid=")(\d+)~',
+            [$this, 'updateFileLinksCallback'],
+            $value
+        );
+        return $value;
+    }
+
+    /**
      * Replace t3://page?uid=123 => t3://page?uid=234
      *
      * @param array $match
@@ -172,7 +197,10 @@ class LinkService
     }
 
     /**
-     * Replace t3://file?uid=123 => t3://file?uid=234
+     * Replace
+     * t3://file?uid=123 => t3://file?uid=234
+     * and
+     * data-htmlarea-file-uid="123" => data-htmlarea-file-uid="234"
      *
      * @param array $match
      * @return string
