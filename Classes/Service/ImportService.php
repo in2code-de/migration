@@ -114,15 +114,17 @@ class ImportService
      */
     protected function importFileRecords()
     {
-        foreach ($this->jsonArray['records']['sys_file'] as $properties) {
-            if ($this->isFileRecordAlradyExisting($properties['identifier'], (int)$properties['storage'])) {
-                $newUid = $this->findFileUidByStorageAndIdentifier(
-                    $properties['identifier'],
-                    (int)$properties['storage']
-                );
-                $this->mappingService->setNew($newUid, (int)$properties['uid'], 'sys_file');
-            } else {
-                $this->insertRecord($properties, 'sys_file');
+        if (is_array($this->jsonArray['records']['sys_file'])) {
+            foreach ($this->jsonArray['records']['sys_file'] as $properties) {
+                if ($this->isFileRecordAlradyExisting($properties['identifier'], (int)$properties['storage'])) {
+                    $newUid = $this->findFileUidByStorageAndIdentifier(
+                        $properties['identifier'],
+                        (int)$properties['storage']
+                    );
+                    $this->mappingService->setNew($newUid, (int)$properties['uid'], 'sys_file');
+                } else {
+                    $this->insertRecord($properties, 'sys_file');
+                }
             }
         }
     }
@@ -133,8 +135,10 @@ class ImportService
      */
     protected function importFileReferenceRecords()
     {
-        foreach ($this->jsonArray['records']['sys_file_reference'] as $properties) {
-            $this->insertRecord($this->preparePropertiesForSysFileReference($properties), 'sys_file_reference');
+        if (is_array($this->jsonArray['records']['sys_file_reference'])) {
+            foreach ($this->jsonArray['records']['sys_file_reference'] as $properties) {
+                $this->insertRecord($this->preparePropertiesForSysFileReference($properties), 'sys_file_reference');
+            }
         }
     }
 
@@ -143,8 +147,10 @@ class ImportService
      */
     protected function importImages()
     {
-        foreach ($this->jsonArray['files'] as $properties) {
-            FileUtility::writeFileFromBase64Code($properties['path'], $properties['base64'], $this->overwriteFiles);
+        if (is_array($this->jsonArray['files'])) {
+            foreach ($this->jsonArray['files'] as $properties) {
+                FileUtility::writeFileFromBase64Code($properties['path'], $properties['base64'], $this->overwriteFiles);
+            }
         }
     }
 
