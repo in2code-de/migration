@@ -384,6 +384,7 @@ Example CLI call
 
 | Version    | Date       | State      | Description                                                                  |
 | ---------- | ---------- | ---------- | ---------------------------------------------------------------------------- |
+| 3.1.0      | 2019-03-19 | Feature    | Update RTE images, Export now with files from links                          |
 | 3.0.0      | 2019-02-08 | Task       | Add a working import and export command controller                           |
 | 2.0.0      | 2018-09-07 | Task       | Use extkey migration, add ImportExportCommandController, some improvements   |
 | 1.1.1      | 2018-09-07 | Task       | Add Changelog                                                                |
