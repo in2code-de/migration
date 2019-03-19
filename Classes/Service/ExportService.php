@@ -112,6 +112,7 @@ class ExportService
         ];
         $this->extendWithOtherTables();
         $this->extendWithFiles();
+        $this->extendWithFilesFromLinks();
     }
 
     /**
@@ -166,6 +167,30 @@ class ExportService
                     'fileIdentifier' => (int)$fileProperties['uid']
                 ];
             }
+        }
+    }
+
+    /**
+     * @return void
+     * @throws DBALException
+     */
+    protected function extendWithFilesFromLinks()
+    {
+        $linkRelationService = ObjectUtility::getObjectManager()->get(LinkRelationService::class);
+        $identifiers = $linkRelationService->getFileIdentifiersFromLinks($this->jsonArray);
+        foreach ($identifiers as $fileIdentifier) {
+            $fileProperties = $this->getPropertiesFromIdentifierAndTable($fileIdentifier, 'sys_file');
+            $this->jsonArray['records']['sys_file'][(int)$fileProperties['uid']] = $fileProperties;
+
+            $relativePathAndFilename = DatabaseUtility::getFilePathAndNameByStorageAndIdentifier(
+                (int)$fileProperties['storage'],
+                $fileProperties['identifier']
+            );
+            $this->jsonArray['files'][(int)$fileProperties['uid']] = [
+                'path' => $relativePathAndFilename,
+                'base64' => FileUtility::getBase64CodeFromFile($relativePathAndFilename),
+                'fileIdentifier' => (int)$fileProperties['uid']
+            ];
         }
     }
 
