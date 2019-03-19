@@ -5,9 +5,9 @@ use In2code\Migration\Utility\DatabaseUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Class LinkService
+ * Class LinkMappingService
  */
-class LinkService
+class LinkMappingService
 {
 
     /**

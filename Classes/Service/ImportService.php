@@ -159,7 +159,7 @@ class ImportService
      */
     protected function updateLinks()
     {
-        $linkService = ObjectUtility::getObjectManager()->get(LinkService::class, $this->mappingService);
+        $linkService = ObjectUtility::getObjectManager()->get(LinkMappingService::class, $this->mappingService);
         $linkService->updateLinksAndRecordsInNewRecords();
     }
 
