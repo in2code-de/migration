@@ -37,6 +37,33 @@ class ExportService
     protected $addFiles = true;
 
     /**
+     * Array that is build just before it's packed into a json file
+     *
+     * Example content:
+     *  [
+     *      'records' => [
+     *          'pages' => [
+     *              [
+     *                  'uid' => 123,
+     *                  'title' => 'page title'
+     *              ]
+     *          ],
+     *          'tt_content' => [
+     *              [
+     *                  'uid' => 1234,
+     *                  'header' => 'content header'
+     *              ]
+     *          ]
+     *      ],
+     *      'files' => [
+     *          12345 => [
+     *              'path' => 'fileadmin/file.pdf',
+     *              'base64' => 'base64:abcdef1234567890'
+     *              'fileIdentifier' => 12345
+     *          ]
+     *      ]
+     *  ]
+     *
      * @var array
      */
     protected $jsonArray = [];
