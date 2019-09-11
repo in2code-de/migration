@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace In2code\Migration\Service;
 
 use Doctrine\DBAL\DBALException;
@@ -135,7 +136,7 @@ class ExportService
     {
         foreach (TcaUtility::getTableNamesToExport($this->excludedTables) as $table) {
             $rows = [];
-            foreach ($this->jsonArray['records']['pages'] as $pageProperties) {
+            foreach ((array)$this->jsonArray['records']['pages'] as $pageProperties) {
                 $pid = (int)$pageProperties['uid'];
                 $rows = array_merge($rows, $this->getRecordsFromPageAndTable($pid, $table));
             }
@@ -152,7 +153,7 @@ class ExportService
     protected function extendWithFiles()
     {
         if ($this->addFiles === true) {
-            foreach ($this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
+            foreach ((array)$this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
                 $fileIdentifier = (int)$referenceProperties['uid_local'];
                 $fileProperties = $this->getPropertiesFromIdentifierAndTable($fileIdentifier, 'sys_file');
                 $this->jsonArray['records']['sys_file'][(int)$fileProperties['uid']] = $fileProperties;
@@ -202,16 +203,12 @@ class ExportService
     protected function getPropertiesFromIdentifierAndTable(int $identifier, string $tableName): array
     {
         $queryBuilder = DatabaseUtility::getQueryBuilderForTable($tableName, true);
-        $rows = (array)$queryBuilder
+        return (array)$queryBuilder
             ->select('*')
             ->from($tableName)
             ->where('uid=' . $identifier)
             ->execute()
-            ->fetchAll();
-        if (!empty($rows[0]['uid'])) {
-            return $rows[0];
-        }
-        return [];
+            ->fetch();
     }
 
     /**

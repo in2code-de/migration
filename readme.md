@@ -327,63 +327,70 @@ be filled automaticly with useful values - just test
 ./vendor/bin/typo3cms migrate:start --key=news --dryrun=0 --limit-to-record=123
 ```
 
-## Additional useful CommandControllers in this extension
 
-### DataHandlerCommandController
 
-List of Commands:
 
-- handleCommand(): Do TYPO3 pageactions (normally known from backend) via console. Move, delete, copy complete pages and trees without runtimelimit from CLI
+## Additional useful symfony commands in this extension
+
+### DataHandlerCommand
+
+Do TYPO3 pageactions (normally known from backend) via console. Move, delete, copy complete pages and trees without runtimelimit from CLI
 
 Example CLI call
 
 ```
 # Copy tree with beginning pid 123 into page with pid 234
-./vendor/bin/typo3cms datahandler:handle --start-pid=123 --action=copy --target-pid=234
+./vendor/bin/typo3cms migration:datahandler 123 copy 234
 
 # Move tree with beginning pid 123 into page with pid 234
-./vendor/bin/typo3cms datahandler:handle --start-pid=123 --action=move --target-pid=234
+./vendor/bin/typo3cms migration:datahandler 123 move 234
 
 # Delete complete tree with beginning pid 123
-./vendor/bin/typo3cms datahandler:handle --start-pid=123 --action=delete --recursion=99
+./vendor/bin/typo3cms migration:datahandler 123 delete 0 99
 
 ```
 
-### PortCommandController
+### ExportCommand
 
-List of Commands:
-
-- exportCommand(): Export a page branch into an json export file (with files and relations)
-- importCommand(): Import a json file with exported data (e.g. a page branch) into an existing TYPO3 installation
+Export a page branch into an json export file (with all files and relations)
 
 Example CLI call
 
 ```
 # Export page with pid123 and its subpages into a json file
-./vendor/bin/typo3cms port:export 123 > /home/user/export.json
-
-# Import page branch with subpages and files into page with uid 123
-./vendor/bin/typo3cms port:import /home/user/export.json 123
+./vendor/bin/typo3cms migration:export 123 > /home/user/export.json
 ```
 
-### HelpCommandController
+### ImportCommand
 
-List of Commands:
+Import a json file with exported data (e.g. a page branch) into an existing TYPO3 installation
 
-- getListsOfSubPagesCommand(): Simple show a commaseparated list of subpages to a page (helpful for further database commands)
+Example CLI call
+
+```
+# Import page branch with subpages and files into page with uid 123
+./vendor/bin/typo3cms migration:import /home/user/export.json 123
+```
+
+### HelpCommand
+
+Simple show a commaseparated list of subpages to a page (helpful for further database commands)
 
 Example CLI call
 
 ```
 # Show a commaseparated list of a page with pid 123 and its subpages
-./vendor/bin/typo3cms help:getlistsofsubpages --start-pid=123
+./vendor/bin/typo3cms migration:help 123
 ```
+
+
 
 
 ## Changelog
 
 | Version    | Date       | State      | Description                                                                  |
 | ---------- | ---------- | ---------- | ---------------------------------------------------------------------------- |
+| 4.0.0      | ?          | Task       | Rewrite everything for TYPO3 9                                               |
 | 3.1.0      | 2019-03-19 | Feature    | Update RTE images, Export now with files from links                          |
 | 3.0.0      | 2019-02-08 | Task       | Add a working import and export command controller                           |
 | 2.0.0      | 2018-09-07 | Task       | Use extkey migration, add ImportExportCommandController, some improvements   |
@@ -391,7 +398,9 @@ Example CLI call
 | 1.1.0      | 2017-07-28 | Task       | Add DataHandler and Help CommandControllers                                  |
 | 1.0.0      | 2017-07-26 | Task       | Initial release                                                              |
 
+
+
+
 ## Future Todos
 
-* Rewrite all database queries with doctrine methods to enable migration extension also for TYPO3 9.x
 * Add a fully functional generic importer - e.g. tt_news to tx_news
