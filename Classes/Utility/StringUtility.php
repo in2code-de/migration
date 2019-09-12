@@ -1,6 +1,8 @@
 <?php
 namespace In2code\Migration\Utility;
 
+use TYPO3\CMS\Fluid\View\StandaloneView;
+
 /**
  * Class StringUtility
  */
@@ -91,5 +93,18 @@ class StringUtility
     public static function startsWith(string $haystack, string $needle): bool
     {
         return stristr($haystack, $needle) && strrpos($haystack, $needle, -strlen($haystack)) !== false;
+    }
+
+    /**
+     * @param string $string
+     * @param array $variables
+     * @return string
+     */
+    public static function parseString(string $string, array $variables = []): string
+    {
+        $standaloneView = ObjectUtility::getObjectManager()->get(StandaloneView::class);
+        $standaloneView->setTemplateSource($string);
+        $standaloneView->assignMultiple($variables);
+        return $standaloneView->render();
     }
 }

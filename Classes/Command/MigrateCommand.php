@@ -2,11 +2,12 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
-use In2code\Migration\Migration\Starter;
+use In2code\Migration\Migration\Start;
 use In2code\Migration\Utility\ObjectUtility;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -21,19 +22,48 @@ class MigrateCommand extends Command
     public function configure()
     {
         $this->setDescription('Start migration script');
-        $this->addArgument('key', InputArgument::REQUIRED, 'Which migration/importer should be called? E.g. "content"');
-        $this->addArgument('dryrun', InputArgument::OPTIONAL, 'Test before real migration?', true);
-        $this->addArgument(
-            'limitToRecord',
-            InputArgument::OPTIONAL,
-            '0=disable, 12=enable(all tables with uid 12), table:123(only table.uid=123)',
-            '0'
+        $this->setDefinition(
+            new InputDefinition([
+                new InputOption('configuration', 'c', InputOption::VALUE_OPTIONAL, 'Path to configuration file', ''),
+                new InputOption(
+                    'key',
+                    'k',
+                    InputOption::VALUE_OPTIONAL,
+                    'Which migration/importer should be called? E.g. "content". Empty value means all.',
+                    ''
+                ),
+                new InputOption('dryrun', 'd', InputOption::VALUE_OPTIONAL, 'Test before real migration?', true),
+                new InputOption(
+                    'limitToRecord',
+                    'l',
+                    InputOption::VALUE_OPTIONAL,
+                    '0=disable, 12=enable(all tables with uid 12), table:123(only table.uid=123)',
+                    '0'
+                ),
+                new InputOption(
+                    'limitToPage',
+                    'p',
+                    InputOption::VALUE_OPTIONAL,
+                    '0=disable, 12=enable(all records with pid=12)',
+                    0
+                ),
+                new InputOption(
+                    'recursive',
+                    'r',
+                    InputOption::VALUE_OPTIONAL,
+                    'true only enabled if limitToPage is set',
+                    false
+                ),
+            ])
         );
-        $this->addArgument('limitToPage', InputArgument::OPTIONAL, '0=disable, 12=enable(all records with pid=12)', 0);
-        $this->addArgument('recursive', InputArgument::OPTIONAL, 'true only enabled if limitToPage is set', false);
     }
 
     /**
+     * Example calls:
+     *  ./vendor/bin/typo3cms migration:migrate --configuration /var/www/site.org/migrationconfiguration.php
+     *  ./vendor/bin/typo3cms migration:migrate -c /var/www/site.org/migrationconfiguration.php
+     *  ./vendor/bin/typo3cms migration:migrate -c /configurationfile.php -k content -p 123 -d 0
+     *
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int
@@ -41,16 +71,8 @@ class MigrateCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $starter = ObjectUtility::getObjectManager()->get(Starter::class, $output, 'content');
-        $starter->start(
-            $input->getArgument('key'),
-            (bool)$input->getArgument('dryrun'),
-            $input->getArgument('limitToRecord'),
-            (int)$input->getArgument('limitToPage'),
-            (bool)$input->getArgument('recursive')
-        );
-        $output->writeln('finished');
+        $starter = ObjectUtility::getObjectManager()->get(Start::class);
+        $starter->start($input, $output);
         return 0;
     }
 }
