@@ -94,15 +94,17 @@ abstract class AbstractMigrator
             $this->configuration,
             $this->enforce
         );
-        foreach ($generalRepository->getRecords($this->tableName) as $properties) {
+        $records = $generalRepository->getRecords($this->tableName);
+        foreach ($records as $properties) {
             $this->log->addNote(
                 'Start migrating ' . $this->tableName
                 . ' (uid' . $properties['uid'] . '/pid' . $properties['pid'] . ') ...'
             );
             $properties = $this->manipulatePropertiesWithValues($properties);
             $properties = $this->manipulatePropertiesWithPropertyHelpers($properties);
-            $generalRepository->persistRecord($properties, $this->tableName);
+            $generalRepository->updateRecord($properties, $this->tableName);
         }
+        $this->finalMessage($records);
     }
 
     /**
@@ -168,5 +170,19 @@ abstract class AbstractMigrator
         if ($this->tableName === '') {
             throw new \LogicException('No tablename given', 1568276662);
         }
+    }
+
+    /**
+     * @param array $records
+     * @return void
+     */
+    protected function finalMessage(array $records)
+    {
+        if ($this->configuration['dryrun'] === false) {
+            $message = count($records) . ' records successfully migrated in ' . $this->tableName;
+        } else {
+            $message = count($records) . ' records could be migrated without dryrun in ' . $this->tableName;
+        }
+        $this->log->addMessage($message);
     }
 }

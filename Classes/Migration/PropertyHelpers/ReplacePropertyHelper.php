@@ -1,5 +1,5 @@
 <?php
-namespace In2code\Migration\MigrationOld\Migrate\PropertyHelper;
+namespace In2code\Migration\Migration\PropertyHelpers;
 
 /**
  * Class ReplacePropertyHelper
@@ -30,22 +30,17 @@ class ReplacePropertyHelper extends AbstractPropertyHelper implements PropertyHe
 {
 
     /**
-     * @return void
-     * @throws \Exception
+     * @var array
      */
-    public function initialize()
-    {
-        if (!is_array($this->getConfigurationByKey('search'))
-            || !is_array($this->getConfigurationByKey('replace'))
-            || count($this->getConfigurationByKey('search')) !== count($this->getConfigurationByKey('replace'))) {
-            throw new \Exception('configuration is wrong', 1525771174);
-        }
-    }
+    protected $checkForConfiguration = [
+        'search',
+        'replace'
+    ];
 
     /**
      * @return void
      */
-    public function manipulate()
+    public function manipulate(): void
     {
         $value = $this->getValue();
         if (in_array($value, $this->getConfigurationByKey('search'))) {

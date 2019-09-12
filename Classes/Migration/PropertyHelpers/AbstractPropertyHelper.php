@@ -2,7 +2,7 @@
 namespace In2code\Migration\Migration\PropertyHelpers;
 
 use In2code\Migration\Migration\Exception\ConfigurationException;
-use In2code\Migration\MigrationOld\Service\Log;
+use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Utility\ObjectUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 

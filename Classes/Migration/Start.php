@@ -3,7 +3,9 @@ declare(strict_types=1);
 namespace In2code\Migration\Migration;
 
 use In2code\Migration\Migration\Exception\ConfigurationException;
+use In2code\Migration\Migration\Importer\ImporterInterface;
 use In2code\Migration\Migration\Log\Log;
+use In2code\Migration\Migration\Migrator\MigratorInterface;
 use In2code\Migration\Utility\ObjectUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,6 +32,16 @@ class Start
         ObjectUtility::getObjectManager()->get(Log::class)->setOutput($output);
 
         $configuration = $this->getConfiguration($input);
+        $this->startMigrators($configuration);
+    }
+
+    /**
+     * @param array $configuration
+     * @return void
+     * @throws ConfigurationException
+     */
+    protected function startMigrators(array $configuration): void
+    {
         foreach ($this->getMigrationDefinitions($configuration) as $migration) {
             if (class_exists($migration['className']) === false) {
                 throw new ConfigurationException(
@@ -37,13 +49,16 @@ class Start
                     1568213501
                 );
             }
-            if (is_subclass_of($migration['className'], MigrationInterface::class) === false) {
+            if (
+                is_subclass_of($migration['className'], MigratorInterface::class) === false &&
+                is_subclass_of($migration['className'], ImporterInterface::class) === false
+            ) {
                 throw new ConfigurationException(
-                    'Class ' . $migration['className'] . ' does not implement ' . MigrationInterface::class,
+                    'Class ' . $migration['className'] . ' does not implement ' . MigratorInterface::class,
                     1568213506
                 );
             }
-            /** @var MigrationInterface $migration */
+            /** @var MigratorInterface $migration */
             /** @noinspection PhpMethodParametersCountMismatchInspection */
             $migration = ObjectUtility::getObjectManager()->get($migration['className'], $configuration);
             $migration->start();

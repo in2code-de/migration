@@ -1,5 +1,5 @@
 <?php
-namespace In2code\Migration\MigrationOld\Migrate\PropertyHelper;
+namespace In2code\Migration\Migration\PropertyHelpers;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -12,7 +12,7 @@ class RemoveEmptyLinesPropertyHelper extends AbstractPropertyHelper implements P
     /**
      * @return void
      */
-    public function manipulate()
+    public function manipulate(): void
     {
         $text = $this->getProperty();
         $text = $this->removeNonBreakingSpaces($text);

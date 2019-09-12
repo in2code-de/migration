@@ -1,41 +1,53 @@
 <?php
 declare(strict_types=1);
-namespace In2code\Migration\Migration\Migrator;
+namespace In2code\Migration\Migration\Importer;
 
 use In2code\Migration\Migration\PropertyHelpers\ReplaceOnConditionPropertyHelper;
 
 /**
- * Class PageMigrator
+ * Class PageImporter
  */
-class PageMigrator extends AbstractMigrator implements MigratorInterface
+class PageImporter extends AbstractImporter implements ImporterInterface
 {
     /**
      * @var string
      */
-    protected $tableName = 'pages';
+    protected $tableName = 'tx_news_domain_model_news';
+
+    /**
+     * @var string
+     */
+    protected $tableNameOld = 'tt_news';
+
+    /**
+     * @var array
+     */
+    protected $mapping = [
+        'title' => 'title'
+    ];
 
     /**
      * @var array
      */
     protected $values = [
-        'hidden' => '1'
+        'hidden' => '0'
     ];
 
     /**
      * @var array
      */
     protected $propertyHelpers = [
-        'seo_title' => [
+        'crdate' => [
             [
                 'className' => ReplaceOnConditionPropertyHelper::class,
                 'configuration' => [
                     'conditions' => [
                         'deleted' => [
-                            1
+                            0
                         ]
                     ],
                     'replace' => [
-                        'value' => '0'
+                        'value' => '123465'
                     ]
                 ]
             ]

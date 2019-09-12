@@ -59,7 +59,7 @@ class GeneralRepository
      * @param string $tableName
      * @return void
      */
-    public function persistRecord(array $properties, string $tableName)
+    public function updateRecord(array $properties, string $tableName)
     {
         if (array_key_exists('uid', $properties) === false) {
             throw new \LogicException(
@@ -72,7 +72,23 @@ class GeneralRepository
             $connection->update($tableName, $properties, ['uid' => (int)$properties['uid']]);
             $this->log->addMessage('Record updated', $properties, $tableName);
         } else {
-            $this->log->addMessage('Record could be updated', $properties, $tableName);
+            $this->log->addMessage('Record could be inserted', $properties, $tableName);
+        }
+    }
+
+    /**
+     * @param array $properties
+     * @param string $tableName
+     * @return void
+     */
+    public function insertRecord(array $properties, string $tableName)
+    {
+        if ($this->getConfiguration('dryrun') === false) {
+            $connection = DatabaseUtility::getConnectionForTable($tableName);
+            $connection->insert($tableName, $properties);
+            $this->log->addMessage('Record inserted', $properties, $tableName);
+        } else {
+            $this->log->addMessage('Record could be inserted', $properties, $tableName);
         }
     }
 

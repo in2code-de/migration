@@ -1,5 +1,5 @@
 <?php
-namespace In2code\Migration\MigrationOld\Migrate\PropertyHelper;
+namespace In2code\Migration\Migration\PropertyHelpers;
 
 use In2code\Migration\Utility\DomDocumentUtility;
 use In2code\Migration\Utility\StringUtility;
@@ -32,27 +32,24 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
 {
 
     /**
+     * @var array
+     */
+    protected $checkForConfiguration = [
+        'condition',
+        'tags',
+        'search',
+        'replace'
+    ];
+
+    /**
      * @var string
      */
     protected $xmlDeclaration = '<?xml encoding="utf-8" ?>';
 
     /**
      * @return void
-     * @throws \Exception
      */
-    public function initialize()
-    {
-        foreach (['condition', 'tags', 'search', 'replace'] as $arrayKey) {
-            if (!is_array($this->getConfigurationByKey($arrayKey))) {
-                throw new \Exception('configuration is missing or wrong', 1525355693);
-            }
-        }
-    }
-
-    /**
-     * @return void
-     */
-    public function manipulate()
+    public function manipulate(): void
     {
         $dom = new \DOMDocument();
         try {

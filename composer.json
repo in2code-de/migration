@@ -12,6 +12,8 @@
   "type": "typo3-cms-extension",
   "license": "GPL-3.0",
   "require": {
+    "ext-dom": "*",
+    "ext-libxml": "*",
     "typo3/cms-core": ">=9.5.0 <10.0.0",
     "ext-json": "*"
   },

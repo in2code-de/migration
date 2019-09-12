@@ -12,10 +12,16 @@ return [
     // Define your migrations
     'migrations' => [
         [
-            'className' => \In2code\Migration\Migration\Migrator\PageMigrator::class,
+            'className' => \In2code\Migration\Migration\Importer\PageImporter::class,
             'keys' => [
                 'page'
             ]
-        ]
+        ],
+//        [
+//            'className' => \In2code\Migration\Migration\Migrator\PageMigrator::class,
+//            'keys' => [
+//                'page'
+//            ]
+//        ]
     ]
 ];
