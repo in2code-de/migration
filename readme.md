@@ -1,20 +1,40 @@
 # TYPO3 Migration and Importer Boilerplate
 
 ## Description
-This extension (with extension key **migration**) is a kickstarter extension (boilerplate)
-to import or migrate TYPO3 stuff within the same database.
-Boilerplate means in this case, take the extension and change it to your needs.
-The main task is to create easy migrations with just a few lines of code.
 
-E.g: 
-* **Import** from an old to a new table (like from tt_news to tx_news_domain_model_news)
-* **Migrate** existing records in an existing table (like in tt_content from TemplaVoila to Gridelements)
+This extension (**EXT:migration**) is a helper extension for your TYPO3 updates and migrations based
+on CLI commands (to prevent timeouts, use a better performance, etc...).
+
+What can this extension do for you:
+* migrates table values
+* import tables values from other tables
+* exports whole page branches with all records and files as json
+* imports whole page branches with all records and files from json into an existing table (and gives new identifiers and relations)
+* does page actions (move, copy and delete) from CLI
+
+This boilerplate extension (similar to a framework: take it, adjust it to your needs, make your migration and delete it at the end) helped
+in2code in some really large projects to migrate some stuff - e.g.:
+* tt_news to tx_news
+* templatevoila to backendlayouts and gridelements
+* mailform to powermail or mailform to form
+* individual stuff to different individual stuff
+
+**Note**:
+If you want to use this extension for your migrations, you need a basic understanding of the database structure
+of your TYPO3 instance. Because you have to set up the migrators and importers by yourself
+(e.g. you have to know that tt_news.title will be migrated to tx_news_domain_model_news.title for your news
+migration, etc...).
+
+
+Some naming conventions:
+* **Import** means here: Import stuff from an old to a new table (like from tt_news to tx_news_domain_model_news)
+* **Migrate** means here: Migrate existing records in an existing table (like in tt_content from TemplaVoila to Gridelements)
 
 ## Introduction
 
 ### Possible roadmap for TYPO3 update and migration projects
 
-If your migration comes along with a TYPO3 update (like from 6.2 to 8.7 or so), you should go this way:
+If your migration comes along with a TYPO3 update (like from 6.2 to 9.5 or so), you should go this way:
 
 * Start with a clean database and a new TYPO3 and build your functions in it with some testpages
 * Add additional functions you need to your small test instance (like news, powermail, own content elements, etc...)
@@ -23,11 +43,11 @@ If your migration comes along with a TYPO3 update (like from 6.2 to 8.7 or so), 
 * Make a db compare (I would recommend the package **typo3_console** for this to do this from CLI)
 * Make your update wizard steps (I would also recommend the package **typo3_console** for this to do this from CLI)
 * Dump your new database
-* Add a fork of this extension with key **migration** to your project (require-dev e.g. via composer)
-* Start with adding your own Migrators and Importers
+* Add a fork of this extension with key **migration** to your project or install it via composer `composer req in2code/migration`
+* Start with adding your own Migrators and Importers to your extension
 * And then have fun with migrating, rolling back database, update your scripts, migrate again, and so on
 * If you are finished and have a good result, you simply can remove the extension
-* See also https://www.slideshare.net/einpraegsam/typo3-migration-in-komplexen-upgrade-und-relaunchprojekten-113908250
+* See also https://www.slideshare.net/einpraegsam/typo3-migration-in-komplexen-upgrade-und-relaunchprojekten-114716116
 
 
 
@@ -36,64 +56,60 @@ If your migration comes along with a TYPO3 update (like from 6.2 to 8.7 or so), 
 ### First migration
 
 Let's say we want only a very small migration. CSS classes in tt_content.bodytext should be changed with some new
-classes. Go into the file `\In2code\Migration\Migration\Starter` and clean the property $migrationClasses. In the first
-step we only want a migration (because we want to manipulate existing values in an existing table - in this case
-tt_content).
+classes. 
+Add a configuration php file anywhere to your extension (e.g. EXT:sitepackage/Configuration/Migration.php). Here
+you define which migrators or importers should be run by your CLI commands. In this example there is only one migration.
 
 ```
-protected $migrationClasses = [
-    [
-        'className' => ContentMigrator::class,
-        'configuration' => [
-            'migrationClassKey' => 'content'
+<?php
+return [
+    // Default values if not given from CLI
+    'configuration' => [
+        'key' => '',
+        'dryrun' => true,
+        'limitToRecord' => null,
+        'limitToPage' => null,
+        'recursive' => false
+    ],
+
+    // Define your migrations
+    'migrations' => [
+        [
+            'className' => \In2code\Migration\Migration\Migrator\ContentMigrator::class,
+            'keys' => [
+                'content'
+            ]
         ]
     ]
 ];
+
 ```
 
-Example Content Migration class:
+Example Content Migrator class:
 ```
-<?php
-namespace In2code\Migration\Migration\Migrate;
+declare(strict_types=1);
+namespace In2code\Migration\Migration\Migrator;
 
-use In2code\Migration\Migration\Migrate\PropertyHelper\ReplaceCssClassesInHtmlStringPropertyHelper;
+use In2code\Migration\Migration\PropertyHelpers\ReplaceCssClassesInHtmlStringPropertyHelper;
 
 /**
  * Class ContentMigrator
  */
 class ContentMigrator extends AbstractMigrator implements MigratorInterface
 {
-
     /**
-     * Table to migrate
-     *
      * @var string
      */
     protected $tableName = 'tt_content';
 
     /**
-     * Hardcode some values in tt_content
-     *
      * @var array
      */
     protected $values = [
-        'linkToTop' => 0, // reset linkToTop
-        'date' => 0
+        'editlock' => '0'
     ];
 
     /**
-     * PropertyHelpers are called after initial build via mapping
-     *
-     *      "newProperty" => [
-     *          [
-     *              "className" => class1::class,
-     *              "configuration => ["red"]
-     *          ],
-     *          [
-     *              "className" => class2::class
-     *          ]
-     *      ]
-     *
      * @var array
      */
     protected $propertyHelpers = [
@@ -102,14 +118,14 @@ class ContentMigrator extends AbstractMigrator implements MigratorInterface
                 'className' => ReplaceCssClassesInHtmlStringPropertyHelper::class,
                 'configuration' => [
                     'search' => [
-                        'btn',
                         'btn-green',
-                        'btn-blue'
+                        'btn-blue',
+                        'btn'
                     ],
                     'replace' => [
-                        'c-button',
                         'c-button--green',
                         'c-button--blue'
+                        'c-button'
                     ]
                 ]
             ]
@@ -125,9 +141,10 @@ An `initialize()` is always called before `manipulate()` for your very first tas
 
 ```
 <?php
-namespace In2code\Migration\Migration\Import\PropertyHelper;
+declare(strict_types=1);
+namespace In2code\Migration\Migration\PropertyHelpers;
 
-use In2code\Migration\Migration\Utility\StringUtility;
+use In2code\Migration\Utility\StringUtility;
 
 /**
  * Class ReplaceCssClassesInHtmlStringPropertyHelper
@@ -147,15 +164,14 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
 {
 
     /**
-     * @return void
-     * @throws \Exception
+     * Check if this configuration keys are given
+     *
+     * @var array
      */
-    public function initialize()
-    {
-        if (!is_array($this->getConfigurationByKey('search')) || !is_array($this->getConfigurationByKey('replace'))) {
-            throw new \Exception('configuration search and replace is missing', 1525355698);
-        }
-    }
+    protected $checkForConfiguration = [
+        'search',
+        'replace'
+    ];
 
     /**
      * @return void
@@ -187,24 +203,42 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
 ```
 
 Start migration from CLI:
+```
+# Test it before on content elements on page 123
+./vendor/bin/typo3cms migration:migrate --configuration typo3conf/ext/sitepackage/Configuration/Migration.php --dryrun 1 --key content --limitToPage 123
 
-`./vendor/bin/typo3cms migrate:start --key=content --dryrun=0`
+# Go for it
+./vendor/bin/typo3cms migration:migrate --configuration typo3conf/ext/sitepackage/Configuration/Migration.php --dryrun 0 --key content
+```
 
 
 
 ### First import
 
 Let's say we want to simply copy some values from an old table to a new one with an individual mapping. In this
-example I use tt_news and tx_news_domain_model_news. Go into the file `\In2code\Migration\Migration\Starter`
-and add the importer to the property $migrationClasses.
+example I use tt_news and tx_news_domain_model_news. Go into your configuration file (see above) and enter your
+Importer class name.
 
 
 ```
-protected $migrationClasses = [
-    [
-        'className' => NewsImporter::class,
-        'configuration' => [
-            'migrationClassKey' => 'news'
+<?php
+return [
+    // Default values if not given from CLI
+    'configuration' => [
+        'key' => '',
+        'dryrun' => true,
+        'limitToRecord' => null,
+        'limitToPage' => null,
+        'recursive' => false
+    ],
+
+    // Define your migrations
+    'migrations' => [
+        [
+            'className' => \In2code\Migration\Migration\Importer\NewsImporter::class,
+            'keys' => [
+                'news'
+            ]
         ]
     ]
 ];
@@ -213,7 +247,8 @@ protected $migrationClasses = [
 Example News Importer class:
 ```
 <?php
-namespace In2code\Migration\Migration\Import;
+declare(strict_types=1);
+namespace In2code\Migration\Migration\Importer;
 
 /**
  * Class NewsImporter
@@ -291,15 +326,20 @@ class NewsImporter extends AbstractImporter implements ImporterInterface
 ```
 
 Start import from CLI:
+```
+# Test it before on one news element with uid 123
+./vendor/bin/typo3cms migration:migrate --configuration typo3conf/ext/sitepackage/Configuration/Migration.php --dryrun 1 --key news --limitToRecord 123
 
-`./vendor/bin/typo3cms migrate:start --key=news --dryrun=0`
+# Go for it
+./vendor/bin/typo3cms migration:migrate --configuration typo3conf/ext/sitepackage/Configuration/Migration.php --dryrun 0 --key news
+```
 
 
 
 
 ## Some notes
 * Migration: This means migrate existing records in an existing table
-* Import: This menas to import values with some logic from table A to table B
+* Import: This means to import values with some logic from table A to table B
 
 In your Migrator or Importer class you can define which record should be changed in which way.
 Normally you can choose via class properties:
@@ -310,21 +350,30 @@ Normally you can choose via class properties:
 * etc...
 
 If you extend your new tables with fields like `_migrated`, `_migrated_uid` and `_migrated_table`, they will
-be filled automaticly with useful values - just test
+be filled automatically with useful values - just test
+
+
+
 
 ## Example CLI calls
 ```
-# Migrate and import everything which is tagged to "content"
-./vendor/bin/typo3cms migrate:start --key=content --dryrun=0
+# Migrate and import everything which is tagged to "content" (Configuration from EXT:migration/Configuration/Migration.php is used)
+./vendor/bin/typo3cms migration:migrate --dryrun 0 --key content
+
+# Migrate and import with your configuration
+./vendor/bin/typo3cms migration:migrate --configuration typo3conf/ext/sitepackage/Configuration/Migration.php
 
 # Migrate and import everything which is tagged to "page" but test it (dryrun) and do it only for page with uid=1 and no subpages
-./vendor/bin/typo3cms migrate:start --key=page --dryrun=1 --limit-to-page=1 --recursive=0
+./vendor/bin/typo3cms migration:migrate --key page --dryrun 1 --limitToPage 1 --recursive 0
 
 # Migrate and import everything which is tagged to "content". Use only page with uid=123 and all subpages
-./vendor/bin/typo3cms migrate:start --key=content --dryrun=0 --limit-to-page=123 --recursive=99
+./vendor/bin/typo3cms migration:migrate --key content --dryrun 0 --limitToPage 123 --recursive 1
 
 # Migrate and import everything which is tagged to "news" but only for the record uid=123
-./vendor/bin/typo3cms migrate:start --key=news --dryrun=0 --limit-to-record=123
+./vendor/bin/typo3cms migration:migrate --key news --dryrun 0 --limitToRecord 123
+
+# Use short wrtings instead of long names (with configuration, limit to record, dryrun and key)
+./vendor/bin/typo3cms migration:migrate -c typo3conf/ext/migration/Configuration/Migration.php -l 23 -d 0 -k content
 ```
 
 
@@ -390,7 +439,7 @@ Example CLI call
 
 | Version    | Date       | State      | Description                                                                  |
 | ---------- | ---------- | ---------- | ---------------------------------------------------------------------------- |
-| 4.0.0      | ?          | Task       | Rewrite everything for TYPO3 9                                               |
+| 4.0.0      | 2019-09-13 | Task       | Complete rewrite for TYPO3 9 with symfony tasks and doctrine, etc...         |
 | 3.1.0      | 2019-03-19 | Feature    | Update RTE images, Export now with files from links                          |
 | 3.0.0      | 2019-02-08 | Task       | Add a working import and export command controller                           |
 | 2.0.0      | 2018-09-07 | Task       | Use extkey migration, add ImportExportCommandController, some improvements   |

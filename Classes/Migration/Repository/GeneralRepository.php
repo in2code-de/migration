@@ -169,7 +169,7 @@ class GeneralRepository
     protected function getTreeBranchesFromStartingPoint(int $startPage): string
     {
         $queryGenerator = ObjectUtility::getObjectManager()->get(QueryGenerator::class);
-        return $queryGenerator->getTreeList($startPage, 20, 0, 1);
+        return $queryGenerator->getTreeList($startPage, 99, 0, 1);
     }
 
     /**

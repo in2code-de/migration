@@ -17,11 +17,17 @@ return [
                 'page'
             ]
         ],
-//        [
-//            'className' => \In2code\Migration\Migration\Migrator\PageMigrator::class,
-//            'keys' => [
-//                'page'
-//            ]
-//        ]
+        [
+            'className' => \In2code\Migration\Migration\Migrator\PageMigrator::class,
+            'keys' => [
+                'page'
+            ]
+        ],
+        [
+            'className' => \In2code\Migration\Migration\Migrator\ContentMigrator::class,
+            'keys' => [
+                'content'
+            ]
+        ]
     ]
 ];

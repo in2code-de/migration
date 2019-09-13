@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
