@@ -439,6 +439,7 @@ Example CLI call
 
 | Version    | Date       | State      | Description                                                                  |
 | ---------- | ---------- | ---------- | ---------------------------------------------------------------------------- |
+| 4.0.1      | 2019-09-16 | Bugfix     | Restore deleted ArrayUtility class                                           |
 | 4.0.0      | 2019-09-13 | Task       | Complete rewrite for TYPO3 9 with symfony tasks and doctrine, etc...         |
 | 3.1.0      | 2019-03-19 | Feature    | Update RTE images, Export now with files from links                          |
 | 3.0.0      | 2019-02-08 | Task       | Add a working import and export command controller                           |
