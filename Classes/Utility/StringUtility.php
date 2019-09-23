@@ -105,6 +105,6 @@ class StringUtility
         $standaloneView = ObjectUtility::getObjectManager()->get(StandaloneView::class);
         $standaloneView->setTemplateSource($string);
         $standaloneView->assignMultiple($variables);
-        return $standaloneView->render();
+        return (string)$standaloneView->render();
     }
 }
