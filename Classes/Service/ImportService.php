@@ -2,15 +2,19 @@
 namespace In2code\Migration\Service;
 
 use Doctrine\DBAL\DBALException;
+use In2code\Migration\Signal\SignalTrait;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
 use In2code\Migration\Utility\ObjectUtility;
+use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
+use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 
 /**
  * Class ImportService
  */
 class ImportService
 {
+    use SignalTrait;
 
     /**
      * Absolute file name with JSON export string
@@ -37,6 +41,33 @@ class ImportService
     protected $overwriteFiles = false;
 
     /**
+     * Example array from json file to import
+     *
+     * Example content:
+     *  [
+     *      'records' => [
+     *          'pages' => [
+     *              [
+     *                  'uid' => 123,
+     *                  'title' => 'page title'
+     *              ]
+     *          ],
+     *          'tt_content' => [
+     *              [
+     *                  'uid' => 1234,
+     *                  'header' => 'content header'
+     *              ]
+     *          ]
+     *      ],
+     *      'files' => [
+     *          12345 => [
+     *              'path' => 'fileadmin/file.pdf',
+     *              'base64' => 'base64:abcdef1234567890'
+     *              'fileIdentifier' => 12345
+     *          ]
+     *      ]
+     *  ]
+     *
      * @var array
      */
     protected $jsonArray = [];
@@ -52,6 +83,8 @@ class ImportService
      * @param int $pid
      * @param array $excludedTables
      * @param bool $overwriteFiles
+     * @throws InvalidSlotException
+     * @throws InvalidSlotReturnException
      */
     public function __construct(string $file, int $pid, array $excludedTables = [], bool $overwriteFiles = false)
     {
@@ -62,11 +95,14 @@ class ImportService
         $this->overwriteFiles = $overwriteFiles;
         $this->checkFile();
         $this->setJson();
+        $this->signalDispatch(__CLASS__, 'beforeImport', [$this]);
     }
 
     /**
      * @return bool
      * @throws DBALException
+     * @throws InvalidSlotException
+     * @throws InvalidSlotReturnException
      */
     public function import(): bool
     {
@@ -76,6 +112,7 @@ class ImportService
         $this->importFileReferenceRecords();
         $this->importImages();
         $this->updateLinks();
+        $this->signalDispatch(__CLASS__, 'afterImport', [$this]);
         return true;
     }
 
@@ -291,5 +328,23 @@ class ImportService
         if (is_file($this->file) === false) {
             throw new \LogicException('File not found: ' . $this->file, 1549472056);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getJsonArray(): array
+    {
+        return $this->jsonArray;
+    }
+
+    /**
+     * @param array $jsonArray
+     * @return ImportService
+     */
+    public function setJsonArray(array $jsonArray): self
+    {
+        $this->jsonArray = $jsonArray;
+        return $this;
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace In2code\Migration\Service;
 
 use Doctrine\DBAL\DBALException;
+use In2code\Migration\Signal\SignalTrait;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
 use In2code\Migration\Utility\ObjectUtility;
@@ -10,12 +11,15 @@ use In2code\Migration\Utility\TcaUtility;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
+use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 
 /**
  * Class ExportService
  */
 class ExportService
 {
+    use SignalTrait;
 
     /**
      * @var int
@@ -74,21 +78,27 @@ class ExportService
      * @param int $pid
      * @param int $recursive
      * @param array $excludedTables
+     * @throws InvalidSlotException
+     * @throws InvalidSlotReturnException
      */
     public function __construct(int $pid, int $recursive = 99, array $excludedTables = [])
     {
         $this->pid = $pid;
         $this->recursive = $recursive;
         $this->excludedTables = $excludedTables;
+        $this->signalDispatch(__CLASS__, 'initial', [$this]);
     }
 
     /**
      * @return string
      * @throws DBALException
+     * @throws InvalidSlotException
+     * @throws InvalidSlotReturnException
      */
     public function export(): string
     {
         $this->buildJson();
+        $this->signalDispatch(__CLASS__, 'beforeExport', [$this]);
         return $this->getJson();
     }
 
@@ -236,5 +246,23 @@ class ExportService
         $queryGenerator = ObjectUtility::getObjectManager()->get(QueryGenerator::class);
         $list = $queryGenerator->getTreeList($this->pid, $this->recursive, 0, 1);
         return GeneralUtility::intExplode(',', $list);
+    }
+
+    /**
+     * @return array
+     */
+    public function getJsonArray(): array
+    {
+        return $this->jsonArray;
+    }
+
+    /**
+     * @param array $jsonArray
+     * @return ExportService
+     */
+    public function setJsonArray(array $jsonArray): self
+    {
+        $this->jsonArray = $jsonArray;
+        return $this;
     }
 }
