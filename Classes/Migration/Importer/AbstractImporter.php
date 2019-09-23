@@ -78,6 +78,22 @@ abstract class AbstractImporter
     protected $propertyHelpers = [];
 
     /**
+     * Define some sql statements that should be executed at the beginning or at the end of this import
+     *  e.g.:
+     *  [
+     *      'start' => [
+     *          'update sys_file_reference set fieldname="assets" where fieldname="image" and tablenames="tt_content"'
+     *      ]
+     *  ]
+     *
+     * @var array
+     */
+    protected $sql = [
+        'start' => [],
+        'end' => []
+    ];
+
+    /**
      * Enforce to also get already migrated records
      *
      * @var bool
@@ -129,6 +145,7 @@ abstract class AbstractImporter
      */
     public function start(): void
     {
+        $this->executeSqlStart();
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         $generalRepository = ObjectUtility::getObjectManager()->get(
             GeneralRepository::class,
@@ -147,6 +164,7 @@ abstract class AbstractImporter
             $properties = $this->genericChanges($properties);
             $generalRepository->insertRecord($properties, $this->tableName);
         }
+        $this->executeSqlEnd();
         $this->finalMessage($records);
     }
 
@@ -311,6 +329,34 @@ abstract class AbstractImporter
         if ($this->configuration['configuration']['dryrun'] === false && $this->truncate === true) {
             DatabaseUtility::getConnectionForTable($this->tableName)->truncate($this->tableName);
             $this->log->addMessage('Table ' . $this->tableName . ' truncated before import');
+        }
+    }
+
+    /**
+     * @return void
+     * @throws DBALException
+     */
+    protected function executeSqlStart(): void
+    {
+        if (!empty($this->sql['start'])) {
+            foreach ($this->sql['start'] as $sql) {
+                $connection = DatabaseUtility::getConnectionForTable($this->tableName);
+                $connection->executeQuery($sql);
+            }
+        }
+    }
+
+    /**
+     * @return void
+     * @throws DBALException
+     */
+    protected function executeSqlEnd(): void
+    {
+        if (!empty($this->sql['end'])) {
+            foreach ($this->sql['end'] as $sql) {
+                $connection = DatabaseUtility::getConnectionForTable($this->tableName);
+                $connection->executeQuery($sql);
+            }
         }
     }
 }

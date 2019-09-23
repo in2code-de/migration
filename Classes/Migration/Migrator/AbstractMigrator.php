@@ -7,6 +7,7 @@ use In2code\Migration\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Migration\PropertyHelpers\PropertyHelperInterface;
 use In2code\Migration\Migration\Repository\GeneralRepository;
+use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\StringUtility;
 
@@ -52,6 +53,22 @@ abstract class AbstractMigrator
     protected $propertyHelpers = [];
 
     /**
+     * Define some sql statements that should be executed at the beginning or at the end of this migration
+     *  e.g.:
+     *  [
+     *      'start' => [
+     *          'update sys_file_reference set fieldname="assets" where fieldname="image" and tablenames="tt_content"'
+     *      ]
+     *  ]
+     *
+     * @var array
+     */
+    protected $sql = [
+        'start' => [],
+        'end' => []
+    ];
+
+    /**
      * Enforce to also get already migrated records
      *
      * @var bool
@@ -88,6 +105,7 @@ abstract class AbstractMigrator
      */
     public function start(): void
     {
+        $this->executeSqlStart();
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         $generalRepository = ObjectUtility::getObjectManager()->get(
             GeneralRepository::class,
@@ -104,6 +122,7 @@ abstract class AbstractMigrator
             $properties = $this->manipulatePropertiesWithPropertyHelpers($properties);
             $generalRepository->updateRecord($properties, $this->tableName);
         }
+        $this->executeSqlEnd();
         $this->finalMessage($records);
     }
 
@@ -184,5 +203,33 @@ abstract class AbstractMigrator
             $message = count($records) . ' record(s) could be migrated without dryrun in ' . $this->tableName;
         }
         $this->log->addMessage($message);
+    }
+
+    /**
+     * @return void
+     * @throws DBALException
+     */
+    protected function executeSqlStart(): void
+    {
+        if (!empty($this->sql['start'])) {
+            foreach ($this->sql['start'] as $sql) {
+                $connection = DatabaseUtility::getConnectionForTable($this->tableName);
+                $connection->executeQuery($sql);
+            }
+        }
+    }
+
+    /**
+     * @return void
+     * @throws DBALException
+     */
+    protected function executeSqlEnd(): void
+    {
+        if (!empty($this->sql['end'])) {
+            foreach ($this->sql['end'] as $sql) {
+                $connection = DatabaseUtility::getConnectionForTable($this->tableName);
+                $connection->executeQuery($sql);
+            }
+        }
     }
 }
