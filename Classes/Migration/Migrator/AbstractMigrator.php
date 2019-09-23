@@ -178,10 +178,10 @@ abstract class AbstractMigrator
      */
     protected function finalMessage(array $records)
     {
-        if ($this->configuration['dryrun'] === false) {
-            $message = count($records) . ' records successfully migrated in ' . $this->tableName;
+        if ($this->configuration['configuration']['dryrun'] === false) {
+            $message = count($records) . ' record(s) successfully migrated in ' . $this->tableName;
         } else {
-            $message = count($records) . ' records could be migrated without dryrun in ' . $this->tableName;
+            $message = count($records) . ' record(s) could be migrated without dryrun in ' . $this->tableName;
         }
         $this->log->addMessage($message);
     }
