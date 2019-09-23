@@ -151,7 +151,8 @@ class GeneralRepository
             if ($this->getConfiguration('limitToPage') > 0) {
                 if ($this->getConfiguration('recursive') === true) {
                     $whereClause .= ' and ' . $field . ' in (';
-                    $whereClause .= $this->getTreeBranchesFromStartingPoint($this->getConfiguration('limitToPage')) . ')';
+                    $whereClause .=
+                        $this->getTreeBranchesFromStartingPoint((int)$this->getConfiguration('limitToPage')) . ')';
                     return $whereClause;
                 } else {
                     $whereClause .= ' and ' . $field . '=' . (int)$this->getConfiguration('limitToPage');
@@ -169,7 +170,7 @@ class GeneralRepository
     protected function getTreeBranchesFromStartingPoint(int $startPage): string
     {
         $queryGenerator = ObjectUtility::getObjectManager()->get(QueryGenerator::class);
-        return $queryGenerator->getTreeList($startPage, 99, 0, 1);
+        return (string)$queryGenerator->getTreeList($startPage, 99, 0, 1);
     }
 
     /**

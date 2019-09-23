@@ -121,7 +121,7 @@ abstract class AbstractMigrator
                 'properties' => $properties,
                 'tableName' => $this->tableName
             ];
-            $properties[$propertyName] = StringUtility::parseString($propertyValue, $variables);
+            $properties[$propertyName] = StringUtility::parseString((string)$propertyValue, $variables);
         }
         return $properties;
     }
