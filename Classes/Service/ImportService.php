@@ -192,6 +192,8 @@ class ImportService
     }
 
     /**
+     * At the end links of already new imported records will be updated with new targets
+     *
      * @return void
      */
     protected function updateLinks()

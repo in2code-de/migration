@@ -2,6 +2,7 @@
 namespace In2code\Migration\Service;
 
 use In2code\Migration\Utility\DatabaseUtility;
+use In2code\Migration\Utility\StringUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -11,23 +12,19 @@ class LinkMappingService
 {
 
     /**
-     * Define in which fields there are links that should be replaced with a newer mapping.
+     * Define in which fields there are one or more links and probably a wrapping text (normally a RTE) that should be
+     * replaced with a newer mapping.
      *
-     * Example content (like tt_content.bodytext) with links
-     * like
+     * Example content (like tt_content.bodytext) with links:
      * ... <a href="t3://page?uid=123">link</a> ...
-     * and images in rte like
+     * and images in rte like:
      * ... <img src="fileadmin/image.png" data-htmlarea-file-uid="16279" data-htmlarea-file-table="sys_file" /> ...
      *
      * @var array
      */
     protected $propertiesWithLinks = [
         'tt_content' => [
-            'header_link',
             'bodytext'
-        ],
-        'sys_file_reference' => [
-            'link'
         ],
         'tx_news_domain_model_news' => [
             'bodytext'
@@ -35,7 +32,12 @@ class LinkMappingService
     ];
 
     /**
-     * Define simple fields that hold relations to page records (like pages.shortcut=123)
+     * Define simple fields that only hold relations
+     *
+     * Example content (like pages.shortcut or tt_content.header_link) with relations/links:
+     *  - "123" (link to page 123)
+     *  - "123,124" (link to two pages)
+     *  - "t3://page?uid=123" (link to page 123)
      *
      * @var array
      */
@@ -44,8 +46,12 @@ class LinkMappingService
             'shortcut'
         ],
         'tt_content' => [
+            'header_link',
             'records',
             'tx_gridelements_container'
+        ],
+        'sys_file_reference' => [
+            'link'
         ]
     ];
 
@@ -111,12 +117,12 @@ class LinkMappingService
             if (isset($this->propertiesWithRelations[$tableName])
                 && in_array($fieldName, $this->propertiesWithRelations[$tableName])) {
                 if (!empty($value)) {
-                    $identifiers = GeneralUtility::intExplode(',', $value);
-                    $newIdentifiers = [];
-                    foreach ($identifiers as $identifier) {
-                        $newIdentifiers[] = $this->mappingService->getNewFromOld($identifier, $tableName);
+                    if (StringUtility::isIntegerListOrInteger($value)) {
+                        $properties[$fieldName] = $this->updatePageLinksSimple($value);
+                    } else {
+                        $value = $this->updatePageLinks($value);
+                        $properties[$fieldName] = $this->updateFileLinks($value);
                     }
-                    $properties[$fieldName] = implode(',', $newIdentifiers);
                 }
             }
         }
@@ -149,6 +155,22 @@ class LinkMappingService
             $value
         );
         return $value;
+    }
+
+    /**
+     * Search for "123" or "123,124"
+     *
+     * @param int $value
+     * @return string
+     */
+    protected function updatePageLinksSimple(int $value): string
+    {
+        $identifiers = GeneralUtility::intExplode(',', $value);
+        $newIdentifiers = [];
+        foreach ($identifiers as $identifier) {
+            $newIdentifiers[] = $this->mappingService->getNewPidFromOldPid($identifier);
+        }
+        return (string)implode(',', $newIdentifiers);
     }
 
     /**

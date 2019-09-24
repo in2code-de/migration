@@ -1,6 +1,8 @@
 <?php
 namespace In2code\Migration\Utility;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
@@ -106,5 +108,30 @@ class StringUtility
         $standaloneView->setTemplateSource($string);
         $standaloneView->assignMultiple($variables);
         return (string)$standaloneView->render();
+    }
+
+    /**
+     * @param string $string
+     * @return bool
+     */
+    public static function isIntegerListOrInteger(string $string): bool
+    {
+        if (MathUtility::canBeInterpretedAsInteger($string)) {
+            return true;
+        }
+        if (self::isIntegerList($string)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param string $string
+     * @return bool
+     */
+    protected static function isIntegerList(string $string): bool
+    {
+        $identifiers = GeneralUtility::intExplode(',', $string, true);
+        return implode(',', $identifiers) === $string;
     }
 }
