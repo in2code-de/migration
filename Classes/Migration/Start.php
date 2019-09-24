@@ -84,6 +84,7 @@ class Start
     /**
      * @param InputInterface $input
      * @return array
+     * @throws ConfigurationException
      */
     protected function getConfiguration(InputInterface $input): array
     {
@@ -92,6 +93,9 @@ class Start
             $configurationPath = $this->defaultConfiguration;
         }
         $path = GeneralUtility::getFileAbsFileName($configurationPath);
+        if (is_file($path) === false) {
+            throw new ConfigurationException('File not found on ' . $path, 1569340892);
+        }
         /** @noinspection PhpIncludeInspection */
         $configuration = require_once $path;
         if ($input->getOption('key') !== '') {
