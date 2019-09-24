@@ -39,7 +39,7 @@ use In2code\Migration\Utility\StringUtility;
  *      'replace' => [
  *          'values' => [
  *              'CType' => 'textmedia',
- *              'header_layout' => {properties.header_layout}
+ *              'header_layout' => '{properties.header_layout}'
  *          ]
  *      ]
  *  ]
