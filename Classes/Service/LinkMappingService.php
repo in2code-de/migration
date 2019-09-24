@@ -48,6 +48,7 @@ class LinkMappingService
         'tt_content' => [
             'header_link',
             'records',
+            'pages',
             'tx_gridelements_container'
         ],
         'sys_file_reference' => [
