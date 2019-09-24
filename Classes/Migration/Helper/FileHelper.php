@@ -7,14 +7,25 @@ use In2code\Migration\Migration\Repository\GeneralRepository;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class FileHelper
  * brings some helper functions for file actions
  */
-class FileHelper
+class FileHelper implements SingletonInterface
 {
+
+    /**
+     * Cache storages
+     * [
+     *      1 => "fileadmin"
+     * ]
+     *
+     * @var array
+     */
+    protected $storages = [];
 
     /**
      * @param string $tableName
@@ -29,6 +40,53 @@ class FileHelper
         $whereClause = 'tablenames="' . $tableName . '" and fieldname="' . $fieldName . '" and uid_foreign=' . $uid
             . ' and deleted = 0';
         return (array)$connection->executeQuery('select * from sys_file_reference where ' . $whereClause)->fetchAll();
+    }
+
+    /**
+     * @param int $identifier
+     * @return array
+     * @throws DBALException
+     */
+    public function findFileFromIdentifier(int $identifier): array
+    {
+        $connection = DatabaseUtility::getConnectionForTable('sys_file');
+        return (array)$connection->executeQuery('select * from sys_file where uid=' . (int)$identifier)->fetch();
+    }
+
+    /**
+     * @param string $tableName
+     * @param string $fieldName
+     * @param int $uid
+     * @return array
+     * @throws DBALException
+     */
+    public function findFilesFromRecordReferences(string $tableName, string $fieldName, int $uid): array
+    {
+        $references = $this->findReferencesFromRecord($tableName, $fieldName, $uid);
+        $files = [];
+        foreach ($references as $reference) {
+            $files[] = $this->findFileFromIdentifier($reference['uid_local']);
+        }
+        return $files;
+    }
+
+    /**
+     * Return "fileadmin" from sys_file_storage.uid
+     *
+     * @param int $identifier
+     * @return string
+     * @throws DBALException
+     */
+    public function findStoragePathFromIdentifier(int $identifier): string
+    {
+        if (array_key_exists($identifier, $this->storages) === false) {
+            $sql = 'select ExtractValue(configuration, \'//T3FlexForms/data/sheet[@index="sDEF"]';
+            $sql .= '/language/field[@index="basePath"]/value\') path from sys_file_storage where uid=' . (int)$identifier;
+            $connection = DatabaseUtility::getConnectionForTable('sys_file_storage');
+            $storage = rtrim((string)$connection->executeQuery($sql)->fetchColumn(0), '/');
+            $this->storages[$identifier] = $storage;
+        }
+        return $this->storages[$identifier];
     }
 
     /**
