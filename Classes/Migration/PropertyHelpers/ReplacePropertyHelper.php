@@ -64,7 +64,7 @@ class ReplacePropertyHelper extends AbstractPropertyHelper implements PropertyHe
     {
         $value = $this->getProperty();
         if ($this->getConfigurationByKey('startField') !== null) {
-            $value = $this->getPropertyFromRecord($this->getConfigurationByKey('startField'));
+            $value = $this->getPropertyFromRecord((string)$this->getConfigurationByKey('startField'));
         }
         return $value;
     }
