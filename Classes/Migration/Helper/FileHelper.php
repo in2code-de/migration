@@ -126,7 +126,7 @@ class FileHelper implements SingletonInterface
      * @param int $recordIdentifier for sys_file_reference.uid_foreign
      * @param array $additionalProperties ['title' => 'a', 'link' => 'b', 'alternative' => 'c', 'description' => 'd']
      * @return void
-     * @throws \Exception
+     * @throws DBALException
      */
     public function moveFileAndCreateReference(
         string $relativeFile,
@@ -189,7 +189,7 @@ class FileHelper implements SingletonInterface
      * @param string $file relative path and filename
      * @return string
      */
-    protected function getCombinedIdentifier($file)
+    protected function getCombinedIdentifier($file): string
     {
         $identifier = $this->substituteFileadminFromPathAndName($file);
         return '1:' . $identifier;
@@ -214,16 +214,13 @@ class FileHelper implements SingletonInterface
     }
 
     /**
-     * Create folder
-     *
-     * @param string $path needs absolute path
+     * @param string $path absolute path
      * @return void
-     * @throws \Exception
      */
-    protected function createFolderIfNotExists($path)
+    protected function createFolderIfNotExists(string $path): void
     {
         if (!is_dir($path) && !GeneralUtility::mkdir($path)) {
-            throw new \Exception('Folder ' . $path . ' cannot be created', 1569334703);
+            throw new \LogicException('Folder ' . $path . ' cannot be created', 1569334703);
         }
     }
 }
