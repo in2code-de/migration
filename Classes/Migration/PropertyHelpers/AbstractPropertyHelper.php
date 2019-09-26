@@ -107,6 +107,37 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
     }
 
     /**
+     * This function can be used in the shouldMigrate() function and will check for default condition-field-values like:
+     *  'configuration' => [
+     *      'conditions' => [
+     *          'CType' => [
+     *              'list'
+     *          ],
+     *          'list_type' => [
+     *              'jhmagnificpopup_pi1'
+     *          ]
+     *      ]
+     *  ]
+     *
+     * @return bool
+     * @throws ConfigurationException
+     */
+    public function shouldMigrateByDefaultConditions(): bool
+    {
+        $isFitting = true;
+        foreach ($this->getConfigurationByKey('conditions') as $field => $values) {
+            if (!is_string($field) || !is_array($values)) {
+                throw new ConfigurationException('Misconfiguration of configuration of ' . __CLASS__, 1569407191);
+            }
+            if (!in_array($this->getPropertyFromRecord($field), $values)) {
+                $isFitting = false;
+                break;
+            }
+        }
+        return $isFitting;
+    }
+
+    /**
      * @return array
      */
     public function getRecord(): array

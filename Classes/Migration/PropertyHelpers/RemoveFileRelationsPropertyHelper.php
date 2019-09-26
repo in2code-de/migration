@@ -51,16 +51,6 @@ class RemoveFileRelationsPropertyHelper extends AbstractPropertyHelper implement
      */
     public function shouldMigrate(): bool
     {
-        $isFitting = true;
-        foreach ($this->getConfigurationByKey('conditions') as $field => $values) {
-            if (!is_string($field) || !is_array($values)) {
-                throw new ConfigurationException('Possible misconfiguration in ' . __CLASS__, 1569323862);
-            }
-            if (!in_array($this->getPropertyFromRecord($field), $values)) {
-                $isFitting = false;
-                break;
-            }
-        }
-        return $isFitting;
+        return $this->shouldMigrateByDefaultConditions();
     }
 }

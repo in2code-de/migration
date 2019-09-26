@@ -103,16 +103,6 @@ class ReplaceOnConditionPropertyHelper extends AbstractPropertyHelper implements
      */
     public function shouldMigrate(): bool
     {
-        $isFitting = true;
-        foreach ($this->getConfigurationByKey('conditions') as $field => $values) {
-            if (!is_string($field) || !is_array($values)) {
-                throw new ConfigurationException('Misconfiguration of configuration of ' . __CLASS__, 1568286543);
-            }
-            if (!in_array($this->getPropertyFromRecord($field), $values)) {
-                $isFitting = false;
-                break;
-            }
-        }
-        return $isFitting;
+        return $this->shouldMigrateByDefaultConditions();
     }
 }
