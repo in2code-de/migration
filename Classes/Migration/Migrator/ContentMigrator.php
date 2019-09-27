@@ -6,6 +6,7 @@ use In2code\Migration\Migration\PropertyHelpers\ReplaceCssClassesInHtmlStringPro
 
 /**
  * Class ContentMigrator
+ * as an example class for migration of tt_content elements
  */
 class ContentMigrator extends AbstractMigrator implements MigratorInterface
 {

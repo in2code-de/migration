@@ -12,9 +12,9 @@ return [
     // Define your migrations
     'migrations' => [
         [
-            'className' => \In2code\Migration\Migration\Importer\PageImporter::class,
+            'className' => \In2code\Migration\Migration\Importer\NewsImporter::class,
             'keys' => [
-                'page'
+                'news'
             ]
         ],
         [

@@ -6,6 +6,7 @@ use In2code\Migration\Migration\PropertyHelpers\ReplaceOnConditionPropertyHelper
 
 /**
  * Class PageMigrator
+ * as an example class for a page migrator
  */
 class PageMigrator extends AbstractMigrator implements MigratorInterface
 {
