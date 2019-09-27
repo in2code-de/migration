@@ -128,6 +128,15 @@ class StringUtility
 
     /**
      * @param string $string
+     * @return string
+     */
+    public static function quoteString(string $string): string
+    {
+        return '"' . str_replace('"', '\"', $string) . '"';
+    }
+
+    /**
+     * @param string $string
      * @return bool
      */
     protected static function isIntegerList(string $string): bool

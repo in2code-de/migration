@@ -127,7 +127,7 @@ class Log implements SingletonInterface
     protected function writeLine(string $message)
     {
         if ($this->output !== null) {
-            $counterString = str_pad($this->counter, 6, '0', STR_PAD_LEFT) . ': ';
+            $counterString = str_pad((string)$this->counter, 6, '0', STR_PAD_LEFT) . ': ';
             $this->output->writeln($counterString . $message);
             $this->counter++;
         }

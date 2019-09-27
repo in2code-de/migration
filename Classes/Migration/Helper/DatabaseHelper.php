@@ -6,6 +6,7 @@ use Doctrine\DBAL\DBALException;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;
+use In2code\Migration\Utility\StringUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /**
@@ -78,7 +79,7 @@ class DatabaseHelper implements SingletonInterface
             'tstamp',
             'crdate'
         ]
-    ) {
+    ): string {
         $whereString = '';
         foreach ($properties as $propertyName => $propertyValue) {
             if (!in_array($propertyName, $excludeFields)) {
@@ -89,8 +90,8 @@ class DatabaseHelper implements SingletonInterface
                     $whereString .= '(' . $propertyName . '=\'\' or ' . $propertyName . ' is null)';
                 } else {
                     $whereString .= $propertyName . '=';
-                    if (!is_numeric($propertyValue)) {
-                        $propertyValue = '"' . $propertyValue . '"';
+                    if (is_numeric($propertyValue) === false) {
+                        $propertyValue = StringUtility::quoteString($propertyValue);
                     }
                     $whereString .= $propertyValue;
                 }
