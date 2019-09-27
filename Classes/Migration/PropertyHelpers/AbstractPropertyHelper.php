@@ -65,7 +65,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
             foreach ($this->checkForConfiguration as $key) {
                 if (array_key_exists($key, $this->configuration) === false) {
                     throw new ConfigurationException(
-                        'Missing configuration in property helper ' . __CLASS__,
+                        'Missing configuration in property helper ' . get_called_class(),
                         1568287339
                     );
                 }
@@ -127,7 +127,10 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
         $isFitting = true;
         foreach ($this->getConfigurationByKey('conditions') as $field => $values) {
             if (!is_string($field) || !is_array($values)) {
-                throw new ConfigurationException('Misconfiguration of configuration of ' . __CLASS__, 1569407191);
+                throw new ConfigurationException(
+                    'Misconfiguration of configuration of ' . get_called_class(),
+                    1569407191
+                );
             }
             if (!in_array($this->getPropertyFromRecord($field), $values)) {
                 $isFitting = false;
