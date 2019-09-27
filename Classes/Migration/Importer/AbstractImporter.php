@@ -115,6 +115,27 @@ abstract class AbstractImporter
     protected $truncate = true;
 
     /**
+     * Filter selection of old records like "and pid > 0" (to prevent elements in a workflow e.g.)
+     *
+     * @var string
+     */
+    protected $additionalWhere = '';
+
+    /**
+     * Group selection of old records like "url"
+     *
+     * @var string
+     */
+    protected $groupBy = '';
+
+    /**
+     * Overwrite default order by definition
+     *
+     * @var string
+     */
+    protected $orderBy = 'pid,uid';
+
+    /**
      * Complete configuration from configuration file
      *
      * @var array
@@ -152,7 +173,12 @@ abstract class AbstractImporter
             $this->configuration,
             $this->enforce
         );
-        $records = $generalRepository->getRecords($this->tableNameOld);
+        $records = $generalRepository->getRecords(
+            $this->tableNameOld,
+            $this->additionalWhere,
+            $this->groupBy,
+            $this->orderBy
+        );
         foreach ($records as $propertiesOld) {
             $this->log->addNote(
                 'Start importing ' . $this->tableName

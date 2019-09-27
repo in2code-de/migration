@@ -43,14 +43,27 @@ class GeneralRepository
 
     /**
      * @param string $tableName
+     * @param string $additionalWhere add an additional where like "and pid>0"
+     * @param string $groupby add a groupby definition
+     * @param string $orderby overwrite order by "pid,uid"
      * @return array
      * @throws DBALException
      */
-    public function getRecords(string $tableName): array
-    {
+    public function getRecords(
+        string $tableName,
+        string $additionalWhere = '',
+        string $groupby = '',
+        string $orderby = ''
+    ): array {
         $connection = DatabaseUtility::getConnectionForTable($tableName);
         /** @noinspection SqlNoDataSourceInspection */
-        $query = 'select * from ' . $tableName . ' where ' . $this->getWhereClause($tableName) . ' order by pid, uid;';
+        $query = 'select * from ' . $tableName . ' where ' . $this->getWhereClause($tableName, $additionalWhere);
+        if ($groupby !== '') {
+            $query .= ' group by ' . $groupby;
+        }
+        if ($orderby !== '') {
+            $query .= ' order by ' . $orderby;
+        }
         return (array)$connection->executeQuery($query)->fetchAll();
     }
 
@@ -94,16 +107,20 @@ class GeneralRepository
 
     /**
      * @param string $tableName
+     * @param string $additionalWhere
      * @return string
      * @throws DBALException
      */
-    protected function getWhereClause(string $tableName): string
+    protected function getWhereClause(string $tableName, string $additionalWhere): string
     {
         $whereClause = 'deleted=0';
         $whereClause = $this->getWhereClauseForLimitToRecord($whereClause, $tableName);
         $whereClause = $this->getWhereClauseForLimitToPage($whereClause, $tableName);
         if ($this->enforce === false && DatabaseUtility::isFieldExistingInTable('_migrated', $tableName)) {
             $whereClause .= ' and _migrated = 0';
+        }
+        if ($additionalWhere !== '') {
+            $whereClause .= ' ' . $additionalWhere;
         }
         return $whereClause;
     }

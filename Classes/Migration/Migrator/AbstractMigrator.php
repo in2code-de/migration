@@ -76,6 +76,27 @@ abstract class AbstractMigrator
     protected $enforce = false;
 
     /**
+     * Filter selection of old records like "and pid > 0" (to prevent elements in a workflow e.g.)
+     *
+     * @var string
+     */
+    protected $additionalWhere = '';
+
+    /**
+     * Group selection of old records like "url"
+     *
+     * @var string
+     */
+    protected $groupBy = '';
+
+    /**
+     * Overwrite default order by definition
+     *
+     * @var string
+     */
+    protected $orderBy = 'pid,uid';
+
+    /**
      * Complete configuration from configuration file
      *
      * @var array
@@ -112,7 +133,12 @@ abstract class AbstractMigrator
             $this->configuration,
             $this->enforce
         );
-        $records = $generalRepository->getRecords($this->tableName);
+        $records = $generalRepository->getRecords(
+            $this->tableName,
+            $this->additionalWhere,
+            $this->groupBy,
+            $this->orderBy
+        );
         foreach ($records as $properties) {
             $this->log->addNote(
                 'Start migrating ' . $this->tableName
