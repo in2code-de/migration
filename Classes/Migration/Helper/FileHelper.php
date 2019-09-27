@@ -81,12 +81,49 @@ class FileHelper implements SingletonInterface
     {
         if (array_key_exists($identifier, $this->storages) === false) {
             $sql = 'select ExtractValue(configuration, \'//T3FlexForms/data/sheet[@index="sDEF"]';
-            $sql .= '/language/field[@index="basePath"]/value\') path from sys_file_storage where uid=' . (int)$identifier;
+            $sql .= '/language/field[@index="basePath"]/value\') path from sys_file_storage where uid='
+                . (int)$identifier;
             $connection = DatabaseUtility::getConnectionForTable('sys_file_storage');
             $storage = rtrim((string)$connection->executeQuery($sql)->fetchColumn(0), '/');
             $this->storages[$identifier] = $storage;
         }
         return $this->storages[$identifier];
+    }
+
+    /**
+     * @param string $relativeFile e.g. uploads/pics/image.jpg
+     * @param string $targetFolder e.g. fileadmin/new/
+     * @param string $tableName for sys_file_reference e.g. tx_news_domain_model_news
+     * @param string $fieldName for sys_file_reference e.g. image
+     * @param int $recordIdentifier for sys_file_reference.uid_foreign
+     * @param array $additionalProperties ['title' => 'a', 'link' => 'b', 'alternative' => 'c', 'description' => 'd']
+     * @param int $storageIdentifier
+     * @return void
+     * @throws DBALException
+     */
+    public function moveFileAndCreateReference(
+        string $relativeFile,
+        string $targetFolder,
+        string $tableName,
+        string $fieldName,
+        int $recordIdentifier,
+        array $additionalProperties = [],
+        int $storageIdentifier = 1
+    ): void {
+        $this->createFolderIfNotExists(GeneralUtility::getFileAbsFileName($targetFolder));
+        $pathAndFilename = $this->copyFileToTargetFolder(
+            GeneralUtility::getFileAbsFileName($relativeFile), $targetFolder
+        );
+        $fileUid = $this->indexFile($pathAndFilename, $storageIdentifier);
+        if ($fileUid > 0) {
+            $this->createFileRelation(
+                $tableName,
+                $fieldName,
+                $recordIdentifier,
+                $fileUid,
+                $additionalProperties
+            );
+        }
     }
 
     /**
@@ -107,7 +144,7 @@ class FileHelper implements SingletonInterface
         int $fileIdentifier,
         array $additionalProperties = []
     ): int {
-        $generalRepository = ObjectUtility::getObjectManager()->get(GeneralRepository::class);
+        $databaseHelper = ObjectUtility::getObjectManager()->get(DatabaseHelper::class);
         $properties = [
             'uid_local' => $fileIdentifier,
             'uid_foreign' => $recordIdentifier,
@@ -115,47 +152,15 @@ class FileHelper implements SingletonInterface
             'fieldname' => $fieldName,
             'table_local' => 'sys_file'
         ];
-        return $generalRepository->createRecord('sys_file_reference', $additionalProperties + $properties);
-    }
-
-    /**
-     * @param string $relativeFile e.g. uploads/pics/image.jpg
-     * @param string $targetFolder e.g. fileadmin/new/
-     * @param string $tableName for sys_file_reference e.g. tx_news_domain_model_news
-     * @param string $fieldName for sys_file_reference e.g. image
-     * @param int $recordIdentifier for sys_file_reference.uid_foreign
-     * @param array $additionalProperties ['title' => 'a', 'link' => 'b', 'alternative' => 'c', 'description' => 'd']
-     * @return void
-     * @throws DBALException
-     */
-    public function moveFileAndCreateReference(
-        string $relativeFile,
-        string $targetFolder,
-        string $tableName,
-        string $fieldName,
-        int $recordIdentifier,
-        array $additionalProperties = []
-    ): void {
-        $this->createFolderIfNotExists(GeneralUtility::getFileAbsFileName($targetFolder));
-        $pathAndFilename = $this->copyFileToFileadmin(GeneralUtility::getFileAbsFileName($relativeFile), $targetFolder);
-        $fileUid = $this->indexFile($pathAndFilename);
-        if ($fileUid > 0) {
-            $this->createFileRelation(
-                $tableName,
-                $fieldName,
-                $recordIdentifier,
-                $fileUid,
-                $additionalProperties
-            );
-        }
+        return $databaseHelper->createRecord('sys_file_reference', $additionalProperties + $properties);
     }
 
     /**
      * @param string $file like /var/www/uploads/file1.mp3
-     * @param string $targetFolder relative path
+     * @param string $targetFolder relative path like fileadmin/folder/
      * @return string new relative path and filename
      */
-    protected function copyFileToFileadmin($file, $targetFolder): string
+    protected function copyFileToTargetFolder($file, $targetFolder): string
     {
         if (!file_exists(GeneralUtility::getFileAbsFileName($targetFolder . basename($file)))
             && file_exists($file)
@@ -169,15 +174,19 @@ class FileHelper implements SingletonInterface
      * Create sys_file entry for given filename and return uid
      *
      * @param string $file relative path and filename
+     * @param int $storageIdentifier
      * @return int
+     * @throws DBALException
      */
-    protected function indexFile($file): int
+    protected function indexFile($file, int $storageIdentifier): int
     {
         $fileIdentifier = 0;
         if (file_exists(GeneralUtility::getFileAbsFileName($file))) {
             $resourceFactory = ObjectUtility::getObjectManager()->get(ResourceFactory::class);
-            $file = $resourceFactory->getFileObjectFromCombinedIdentifier($this->getCombinedIdentifier($file));
-            $fileIdentifier = $file->getProperty('uid');
+            $file = $resourceFactory->getFileObjectFromCombinedIdentifier(
+                $this->getCombinedIdentifier($file, $storageIdentifier)
+            );
+            $fileIdentifier = (int)$file->getProperty('uid');
         }
         return $fileIdentifier;
     }
@@ -187,23 +196,27 @@ class FileHelper implements SingletonInterface
      *      "fileadmin/folder/test.pdf" => "1:folder/test.pdf"
      *
      * @param string $file relative path and filename
+     * @param int $storageIdentifier
      * @return string
+     * @throws DBALException
      */
-    protected function getCombinedIdentifier($file): string
+    protected function getCombinedIdentifier($file, int $storageIdentifier): string
     {
-        $identifier = $this->substituteFileadminFromPathAndName($file);
-        return '1:' . $identifier;
+        $identifier = $this->substituteFileadminFromPathAndName($file, $storageIdentifier);
+        return (string)$storageIdentifier . ':' . $identifier;
     }
 
     /**
      * "fileadmin/downloads/test.pdf" => "/downloads/test.pdf"
      *
      * @param string $pathAndName
+     * @param int $storageIdentifier
      * @return string
+     * @throws DBALException
      */
-    protected function substituteFileadminFromPathAndName(string $pathAndName): string
+    protected function substituteFileadminFromPathAndName(string $pathAndName, int $storageIdentifier): string
     {
-        $substituteString = 'fileadmin/';
+        $substituteString = $this->findStoragePathFromIdentifier($storageIdentifier) . '/';
         if (substr($pathAndName, 0, strlen($substituteString)) === $substituteString) {
             $pathAndName = str_replace($substituteString, '', $pathAndName);
         }
