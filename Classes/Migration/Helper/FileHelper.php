@@ -100,7 +100,7 @@ class FileHelper implements SingletonInterface
      * @return void
      * @throws DBALException
      */
-    public function moveFileAndCreateReference(
+    public function copyFileAndCreateReference(
         string $relativeFile,
         string $targetFolder,
         string $tableName,
