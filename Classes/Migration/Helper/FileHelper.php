@@ -3,7 +3,6 @@ declare(strict_types=1);
 namespace In2code\Migration\Migration\Helper;
 
 use Doctrine\DBAL\DBALException;
-use In2code\Migration\Migration\Repository\GeneralRepository;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
