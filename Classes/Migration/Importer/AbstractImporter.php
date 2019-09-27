@@ -338,7 +338,7 @@ abstract class AbstractImporter
      */
     protected function finalMessage(array $records)
     {
-        if ($this->configuration['dryrun'] === false) {
+        if ($this->configuration['configuration']['dryrun'] === false) {
             $message = count($records) . ' records successfully imported to ' . $this->tableName;
         } else {
             $message = count($records) . ' records could be imported without dryrun to ' . $this->tableName;
