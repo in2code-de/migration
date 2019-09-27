@@ -162,10 +162,10 @@ class LinkMappingService
     /**
      * Search for "123" or "123,124"
      *
-     * @param int $value
+     * @param string $value
      * @return string
      */
-    protected function updatePageLinksSimple(int $value): string
+    protected function updatePageLinksSimple(string $value): string
     {
         $identifiers = GeneralUtility::intExplode(',', $value);
         $newIdentifiers = [];
