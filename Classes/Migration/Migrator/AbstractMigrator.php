@@ -139,13 +139,13 @@ abstract class AbstractMigrator
             $this->groupBy,
             $this->orderBy
         );
-        foreach ($records as $properties) {
+        foreach ($records as $propertiesOriginal) {
             $this->log->addNote(
                 'Start migrating ' . $this->tableName
-                . ' (uid' . $properties['uid'] . '/pid' . $properties['pid'] . ') ...'
+                . ' (uid' . $propertiesOriginal['uid'] . '/pid' . $propertiesOriginal['pid'] . ') ...'
             );
-            $properties = $this->manipulatePropertiesWithValues($properties);
-            $properties = $this->manipulatePropertiesWithPropertyHelpers($properties);
+            $properties = $this->manipulatePropertiesWithValues($propertiesOriginal);
+            $properties = $this->manipulatePropertiesWithPropertyHelpers($properties, $propertiesOriginal);
             $generalRepository->updateRecord($properties, $this->tableName);
         }
         $this->executeSqlEnd();
@@ -173,10 +173,11 @@ abstract class AbstractMigrator
 
     /**
      * @param array $properties
+     * @param array $propertiesOld Original properties (not modified)
      * @return array
      * @throws ConfigurationException
      */
-    protected function manipulatePropertiesWithPropertyHelpers(array $properties): array
+    protected function manipulatePropertiesWithPropertyHelpers(array $properties, array $propertiesOld): array
     {
         foreach ($this->propertyHelpers as $propertyName => $helperConfigurations) {
             foreach ($helperConfigurations as $key => $helperConfiguration) {
@@ -199,6 +200,7 @@ abstract class AbstractMigrator
                 $helperClass = ObjectUtility::getObjectManager()->get(
                     $helperConfiguration['className'],
                     $properties,
+                    $propertiesOld,
                     $propertyName,
                     $this->tableName,
                     (array)$helperConfiguration['configuration']

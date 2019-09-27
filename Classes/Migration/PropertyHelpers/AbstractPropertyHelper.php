@@ -19,6 +19,13 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
     protected $record = [];
 
     /**
+     * Original properties (not modified for migrators, old record properties for importers)
+     *
+     * @var array
+     */
+    protected $recordOld = [];
+
+    /**
      * @var string
      */
     protected $table = '';
@@ -48,14 +55,16 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
     /**
      * AbstractPropertyHelper constructor.
      * @param array $record
+     * @param array $recordOld Original properties (not modified for migrators, old record properties for importers)
      * @param string $propertyName
      * @param string $table
      * @param array $configuration
      * @throws ConfigurationException
      */
-    public function __construct(array $record, string $propertyName, string $table, array $configuration = [])
+    public function __construct(array $record, array $recordOld, string $propertyName, string $table, array $configuration = [])
     {
         $this->record = $record;
+        $this->recordOld = $recordOld;
         $this->propertyName = $propertyName;
         $this->table = $table;
         $this->configuration = $configuration;
@@ -149,6 +158,14 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
     }
 
     /**
+     * @return array
+     */
+    protected function getRecordOld(): array
+    {
+        return $this->recordOld;
+    }
+
+    /**
      * @return string
      */
     public function getPropertyName(): string
@@ -166,6 +183,20 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
         $property = '';
         if (array_key_exists($propertyName, $record)) {
             $property = $record[$propertyName];
+        }
+        return $property;
+    }
+
+    /**
+     * @param string $propertyName
+     * @return string|int
+     */
+    protected function getPropertyFromRecordOld(string $propertyName)
+    {
+        $oldRecord = $this->getRecordOld();
+        $property = '';
+        if (isset($oldRecord[$propertyName])) {
+            $property = $oldRecord[$propertyName];
         }
         return $property;
     }

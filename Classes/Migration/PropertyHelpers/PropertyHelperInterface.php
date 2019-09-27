@@ -11,11 +11,18 @@ interface PropertyHelperInterface
     /**
      * PropertyHelperInterface constructor.
      * @param array $record
+     * @param array $recordOld
      * @param string $propertyName
      * @param string $table
      * @param array $configuration
      */
-    public function __construct(array $record, string $propertyName, string $table, array $configuration = []);
+    public function __construct(
+        array $record,
+        array $recordOld,
+        string $propertyName,
+        string $table,
+        array $configuration = []
+    );
 
     /**
      * Function is called before manipulate() (e.g. to do some checks before migration)

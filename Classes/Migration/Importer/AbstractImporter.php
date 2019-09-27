@@ -186,7 +186,7 @@ abstract class AbstractImporter
             );
             $properties = $this->createPropertiesFromMapping($propertiesOld);
             $properties = $this->createPropertiesFromValues($properties);
-            $properties = $this->createPropertiesFromPropertyHelpers($properties);
+            $properties = $this->createPropertiesFromPropertyHelpers($properties, $propertiesOld);
             $properties = $this->genericChanges($properties);
             $generalRepository->insertRecord($properties, $this->tableName);
         }
@@ -229,11 +229,12 @@ abstract class AbstractImporter
     }
 
     /**
-     * @param array $properties
+     * @param array $properties Modified properties
+     * @param array $propertiesOld Original properties (old record properties)
      * @return array
      * @throws ConfigurationException
      */
-    protected function createPropertiesFromPropertyHelpers(array $properties): array
+    protected function createPropertiesFromPropertyHelpers(array $properties, array $propertiesOld): array
     {
         foreach ($this->propertyHelpers as $propertyName => $helperConfigurations) {
             foreach ($helperConfigurations as $key => $helperConfiguration) {
@@ -256,6 +257,7 @@ abstract class AbstractImporter
                 $helperClass = ObjectUtility::getObjectManager()->get(
                     $helperConfiguration['className'],
                     $properties,
+                    $propertiesOld,
                     $propertyName,
                     $this->tableName,
                     (array)$helperConfiguration['configuration']
