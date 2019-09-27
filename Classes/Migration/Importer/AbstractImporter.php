@@ -210,17 +210,20 @@ abstract class AbstractImporter
     protected function createPropertiesFromPropertyHelpers(array $properties): array
     {
         foreach ($this->propertyHelpers as $propertyName => $helperConfigurations) {
-            foreach ($helperConfigurations as $helperConfiguration) {
+            foreach ($helperConfigurations as $key => $helperConfiguration) {
+                if (is_int($key) === false) {
+                    throw new ConfigurationException('Misconfiguration of your importer class', 1569574630);
+                }
                 if (class_exists($helperConfiguration['className']) === false) {
                     throw new ConfigurationException(
                         'Class ' . $helperConfiguration['className'] . ' does not exist',
-                        1568285755
+                        1569574672
                     );
                 }
                 if (is_subclass_of($helperConfiguration['className'], PropertyHelperInterface::class) === false) {
                     throw new ConfigurationException(
                         'Class does not implement ' . PropertyHelperInterface::class,
-                        1568285773
+                        1569574677
                     );
                 }
                 /** @var PropertyHelperInterface $helperClass */
