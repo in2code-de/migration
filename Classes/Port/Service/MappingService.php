@@ -30,7 +30,7 @@ class MappingService
      * @param string $tableName
      * @return void
      */
-    public function setNew(int $new, int $old, string $tableName)
+    public function setNew(int $new, int $old, string $tableName): void
     {
         $this->mapping[$tableName][$old] = $new;
     }
@@ -40,7 +40,7 @@ class MappingService
      * @param int $old
      * @return void
      */
-    public function setNewPid(int $new, int $old)
+    public function setNewPid(int $new, int $old): void
     {
         $this->mapping['pages'][$old] = $new;
     }

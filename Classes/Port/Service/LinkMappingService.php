@@ -11,51 +11,37 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class LinkMappingService
 {
-
     /**
-     * Define in which fields there are one or more links and probably a wrapping text (normally a RTE) that should be
-     * replaced with a newer mapping.
+     * Hold the complete configuration like
      *
-     * Example content (like tt_content.bodytext) with links:
-     * ... <a href="t3://page?uid=123">link</a> ...
-     * and images in rte like:
-     * ... <img src="fileadmin/image.png" data-htmlarea-file-uid="16279" data-htmlarea-file-table="sys_file" /> ...
+     *  'excludedTables' => [
+     *      'be_users'
+     *  ],
+     *  'linkMapping' => [
+     *      'propertiesWithLinks' => [
+     *          'tt_content' => [
+     *              'bodytext'
+     *          ],
+     *          'tx_news_domain_model_news' => [
+     *              'bodytext'
+     *          ]
+     *      ],
+     *      'propertiesWithRelations' => [
+     *          'pages' => [
+     *              'shortcut'
+     *          ],
+     *          'tt_content' => [
+     *              'header_link'
+     *          ],
+     *          'sys_file_reference' => [
+     *              'link'
+     *          ]
+     *      ]
+     *  ]
      *
      * @var array
      */
-    protected $propertiesWithLinks = [
-        'tt_content' => [
-            'bodytext'
-        ],
-        'tx_news_domain_model_news' => [
-            'bodytext'
-        ]
-    ];
-
-    /**
-     * Define simple fields that only hold relations
-     *
-     * Example content (like pages.shortcut or tt_content.header_link) with relations/links:
-     *  - "123" (link to page 123)
-     *  - "123,124" (link to two pages)
-     *  - "t3://page?uid=123" (link to page 123)
-     *
-     * @var array
-     */
-    protected $propertiesWithRelations = [
-        'pages' => [
-            'shortcut'
-        ],
-        'tt_content' => [
-            'header_link',
-            'records',
-            'pages',
-            'tx_gridelements_container'
-        ],
-        'sys_file_reference' => [
-            'link'
-        ]
-    ];
+    protected $configuration = [];
 
     /**
      * @var null
@@ -63,18 +49,20 @@ class LinkMappingService
     protected $mappingService = null;
 
     /**
-     * LinkService constructor.
+     * LinkMappingService constructor.
      * @param MappingService $mappingService
+     * @param array $configuration
      */
-    public function __construct(MappingService $mappingService)
+    public function __construct(MappingService $mappingService, array $configuration)
     {
         $this->mappingService = $mappingService;
+        $this->configuration = $configuration;
     }
 
     /**
      * @return void
      */
-    public function updateLinksAndRecordsInNewRecords()
+    public function updateLinksAndRecordsInNewRecords(): void
     {
         foreach ($this->mappingService->getMapping() as $tableName => $identifiers) {
             if ($this->isTableInAnyLinkConfiguration($tableName)) {
@@ -98,8 +86,8 @@ class LinkMappingService
     protected function updatePropertiesWithNewLinkMapping(array $properties, string $tableName): array
     {
         foreach ($properties as $fieldName => $value) {
-            if (isset($this->propertiesWithLinks[$tableName])
-                && in_array($fieldName, $this->propertiesWithLinks[$tableName])) {
+            if (isset($this->getPropertiesWithLinks()[$tableName])
+                && in_array($fieldName, $this->getPropertiesWithLinks()[$tableName])) {
                 if (!empty($value)) {
                     $properties[$fieldName] = $this->updateValueWithNewLinkMapping($value);
                 }
@@ -116,8 +104,8 @@ class LinkMappingService
     protected function updatePropertiesWithNewRelationMapping(array $properties, string $tableName): array
     {
         foreach ($properties as $fieldName => $value) {
-            if (isset($this->propertiesWithRelations[$tableName])
-                && in_array($fieldName, $this->propertiesWithRelations[$tableName])) {
+            if (isset($this->getPropertiesWithRelations()[$tableName])
+                && in_array($fieldName, $this->getPropertiesWithRelations()[$tableName])) {
                 if (!empty($value)) {
                     if (StringUtility::isIntegerListOrInteger($value)) {
                         $properties[$fieldName] = $this->updatePageLinksSimple($value);
@@ -261,7 +249,7 @@ class LinkMappingService
      * @param string $tableName
      * @return void
      */
-    protected function updateRecord(array $properties, string $tableName)
+    protected function updateRecord(array $properties, string $tableName): void
     {
         if (!empty($properties['uid'])) {
             $connection = DatabaseUtility::getConnectionForTable($tableName);
@@ -279,7 +267,23 @@ class LinkMappingService
      */
     protected function isTableInAnyLinkConfiguration($tableName): bool
     {
-        return array_key_exists($tableName, $this->propertiesWithLinks)
-            || array_key_exists($tableName, $this->propertiesWithRelations);
+        return array_key_exists($tableName, $this->getPropertiesWithLinks())
+            || array_key_exists($tableName, $this->getPropertiesWithRelations());
+    }
+
+    /**
+     * @return array
+     */
+    protected function getPropertiesWithLinks(): array
+    {
+        return $this->configuration['linkMapping']['propertiesWithLinks'];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getPropertiesWithRelations(): array
+    {
+        return $this->configuration['linkMapping']['propertiesWithRelations'];
     }
 }
