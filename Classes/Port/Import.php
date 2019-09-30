@@ -80,6 +80,16 @@ class Import
      *              'base64' => 'base64:abcdef1234567890'
      *              'fileIdentifier' => 12345
      *          ]
+     *      ],
+     *      'mm' => [
+     *          'sys_category_record_mm' => [
+     *              [
+     *                  'uid_local' => 123,
+     *                  'uid_foreign' => 124,
+     *                  'tablenames' => 'pages',
+     *                  'fieldname' => 'categories'
+     *              ]
+     *          ]
      *      ]
      *  ]
      *
@@ -124,6 +134,7 @@ class Import
         $this->importFileRecords();
         $this->importFileReferenceRecords();
         $this->importImages();
+        $this->importMmRecords();
         $this->updateLinks();
         $this->signalDispatch(__CLASS__, 'afterImport', [$this]);
         return true;
@@ -133,7 +144,7 @@ class Import
      * @return void
      * @throws DBALException
      */
-    protected function importPages()
+    protected function importPages(): void
     {
         foreach ($this->jsonArray['records']['pages'] as $properties) {
             $this->insertRecord($properties, 'pages');
@@ -144,7 +155,7 @@ class Import
      * @return void
      * @throws DBALException
      */
-    protected function importRecords()
+    protected function importRecords(): void
     {
         $excludedTables = ['pages', 'sys_file', 'sys_file_reference'] + $this->configuration['excludedTables'];
         foreach (array_keys($this->jsonArray['records']) as $tableName) {
@@ -162,7 +173,7 @@ class Import
      * @return void
      * @throws DBALException
      */
-    protected function importFileRecords()
+    protected function importFileRecords(): void
     {
         if (is_array($this->jsonArray['records']['sys_file'])) {
             foreach ($this->jsonArray['records']['sys_file'] as $properties) {
@@ -183,7 +194,7 @@ class Import
      * @return void
      * @throws DBALException
      */
-    protected function importFileReferenceRecords()
+    protected function importFileReferenceRecords(): void
     {
         if (is_array($this->jsonArray['records']['sys_file_reference'])) {
             foreach ($this->jsonArray['records']['sys_file_reference'] as $properties) {
@@ -195,7 +206,7 @@ class Import
     /**
      * @return void
      */
-    protected function importImages()
+    protected function importImages(): void
     {
         if (is_array($this->jsonArray['files'])) {
             foreach ($this->jsonArray['files'] as $properties) {
@@ -209,11 +220,91 @@ class Import
     }
 
     /**
+     * @return void
+     * @throws DBALException
+     */
+    protected function importMmRecords(): void
+    {
+        if (is_array($this->jsonArray['mm'])) {
+            foreach ($this->jsonArray['mm'] as $tableMm => $records) {
+                if (DatabaseUtility::isTableExisting($tableMm)) {
+                    foreach ($records as $record) {
+                        $connection = DatabaseUtility::getConnectionForTable($tableMm);
+                        $connection->insert($tableMm, $this->getNewPropertiesForMmRelation($record, $tableMm));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param array $properties
+     * @param string $tableMm
+     * @return array
+     */
+    protected function getNewPropertiesForMmRelation(array $properties, string $tableMm): array
+    {
+        $configuration = $this->getMmConfigurationForRecord($properties, $tableMm);
+        $tablesToReplace = ['uid_local', 'uid_foreign'];
+        foreach ($tablesToReplace as $tableToReplace) {
+            if ($this->mappingService->isTableExisting($configuration[$tableToReplace])) {
+                $properties[$tableToReplace] = $this->mappingService->getNewFromOld(
+                    $properties[$tableToReplace],
+                    $configuration[$tableToReplace]
+                );
+            }
+        }
+        return $properties;
+    }
+
+    /**
+     * Return a configuration from configuration file for this specific MM record like
+     *  [
+     *      'table' => 'sys_category_record_mm',
+     *      'uid_local' => 'sys_category',
+     *      'uid_foreign' => 'tt_content',
+     *      'additional' => [
+     *          'tablenames' => 'tt_content',
+     *          'fieldname' => 'categories'
+     *      ]
+     *  ]
+     *
+     * @param array $properties
+     * @param string $tableMm
+     * @return array
+     */
+    protected function getMmConfigurationForRecord(array $properties, string $tableMm): array
+    {
+        $configurationMm = [];
+        foreach ((array)$this->configuration['relations'] as $table => $configurations) {
+            foreach ($configurations as $configuration) {
+                if ($configuration['table'] === $tableMm) {
+                    if (!empty($configuration['additional'])) {
+                        $fit = true;
+                        foreach ($configuration['additional'] as $field => $value) {
+                            if (array_key_exists($field, $properties) !== true || $properties[$field] !== $value) {
+                                $fit = false;
+                                break;
+                            }
+                        }
+                        if ($fit === true) {
+                            $configurationMm = $configuration;
+                        }
+                    } else {
+                        $configurationMm = $configuration;
+                    }
+                }
+            }
+        }
+        return $configurationMm;
+    }
+
+    /**
      * At the end links of already new imported records will be updated with new targets
      *
      * @return void
      */
-    protected function updateLinks()
+    protected function updateLinks(): void
     {
         $linkService = ObjectUtility::getObjectManager()->get(LinkMappingService::class, $this->mappingService);
         $linkService->updateLinksAndRecordsInNewRecords();
@@ -227,7 +318,7 @@ class Import
      * @return void
      * @throws DBALException
      */
-    protected function insertRecord(array $properties, string $tableName)
+    protected function insertRecord(array $properties, string $tableName): void
     {
         $oldIdentifier = (int)$properties['uid'];
         $connection = DatabaseUtility::getConnectionForTable($tableName);
@@ -313,7 +404,7 @@ class Import
     /**
      * @return void
      */
-    protected function setJson()
+    protected function setJson(): void
     {
         $content = file_get_contents($this->file);
         $array = json_decode($content, true);
@@ -329,7 +420,7 @@ class Import
      *
      * @return void
      */
-    protected function setPidForFirstPage()
+    protected function setPidForFirstPage(): void
     {
         foreach ($this->jsonArray['records']['pages'] as &$properties) {
             $oldPid = (int)$properties['pid'];
@@ -342,7 +433,7 @@ class Import
     /**
      * @return void
      */
-    protected function checkFile()
+    protected function checkFile(): void
     {
         if (is_file($this->file) === false) {
             throw new \LogicException('File not found: ' . $this->file, 1549472056);

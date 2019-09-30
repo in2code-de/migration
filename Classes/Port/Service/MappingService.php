@@ -65,6 +65,15 @@ class MappingService
     }
 
     /**
+     * @param string $tableName
+     * @return bool
+     */
+    public function isTableExisting(string $tableName): bool
+    {
+        return array_key_exists($tableName, $this->mapping);
+    }
+
+    /**
      * @return array
      */
     public function getMapping(): array

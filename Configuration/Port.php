@@ -1,6 +1,6 @@
 <?php
 return [
-    // Exclude tables from export and import
+    // Exclude tables from ex- and import
     'excludedTables' => [
         'be_groups',
         'be_users',
@@ -17,7 +17,10 @@ return [
         'sys_category_record_mm'
     ],
 
-    // Special relations with MM-tables for ex- and import (tables are ignored if they don't exist in the system)
+    /**
+     * Special relations with MM-tables for ex- and import (tables are ignored if they don't exist in the system,
+     * sys_file_reference is handled separately)
+     */
     'relations' => [
         'pages' => [
             [
