@@ -84,6 +84,16 @@ class Export
      *              'base64' => 'base64:abcdef1234567890'
      *              'fileIdentifier' => 12345
      *          ]
+     *      ],
+     *      'mm' => [
+     *          'sys_category_record_mm' => [
+     *              [
+     *                  'uid_local' => 123,
+     *                  'uid_foreign' => 124,
+     *                  'tablenames' => 'pages',
+     *                  'fieldname' => 'categories'
+     *              ]
+     *          ]
      *      ]
      *  ]
      *
@@ -132,7 +142,7 @@ class Export
      * @return void
      * @throws DBALException
      */
-    protected function buildJson()
+    protected function buildJson(): void
     {
         $this->jsonArray = [
             'records' => [
@@ -142,6 +152,7 @@ class Export
         $this->extendWithOtherTables();
         $this->extendWithFiles();
         $this->extendWithFilesFromLinks();
+        $this->extendWithMmRelations();
     }
 
     /**
@@ -160,7 +171,7 @@ class Export
      * @return void
      * @throws DBALException
      */
-    protected function extendWithOtherTables()
+    protected function extendWithOtherTables(): void
     {
         foreach (TcaUtility::getTableNamesToExport($this->configuration['excludedTables']) as $table) {
             $rows = [];
@@ -178,7 +189,7 @@ class Export
      * @return void
      * @throws DBALException
      */
-    protected function extendWithFiles()
+    protected function extendWithFiles(): void
     {
         if ($this->addFiles === true) {
             foreach ((array)$this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
@@ -192,12 +203,43 @@ class Export
      * @return void
      * @throws DBALException
      */
-    protected function extendWithFilesFromLinks()
+    protected function extendWithFilesFromLinks(): void
     {
         $linkRelationService = ObjectUtility::getObjectManager()->get(LinkRelationService::class);
         $identifiers = $linkRelationService->getFileIdentifiersFromLinks($this->jsonArray);
         foreach ($identifiers as $fileIdentifier) {
             $this->extendWithFilesBasic($fileIdentifier);
+        }
+    }
+
+    /**
+     * @return void
+     * @throws DBALException
+     */
+    protected function extendWithMmRelations(): void
+    {
+        foreach ((array)$this->configuration['relations'] as $table => $configurations) {
+            if (DatabaseUtility::isTableExisting($table)) {
+                foreach ($configurations as $configuration) {
+                    $tableMm = $configuration['table'];
+                    if (DatabaseUtility::isTableExisting($tableMm)) {
+                        $queryBuilder = DatabaseUtility::getQueryBuilderForTable($tableMm, true);
+                        $whereClause = $this->getWhereClauseForExtensionWithMmRelations($configuration, $table);
+                        if ($whereClause !== '') {
+                            $rows = (array)$queryBuilder
+                                ->select('*')
+                                ->from($tableMm)
+                                ->where($whereClause)
+                                ->execute()
+                                ->fetchAll();
+                            if (empty($this->jsonArray['mm'][$tableMm])) {
+                                $this->jsonArray['mm'][$tableMm] = [];
+                            }
+                            $this->jsonArray['mm'][$tableMm] += $rows;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -263,6 +305,45 @@ class Export
         $queryGenerator = ObjectUtility::getObjectManager()->get(QueryGenerator::class);
         $list = $queryGenerator->getTreeList($this->pid, $this->recursive, 0, 1);
         return GeneralUtility::intExplode(',', $list);
+    }
+
+    /**
+     * @param array $configuration
+     * @param string $table
+     * @return string
+     */
+    protected function getWhereClauseForExtensionWithMmRelations(array $configuration, string $table): string
+    {
+        $identifiers = $this->getIdentifiersForTable($table);
+        if ($identifiers !== []) {
+            $lookupField = 'uid_local';
+            if ($table === $configuration['uid_foreign']) {
+                $lookupField = 'uid_foreign';
+            }
+            $where = $lookupField . ' in (' . implode(',', $identifiers) . ')';
+            if (!empty($configuration['additional'])) {
+                foreach ($configuration['additional'] as $field => $value) {
+                    $where .= ' and ' . $field . '="' . $value . '"';
+                }
+            }
+            return $where;
+        }
+        return '';
+    }
+
+    /**
+     * @param string $tableName
+     * @return int[]
+     */
+    protected function getIdentifiersForTable(string $tableName): array
+    {
+        $identifiers = [];
+        foreach ((array)$this->getJsonArray()['records'][$tableName] as $record) {
+            if (!empty($record['uid'])) {
+                $identifiers[] = (int)$record['uid'];
+            }
+        }
+        return $identifiers;
     }
 
     /**

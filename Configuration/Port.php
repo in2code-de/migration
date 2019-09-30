@@ -22,20 +22,35 @@ return [
         'pages' => [
             [
                 'table' => 'sys_category_record_mm',
-                'relation' => 'pages.uid = sys_category_record_mm.uid_foreign and tablename="pages" and '
-                    . 'fieldname="categories"',
-                'targetTable' => 'sys_category',
-                'targetRelation' => 'sys_category.uid = sys_category_record_mm.uid_local'
+                'uid_local' => 'sys_category',
+                'uid_foreign' => 'pages',
+                'additional' => [
+                    'tablenames' => 'pages',
+                    'fieldname' => 'categories'
+                ]
+            ]
+        ],
+        'tt_content' => [
+            [
+                'table' => 'sys_category_record_mm',
+                'uid_local' => 'sys_category',
+                'uid_foreign' => 'tt_content',
+                'additional' => [
+                    'tablenames' => 'tt_content',
+                    'fieldname' => 'categories'
+                ]
             ]
         ],
         'tt_news' => [
             [
                 'table' => 'tt_news_cat_mm',
-                'relation' => 'tt_news.uid = tt_news_cat_mm.uid_local'
+                'uid_local' => 'tt_news',
+                'uid_foreign' => 'tt_news_cat'
             ],
             [
                 'table' => 'tt_news_related_mm',
-                'relation' => 'tt_news.uid = tt_news_related_mm.uid_local'
+                'uid_local' => 'tt_news',
+                'uid_foreign' => 'tt_news'
             ]
         ]
     ],
