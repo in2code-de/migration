@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Port\Service;
 
+use Doctrine\DBAL\DBALException;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\StringUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -36,7 +37,21 @@ class LinkMappingService
      *          'sys_file_reference' => [
      *              'link'
      *          ]
-     *      ]
+     *      ],
+     *      'propertiesWithRelationsInFlexForms' => [
+     *          'tt_content' => [
+     *              'pi_flexform' => [
+     *                  [
+     *                      // tt_news update flexform
+     *                      'condition' => [
+     *                          'Ctype' => 'list',
+     *                          'list_type' => 9
+     *                      ],
+     *                      'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value'
+     *                  ]
+     *              ]
+     *          ]
+     *      ],
      *  ]
      *
      * @var array
@@ -61,6 +76,7 @@ class LinkMappingService
 
     /**
      * @return void
+     * @throws DBALException
      */
     public function updateLinksAndRecordsInNewRecords(): void
     {
@@ -70,6 +86,7 @@ class LinkMappingService
                     $properties = $this->getPropertiesFromIdentifierAndTable($identifier, $tableName);
                     $newProperties = $this->updatePropertiesWithNewLinkMapping($properties, $tableName);
                     $newProperties = $this->updatePropertiesWithNewRelationMapping($newProperties, $tableName);
+                    $newProperties = $this->updatePropertiesWithNewRelationsInFlexForms($newProperties, $tableName);
                     if ($newProperties !== $properties) {
                         $this->updateRecord($newProperties, $tableName);
                     }
@@ -107,16 +124,68 @@ class LinkMappingService
             if (isset($this->getPropertiesWithRelations()[$tableName])
                 && in_array($fieldName, $this->getPropertiesWithRelations()[$tableName])) {
                 if (!empty($value)) {
-                    if (StringUtility::isIntegerListOrInteger($value)) {
-                        $properties[$fieldName] = $this->updatePageLinksSimple($value);
-                    } else {
-                        $value = $this->updatePageLinks($value);
-                        $properties[$fieldName] = $this->updateFileLinks($value);
+                    $properties[$fieldName] = $this->updateValueWithSimpleLinks($value);
+                }
+            }
+        }
+        return $properties;
+    }
+
+    /**
+     * @param array $properties
+     * @param string $tableName
+     * @return array
+     * @throws DBALException
+     */
+    protected function updatePropertiesWithNewRelationsInFlexForms(array $properties, string $tableName): array
+    {
+        foreach ($properties as $fieldName => $value) {
+            if (isset($this->getPropertiesWithRelationsInFlexForms()[$tableName])
+                && array_key_exists($fieldName, $this->getPropertiesWithRelationsInFlexForms()[$tableName])) {
+                if (!empty($value)) {
+                    foreach ($this->getPropertiesWithRelationsInFlexForms()[$tableName][$fieldName] as $configuration) {
+                        $conditionFits = true;
+                        foreach ($configuration['condition'] as $field => $value) {
+                            if ($properties[$field] !== $value) {
+                                $conditionFits = true;
+                            }
+                        }
+                        if ($conditionFits === true) {
+                            $this->updateFlexFormValue($properties['uid'], $tableName, $fieldName, $configuration);
+                        }
                     }
                 }
             }
         }
         return $properties;
+    }
+
+    /**
+     * @param int $identifier
+     * @param string $tableName
+     * @param string $fieldName
+     * @param array $configuration
+     * @return void
+     * @throws DBALException
+     */
+    protected function updateFlexFormValue(
+        int $identifier,
+        string $tableName,
+        string $fieldName,
+        array $configuration
+    ): void {
+        $connection = DatabaseUtility::getConnectionForTable($tableName);
+        $sql = 'select ExtractValue(' . $fieldName . ', \'' . $configuration['selection'] . '\') value from '
+            . $tableName . ' where uid=' . (int)$identifier;
+        $value = (string)$connection->executeQuery($sql)->fetchColumn(0);
+        $newValue = $this->updateValueWithSimpleLinks($value);
+        if (!empty($newValue)) {
+            $sql = 'update ' . $tableName . ' set '
+                . $fieldName . ' = UpdateXML(' . $fieldName . ', \''
+                . $configuration['selection'] . '\', concat(\'<value index="vDEF">\', \''
+                . $newValue . '\', \'</value>\' )) WHERE uid=' . (int)$identifier;
+        }
+        $connection->executeQuery($sql);
     }
 
     /**
@@ -129,6 +198,21 @@ class LinkMappingService
         $value = $this->updateFileLinks($value);
         $value = $this->updateRteImages($value);
         return $value;
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    protected function updateValueWithSimpleLinks(string $value): string
+    {
+        if (StringUtility::isIntegerListOrInteger($value)) {
+            $newValue = $this->updatePageLinksSimple($value);
+        } else {
+            $value = $this->updatePageLinks($value);
+            $newValue = $this->updateFileLinks($value);
+        }
+        return $newValue;
     }
 
     /**
@@ -268,7 +352,8 @@ class LinkMappingService
     protected function isTableInAnyLinkConfiguration($tableName): bool
     {
         return array_key_exists($tableName, $this->getPropertiesWithLinks())
-            || array_key_exists($tableName, $this->getPropertiesWithRelations());
+            || array_key_exists($tableName, $this->getPropertiesWithRelations())
+            || array_key_exists($tableName, $this->getPropertiesWithRelationsInFlexForms());
     }
 
     /**
@@ -276,7 +361,7 @@ class LinkMappingService
      */
     protected function getPropertiesWithLinks(): array
     {
-        return $this->configuration['linkMapping']['propertiesWithLinks'];
+        return (array)$this->configuration['linkMapping']['propertiesWithLinks'];
     }
 
     /**
@@ -284,6 +369,14 @@ class LinkMappingService
      */
     protected function getPropertiesWithRelations(): array
     {
-        return $this->configuration['linkMapping']['propertiesWithRelations'];
+        return (array)$this->configuration['linkMapping']['propertiesWithRelations'];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getPropertiesWithRelationsInFlexForms(): array
+    {
+        return (array)$this->configuration['linkMapping']['propertiesWithRelationsInFlexForms'];
     }
 }

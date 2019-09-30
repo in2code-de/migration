@@ -26,6 +26,7 @@ return [
      */
     'linkMapping' => [
         /**
+         * Links in RTE:
          * Define in which fields there are one or more links and probably a wrapping text (normally a RTE) that should
          * be replaced with a newer mapping.
          *
@@ -44,6 +45,7 @@ return [
         ],
 
         /**
+         * Simple PIDs in single fields:
          * Define simple fields that only hold relations
          *
          * Example content (like pages.shortcut or tt_content.header_link) with relations/links:
@@ -64,7 +66,46 @@ return [
             'sys_file_reference' => [
                 'link'
             ]
-        ]
+        ],
+
+        /**
+         * Simple PIDs in FlexForm value fields:
+         * Define some FlexForm fields where PIDs should be updated
+         *
+         *  - "123" (link to page 123)
+         *  - "123,124" (link to two pages)
+         *  - "t3://page?uid=123" (link to page 123)
+         */
+        'propertiesWithRelationsInFlexForms' => [
+            'tt_content' => [
+                'pi_flexform' => [
+                    [
+                        // tt_news update flexform PIDitemDisplay
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 9
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value'
+                    ],
+                    [
+                        // tt_news update flexform backPid
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 9
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="backPid"]/value'
+                    ],
+                    [
+                        // tt_news update flexform pages
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 9
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="pages"]/value'
+                    ]
+                ]
+            ]
+        ],
     ],
 
 
