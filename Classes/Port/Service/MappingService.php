@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace In2code\Migration\Service;
+namespace In2code\Migration\Port\Service;
 
 /**
  * Class MappingService offers function for a mapping from old to new identifiers.

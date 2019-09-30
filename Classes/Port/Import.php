@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
-namespace In2code\Migration\Service;
+namespace In2code\Migration\Port;
 
 use Doctrine\DBAL\DBALException;
+use In2code\Migration\Port\Service\LinkMappingService;
+use In2code\Migration\Port\Service\MappingService;
 use In2code\Migration\Signal\SignalTrait;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
@@ -13,7 +15,7 @@ use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 /**
  * Class ImportService
  */
-class ImportService
+class Import
 {
     use SignalTrait;
 
@@ -343,7 +345,7 @@ class ImportService
 
     /**
      * @param array $jsonArray
-     * @return ImportService
+     * @return Import
      */
     public function setJsonArray(array $jsonArray): self
     {

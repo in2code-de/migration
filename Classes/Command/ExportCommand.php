@@ -3,12 +3,14 @@ declare(strict_types=1);
 namespace In2code\Migration\Command;
 
 use Doctrine\DBAL\DBALException;
-use In2code\Migration\Service\ExportService;
+use In2code\Migration\Port\Export;
 use In2code\Migration\Utility\ObjectUtility;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
+use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 
 /**
  * Class ExportCommand
@@ -60,12 +62,14 @@ class ExportCommand extends Command
      * @param OutputInterface $output
      * @return int
      * @throws DBALException
+     * @throws InvalidSlotException
+     * @throws InvalidSlotReturnException
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         $exportService = ObjectUtility::getObjectManager()->get(
-            ExportService::class,
+            Export::class,
             (int)$input->getArgument('pid'),
             (int)$input->getArgument('recursive'),
             $this->excludedTables

@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace In2code\Migration\Service;
+namespace In2code\Migration\Port\Service;
 
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\StringUtility;

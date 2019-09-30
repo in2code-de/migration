@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
-use In2code\Migration\Service\ImportService;
+use In2code\Migration\Port\Import;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;
 use Symfony\Component\Console\Command\Command;
@@ -76,7 +76,7 @@ class ImportCommand extends Command
     {
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         $importService = ObjectUtility::getObjectManager()->get(
-            ImportService::class,
+            Import::class,
             $input->getArgument('file'),
             (int)$input->getArgument('pid'),
             $this->excludedTables,
