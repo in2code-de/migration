@@ -3,9 +3,9 @@ declare(strict_types=1);
 namespace In2code\Migration\Command;
 
 use Doctrine\DBAL\DBALException;
+use In2code\Migration\Migration\Exception\ConfigurationException;
 use In2code\Migration\Port\Export;
 use In2code\Migration\Utility\ObjectUtility;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,30 +17,8 @@ use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
  * offers own json based export command for TYPO3 page-trees to fit the need to insert large page trees into
  * existing TYPO3 instances.
  */
-class ExportCommand extends Command
+class ExportCommand extends AbstractPortCommand
 {
-
-    /**
-     * Excluded tables for export
-     *
-     * @var array
-     */
-    protected $excludedTables = [
-        'be_groups',
-        'be_users',
-        'sys_language',
-        'sys_log',
-        'sys_news',
-        'sys_domain',
-        'sys_template',
-        'sys_note',
-        'sys_history',
-        'sys_file_storage',
-        'tx_extensionmanager_domain_model_extension',
-        'tx_extensionmanager_domain_model_repository',
-        'sys_category_record_mm'
-    ];
-
     /**
      * Configure the command
      */
@@ -51,6 +29,12 @@ class ExportCommand extends Command
         $this->setDescription($description);
         $this->addArgument('pid', InputArgument::REQUIRED, 'Start page identifier');
         $this->addArgument('recursive', InputArgument::OPTIONAL, 'Recursive level', 99);
+        $this->addArgument(
+            'configuration',
+            InputArgument::OPTIONAL,
+            'Path to configuration file',
+            self::CONFIGURATION_PATH
+        );
     }
 
     /**
@@ -64,6 +48,7 @@ class ExportCommand extends Command
      * @throws DBALException
      * @throws InvalidSlotException
      * @throws InvalidSlotReturnException
+     * @throws ConfigurationException
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -72,7 +57,7 @@ class ExportCommand extends Command
             Export::class,
             (int)$input->getArgument('pid'),
             (int)$input->getArgument('recursive'),
-            $this->excludedTables
+            $this->getCompleteConfiguration($input->getArgument('configuration'))
         );
         $output->writeln($exportService->export());
         return 0;

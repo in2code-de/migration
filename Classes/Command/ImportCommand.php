@@ -2,10 +2,10 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
+use In2code\Migration\Migration\Exception\ConfigurationException;
 use In2code\Migration\Port\Import;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,38 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  * offers own json based import command for TYPO3 page-trees to fit the need to insert large page trees into
  * existing TYPO3 instances.
  */
-class ImportCommand extends Command
+class ImportCommand extends AbstractPortCommand
 {
-
-    /**
-     * Excluded tables for import
-     *
-     * @var array
-     */
-    protected $excludedTables = [
-        'be_groups',
-        'be_users',
-        'sys_language',
-        'sys_log',
-        'sys_news',
-        'sys_domain',
-        'sys_template',
-        'sys_note',
-        'sys_history',
-        'sys_file_storage',
-        'tx_extensionmanager_domain_model_extension',
-        'tx_extensionmanager_domain_model_repository',
-        'sys_category_record_mm'
-    ];
-
-    /**
-     * Import: Check if the file is already existing (compare path and name - no size or date)
-     * and decide if it should be overwritten or not
-     *
-     * @var bool
-     */
-    protected $overwriteFiles = false;
-
     /**
      * Configure the command
      */
@@ -60,6 +30,12 @@ class ImportCommand extends Command
         $this->addArgument('file', InputArgument::REQUIRED, 'Absolute path to a json export file');
         $argumentDescription = 'Page identifier to import new tree into (can also be 0 for an import into root)';
         $this->addArgument('pid', InputArgument::REQUIRED, $argumentDescription);
+        $this->addArgument(
+            'configuration',
+            InputArgument::OPTIONAL,
+            'Path to configuration file',
+            self::CONFIGURATION_PATH
+        );
     }
 
     /**
@@ -71,6 +47,7 @@ class ImportCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int
+     * @throws ConfigurationException
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -79,8 +56,7 @@ class ImportCommand extends Command
             Import::class,
             $input->getArgument('file'),
             (int)$input->getArgument('pid'),
-            $this->excludedTables,
-            $this->overwriteFiles
+            $this->getCompleteConfiguration($input->getArgument('configuration'))
         );
         try {
             $this->checkTarget((int)$input->getArgument('pid'));

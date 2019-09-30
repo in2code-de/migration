@@ -34,14 +34,26 @@ class Import
     protected $pid = 0;
 
     /**
+     * Hold the complete configuration like
+     *
+     *  'excludedTables' => [
+     *      'be_users'
+     *  ],
+     *  'relations' => [
+     *      'pages' => [
+     *          [
+     *              'table' => 'sys_category_record_mm',
+     *              'relation' => 'pages.uid = sys_category_record_mm.uid_foreign and tablename="pages" and '
+     *                  . 'fieldname="categories"',
+     *              'targetTable' => 'sys_category',
+     *              'targetRelation' => 'sys_category.uid = sys_category_record_mm.uid_local'
+     *          ]
+     *      ]
+     *  ]
+     *
      * @var array
      */
-    protected $excludedTables = [];
-
-    /**
-     * @var bool
-     */
-    protected $overwriteFiles = false;
+    protected $configuration = [];
 
     /**
      * Example array from json file to import
@@ -84,18 +96,16 @@ class Import
      * ImportService constructor.
      * @param string $file
      * @param int $pid
-     * @param array $excludedTables
-     * @param bool $overwriteFiles
+     * @param array $configuration
      * @throws InvalidSlotException
      * @throws InvalidSlotReturnException
      */
-    public function __construct(string $file, int $pid, array $excludedTables = [], bool $overwriteFiles = false)
+    public function __construct(string $file, int $pid, array $configuration = [])
     {
         $this->mappingService = ObjectUtility::getObjectManager()->get(MappingService::class);
         $this->file = $file;
         $this->pid = $pid;
-        $this->excludedTables = $excludedTables;
-        $this->overwriteFiles = $overwriteFiles;
+        $this->configuration = $configuration;
         $this->checkFile();
         $this->setJson();
         $this->signalDispatch(__CLASS__, 'beforeImport', [$this]);
@@ -136,7 +146,7 @@ class Import
      */
     protected function importRecords()
     {
-        $excludedTables = ['pages', 'sys_file', 'sys_file_reference'] + $this->excludedTables;
+        $excludedTables = ['pages', 'sys_file', 'sys_file_reference'] + $this->configuration['excludedTables'];
         foreach (array_keys($this->jsonArray['records']) as $tableName) {
             if (in_array($tableName, $excludedTables) === false) {
                 foreach ($this->jsonArray['records'][$tableName] as $properties) {
@@ -189,7 +199,11 @@ class Import
     {
         if (is_array($this->jsonArray['files'])) {
             foreach ($this->jsonArray['files'] as $properties) {
-                FileUtility::writeFileFromBase64Code($properties['path'], $properties['base64'], $this->overwriteFiles);
+                FileUtility::writeFileFromBase64Code(
+                    $properties['path'],
+                    $properties['base64'],
+                    $this->configuration['overwriteFiles']
+                );
             }
         }
     }

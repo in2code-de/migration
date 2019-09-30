@@ -33,14 +33,31 @@ class Export
     protected $recursive = 99;
 
     /**
-     * @var array
-     */
-    protected $excludedTables = [];
-
-    /**
      * @var bool
      */
     protected $addFiles = true;
+
+    /**
+     * Hold the complete configuration like
+     *
+     *  'excludedTables' => [
+     *      'be_users'
+     *  ],
+     *  'relations' => [
+     *      'pages' => [
+     *          [
+     *              'table' => 'sys_category_record_mm',
+     *              'relation' => 'pages.uid = sys_category_record_mm.uid_foreign and tablename="pages" and '
+     *                  . 'fieldname="categories"',
+     *              'targetTable' => 'sys_category',
+     *              'targetRelation' => 'sys_category.uid = sys_category_record_mm.uid_local'
+     *          ]
+     *      ]
+     *  ]
+     *
+     * @var array
+     */
+    protected $configuration = [];
 
     /**
      * Array that is build just before it's packed into a json file
@@ -78,15 +95,15 @@ class Export
      * ExportService constructor.
      * @param int $pid
      * @param int $recursive
-     * @param array $excludedTables
+     * @param array $configuration
      * @throws InvalidSlotException
      * @throws InvalidSlotReturnException
      */
-    public function __construct(int $pid, int $recursive = 99, array $excludedTables = [])
+    public function __construct(int $pid, int $recursive = 99, array $configuration = [])
     {
         $this->pid = $pid;
         $this->recursive = $recursive;
-        $this->excludedTables = $excludedTables;
+        $this->configuration = $configuration;
         $this->signalDispatch(__CLASS__, 'initial', [$this]);
     }
 
@@ -145,7 +162,7 @@ class Export
      */
     protected function extendWithOtherTables()
     {
-        foreach (TcaUtility::getTableNamesToExport($this->excludedTables) as $table) {
+        foreach (TcaUtility::getTableNamesToExport($this->configuration['excludedTables']) as $table) {
             $rows = [];
             foreach ((array)$this->jsonArray['records']['pages'] as $pageProperties) {
                 $pid = (int)$pageProperties['uid'];
