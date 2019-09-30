@@ -166,18 +166,7 @@ class Export
         if ($this->addFiles === true) {
             foreach ((array)$this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
                 $fileIdentifier = (int)$referenceProperties['uid_local'];
-                $fileProperties = $this->getPropertiesFromIdentifierAndTable($fileIdentifier, 'sys_file');
-                $this->jsonArray['records']['sys_file'][(int)$fileProperties['uid']] = $fileProperties;
-
-                $relativePathAndFilename = DatabaseUtility::getFilePathAndNameByStorageAndIdentifier(
-                    (int)$fileProperties['storage'],
-                    $fileProperties['identifier']
-                );
-                $this->jsonArray['files'][(int)$fileProperties['uid']] = [
-                    'path' => $relativePathAndFilename,
-                    'base64' => FileUtility::getBase64CodeFromFile($relativePathAndFilename),
-                    'fileIdentifier' => (int)$fileProperties['uid']
-                ];
+                $this->extendWithFilesBasic($fileIdentifier);
             }
         }
     }
@@ -191,19 +180,29 @@ class Export
         $linkRelationService = ObjectUtility::getObjectManager()->get(LinkRelationService::class);
         $identifiers = $linkRelationService->getFileIdentifiersFromLinks($this->jsonArray);
         foreach ($identifiers as $fileIdentifier) {
-            $fileProperties = $this->getPropertiesFromIdentifierAndTable($fileIdentifier, 'sys_file');
-            $this->jsonArray['records']['sys_file'][(int)$fileProperties['uid']] = $fileProperties;
-
-            $relativePathAndFilename = DatabaseUtility::getFilePathAndNameByStorageAndIdentifier(
-                (int)$fileProperties['storage'],
-                $fileProperties['identifier']
-            );
-            $this->jsonArray['files'][(int)$fileProperties['uid']] = [
-                'path' => $relativePathAndFilename,
-                'base64' => FileUtility::getBase64CodeFromFile($relativePathAndFilename),
-                'fileIdentifier' => (int)$fileProperties['uid']
-            ];
+            $this->extendWithFilesBasic($fileIdentifier);
         }
+    }
+
+    /**
+     * @param int $fileIdentifier
+     * @return void
+     * @throws DBALException
+     */
+    protected function extendWithFilesBasic(int $fileIdentifier): void
+    {
+        $fileProperties = $this->getPropertiesFromIdentifierAndTable($fileIdentifier, 'sys_file');
+        $this->jsonArray['records']['sys_file'][(int)$fileProperties['uid']] = $fileProperties;
+
+        $relativePathAndFilename = DatabaseUtility::getFilePathAndNameByStorageAndIdentifier(
+            (int)$fileProperties['storage'],
+            $fileProperties['identifier']
+        );
+        $this->jsonArray['files'][(int)$fileProperties['uid']] = [
+            'path' => $relativePathAndFilename,
+            'base64' => FileUtility::getBase64CodeFromFile($relativePathAndFilename),
+            'fileIdentifier' => (int)$fileProperties['uid']
+        ];
     }
 
     /**
