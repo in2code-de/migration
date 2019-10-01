@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
-use In2code\Migration\Migration\Exception\ConfigurationException;
+use In2code\Migration\Exception\ConfigurationException;
 use Symfony\Component\Console\Command\Command;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

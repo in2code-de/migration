@@ -3,6 +3,8 @@ declare(strict_types=1);
 namespace In2code\Migration\Port;
 
 use Doctrine\DBAL\DBALException;
+use In2code\Migration\Exception\ConfigurationException;
+use In2code\Migration\Exception\FileNotFoundException;
 use In2code\Migration\Port\Service\LinkMappingService;
 use In2code\Migration\Port\Service\MappingService;
 use In2code\Migration\Signal\SignalTrait;
@@ -107,6 +109,8 @@ class Import
      * @param string $file
      * @param int $pid
      * @param array $configuration
+     * @throws ConfigurationException
+     * @throws FileNotFoundException
      * @throws InvalidSlotException
      * @throws InvalidSlotReturnException
      */
@@ -303,6 +307,7 @@ class Import
      * At the end links of already new imported records will be updated with new targets
      *
      * @return void
+     * @throws DBALException
      */
     protected function updateLinks(): void
     {
@@ -407,13 +412,14 @@ class Import
 
     /**
      * @return void
+     * @throws ConfigurationException
      */
     protected function setJson(): void
     {
         $content = file_get_contents($this->file);
         $array = json_decode($content, true);
         if ($array === null) {
-            throw new \LogicException('No json configuration found in given file', 1549546231);
+            throw new ConfigurationException('No json configuration found in given file', 1569913542);
         }
         $this->jsonArray = $array;
         $this->setPidForFirstPage();
@@ -436,11 +442,12 @@ class Import
 
     /**
      * @return void
+     * @throws FileNotFoundException
      */
     protected function checkFile(): void
     {
         if (is_file($this->file) === false) {
-            throw new \LogicException('File not found: ' . $this->file, 1549472056);
+            throw new FileNotFoundException('File not found: ' . $this->file, 1549472056);
         }
     }
 

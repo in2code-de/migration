@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace In2code\Migration\Migration\Exception;
+namespace In2code\Migration\Exception;
 
 /**
  * Class ConfigurationException

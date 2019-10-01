@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
-use In2code\Migration\Migration\Exception\ConfigurationException;
+use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Port\Import;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;

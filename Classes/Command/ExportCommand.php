@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace In2code\Migration\Command;
 
 use Doctrine\DBAL\DBALException;
-use In2code\Migration\Migration\Exception\ConfigurationException;
+use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Port\Export;
 use In2code\Migration\Utility\ObjectUtility;
 use Symfony\Component\Console\Input\InputArgument;

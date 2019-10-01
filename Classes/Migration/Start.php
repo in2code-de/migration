@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration;
 
-use In2code\Migration\Migration\Exception\ConfigurationException;
+use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Importer\ImporterInterface;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Migration\Migrator\MigratorInterface;
