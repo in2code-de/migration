@@ -3,7 +3,8 @@ declare(strict_types=1);
 namespace In2code\Migration\Port\Service;
 
 /**
- * Class MappingService offers function for a mapping from old to new identifiers.
+ * Class MappingService
+ * offers functionality for a mapping from old to new identifiers while runtime of an import.
  */
 class MappingService
 {

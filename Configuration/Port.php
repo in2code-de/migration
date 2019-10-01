@@ -29,6 +29,9 @@ return [
          * Links in RTE:
          * Define in which fields there are one or more links and probably a wrapping text (normally a RTE) that should
          * be replaced with a newer mapping.
+         * This configuration is used twice:
+         *      1) Import: Change links after importing
+         *      2) Export: Find out which RTE keep links to files that should be added to the json
          *
          * Example content (like tt_content.bodytext) with links:
          * ... <a href="t3://page?uid=123">link</a> ...

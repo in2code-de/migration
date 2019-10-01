@@ -6,27 +6,64 @@ use In2code\Migration\Utility\ArrayUtility;
 
 /**
  * Class LinkRelationService
+ * to extend the export json with files that are linked from a RTE
  */
 class LinkRelationService
 {
-
     /**
-     * Define in which fields can be links to files
+     * Hold the complete configuration like
      *
-     * Example content (like tt_content.bodytext) with links
-     * like
-     * ... <a href="t3://file?uid=123">link</a> ...
+     *  'excludedTables' => [
+     *      'be_users'
+     *  ],
+     *  'linkMapping' => [
+     *      'propertiesWithLinks' => [
+     *          'tt_content' => [
+     *              'bodytext'
+     *          ],
+     *          'tx_news_domain_model_news' => [
+     *              'bodytext'
+     *          ]
+     *      ],
+     *      'propertiesWithRelations' => [
+     *          'pages' => [
+     *              'shortcut'
+     *          ],
+     *          'tt_content' => [
+     *              'header_link'
+     *          ],
+     *          'sys_file_reference' => [
+     *              'link'
+     *          ]
+     *      ],
+     *      'propertiesWithRelationsInFlexForms' => [
+     *          'tt_content' => [
+     *              'pi_flexform' => [
+     *                  [
+     *                      // tt_news update flexform
+     *                      'condition' => [
+     *                          'Ctype' => 'list',
+     *                          'list_type' => 9
+     *                      ],
+     *                      'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value'
+     *                  ]
+     *              ]
+     *          ]
+     *      ],
+     *  ]
      *
      * @var array
      */
-    protected $propertiesWithLinks = [
-        'tt_content' => [
-            'bodytext'
-        ],
-        'tx_news_domain_model_news' => [
-            'bodytext'
-        ]
-    ];
+    protected $configuration = [];
+
+    /**
+     * LinkRelationService constructor.
+     * @param array $configuration
+     */
+    public function __construct(array $configuration)
+    {
+        $this->configuration = $configuration;
+    }
 
     /**
      * @param array $jsonArray
@@ -35,7 +72,7 @@ class LinkRelationService
     public function getFileIdentifiersFromLinks(array $jsonArray): array
     {
         $identifiers = [];
-        foreach ($this->propertiesWithLinks as $table => $fields) {
+        foreach ($this->getPropertiesWithLinks() as $table => $fields) {
             if (!empty($jsonArray['records'][$table])) {
                 foreach ($jsonArray['records'][$table] as $row) {
                     foreach ($fields as $field) {
@@ -76,5 +113,13 @@ class LinkRelationService
             $value
         );
         return $value;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getPropertiesWithLinks(): array
+    {
+        return (array)$this->configuration['linkMapping']['propertiesWithLinks'];
     }
 }

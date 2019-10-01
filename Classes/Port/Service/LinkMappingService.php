@@ -9,6 +9,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class LinkMappingService
+ * will change links after an import with new identifiers
  */
 class LinkMappingService
 {
