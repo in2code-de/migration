@@ -3,8 +3,10 @@ declare(strict_types=1);
 namespace In2code\Migration\Migration\Helper;
 
 use Doctrine\DBAL\DBALException;
+use In2code\Migration\Exception\FileNotFoundException;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;
+use In2code\Migration\Utility\StringUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -99,6 +101,7 @@ class FileHelper implements SingletonInterface
      * @param int $storageIdentifier
      * @return void
      * @throws DBALException
+     * @throws FileNotFoundException
      */
     public function copyFileAndCreateReference(
         string $relativeFile,
@@ -176,16 +179,24 @@ class FileHelper implements SingletonInterface
      * @param int $storageIdentifier
      * @return int
      * @throws DBALException
+     * @throws FileNotFoundException
      */
     protected function indexFile($file, int $storageIdentifier): int
     {
         $fileIdentifier = 0;
         if (file_exists(GeneralUtility::getFileAbsFileName($file))) {
-            $resourceFactory = ObjectUtility::getObjectManager()->get(ResourceFactory::class);
-            $file = $resourceFactory->getFileObjectFromCombinedIdentifier(
-                $this->getCombinedIdentifier($file, $storageIdentifier)
-            );
-            $fileIdentifier = (int)$file->getProperty('uid');
+            try {
+                $resourceFactory = ObjectUtility::getObjectManager()->get(ResourceFactory::class);
+                $file = $resourceFactory->getFileObjectFromCombinedIdentifier(
+                    $this->getCombinedIdentifier($file, $storageIdentifier)
+                );
+                $fileIdentifier = (int)$file->getProperty('uid');
+            } catch (\Exception $exception) {
+                throw new FileNotFoundException(
+                    'combined identifier ' . $this->getCombinedIdentifier($file, $storageIdentifier) . ' not found',
+                    1569921743
+                );
+            }
         }
         return $fileIdentifier;
     }
@@ -216,8 +227,8 @@ class FileHelper implements SingletonInterface
     protected function substituteFileadminFromPathAndName(string $pathAndName, int $storageIdentifier): string
     {
         $substituteString = $this->findStoragePathFromIdentifier($storageIdentifier) . '/';
-        if (substr($pathAndName, 0, strlen($substituteString)) === $substituteString) {
-            $pathAndName = str_replace($substituteString, '', $pathAndName);
+        if (StringUtility::startsWith($pathAndName, $substituteString)) {
+            $pathAndName = substr($pathAndName, strlen($substituteString));
         }
         if (substr($pathAndName, 0, 1) !== '/') {
             $pathAndName = '/' . $pathAndName;
