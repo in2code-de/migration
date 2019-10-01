@@ -87,10 +87,10 @@ class LinkMappingService
                     $properties = $this->getPropertiesFromIdentifierAndTable($identifier, $tableName);
                     $newProperties = $this->updatePropertiesWithNewLinkMapping($properties, $tableName);
                     $newProperties = $this->updatePropertiesWithNewRelationMapping($newProperties, $tableName);
-                    $newProperties = $this->updatePropertiesWithNewRelationsInFlexForms($newProperties, $tableName);
                     if ($newProperties !== $properties) {
                         $this->updateRecord($newProperties, $tableName);
                     }
+                    $this->updatePropertiesWithNewRelationsInFlexForms($newProperties, $tableName);
                 }
             }
         }
@@ -135,10 +135,10 @@ class LinkMappingService
     /**
      * @param array $properties
      * @param string $tableName
-     * @return array
+     * @return void
      * @throws DBALException
      */
-    protected function updatePropertiesWithNewRelationsInFlexForms(array $properties, string $tableName): array
+    protected function updatePropertiesWithNewRelationsInFlexForms(array $properties, string $tableName): void
     {
         foreach ($properties as $fieldName => $value) {
             if (isset($this->getPropertiesWithRelationsInFlexForms()[$tableName])
@@ -158,7 +158,6 @@ class LinkMappingService
                 }
             }
         }
-        return $properties;
     }
 
     /**
