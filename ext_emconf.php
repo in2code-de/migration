@@ -6,14 +6,14 @@
 
 $EM_CONF[$_EXTKEY] = [
     'title' => 'migration',
-    'description' => 'This extension is a boilerplate extension for any kind of in-database-migrations',
+    'description' => 'This extension is a framework extension for any kind of database-migrations',
     'category' => 'misc',
     'author' => 'in2code GmbH',
     'author_email' => 'service@in2code.de',
     'dependencies' => 'extbase, fluid',
     'state' => 'stable',
     'author_company' => 'in2code GmbH',
-    'version' => '4.0.1',
+    'version' => '5.0.0',
     'autoload' => [
         'psr-4' => ['In2code\\Migration\\' => 'Classes']
     ],

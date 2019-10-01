@@ -1,6 +1,6 @@
 {
   "name": "in2code/migration",
-  "description": "Boilerplate for any kind of TYPO3 migrations and imports",
+  "description": "Framework for any kind of TYPO3 migrations and imports",
   "keywords": ["typo3", "migration", "import", "templavoila", "gridelements", "news"],
   "homepage": "https://github.com/einpraegsam/migration",
   "authors": [

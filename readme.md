@@ -60,7 +60,7 @@ If your migration comes along with a TYPO3 update (like from 6.2 to 9.5 or so), 
   * Start with adding your own Migrators and Importers to your extension (Add a configuration file to your extension)
   * And then have fun with migrating, rolling back database, update your scripts, migrate again, and so on
 * Finish
-  * If you are finished and have a good result, you simply can remove the extension
+  * If you are finished and have a good result, you simply can remove both extensions
   * See also https://www.slideshare.net/einpraegsam/typo3-migration-in-komplexen-upgrade-und-relaunchprojekten-114716116
 
 
@@ -78,18 +78,6 @@ A composer.json file could look like:
 {
   "name": "in2code/migration-extend",
   "type": "typo3-cms-extension",
-  "description": "",
-  "keywords": [
-    "TYPO3",
-    "extension"
-  ],
-  "homepage": "http://www.in2code.de",
-  "authors": [
-    {
-      "name": "in2code GmbH",
-      "email": "service@in2code.de"
-    }
-  ],
   "license": "GPL-2.0+",
   "require": {
     "typo3/cms-core": ">=9.5.0",
@@ -538,16 +526,17 @@ Example CLI call
 
 ## Changelog
 
-| Version    | Date       | State      | Description                                                                  |
-| ---------- | ---------- | ---------- | ---------------------------------------------------------------------------- |
-| 4.0.1      | 2019-09-16 | Bugfix     | Restore deleted ArrayUtility class                                           |
-| 4.0.0      | 2019-09-13 | Task       | Complete rewrite for TYPO3 9 with symfony tasks and doctrine, etc...         |
-| 3.1.0      | 2019-03-19 | Feature    | Update RTE images, Export now with files from links                          |
-| 3.0.0      | 2019-02-08 | Task       | Add a working import and export command controller                           |
-| 2.0.0      | 2018-09-07 | Task       | Use extkey migration, add ImportExportCommandController, some improvements   |
-| 1.1.1      | 2018-09-07 | Task       | Add Changelog                                                                |
-| 1.1.0      | 2017-07-28 | Task       | Add DataHandler and Help CommandControllers                                  |
-| 1.0.0      | 2017-07-26 | Task       | Initial release                                                              |
+| Version    | Date       | State      | Description                                                                      |
+| ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 5.0.0      | 2019-10-01 | Feature    | Port and Migration is now based on an extend-extension with a configuration file |
+| 4.0.1      | 2019-09-16 | Bugfix     | Restore deleted ArrayUtility class                                               |
+| 4.0.0      | 2019-09-13 | Task       | Complete rewrite for TYPO3 9 with symfony tasks and doctrine, etc...             |
+| 3.1.0      | 2019-03-19 | Feature    | Update RTE images, Export now with files from links                              |
+| 3.0.0      | 2019-02-08 | Task       | Add a working import and export command controller                               |
+| 2.0.0      | 2018-09-07 | Task       | Use extkey migration, add ImportExportCommandController, some improvements       |
+| 1.1.1      | 2018-09-07 | Task       | Add Changelog                                                                    |
+| 1.1.0      | 2017-07-28 | Task       | Add DataHandler and Help CommandControllers                                      |
+| 1.0.0      | 2017-07-26 | Task       | Initial release                                                                  |
 
 
 
