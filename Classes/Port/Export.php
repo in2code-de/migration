@@ -144,6 +144,7 @@ class Export
                 'pages' => $this->getPageProperties()
             ]
         ];
+        $this->extendPagesWithTranslations();
         $this->extendWithOtherTables();
         $this->extendWithFiles();
         $this->extendWithFilesFromLinks();
@@ -162,6 +163,18 @@ class Export
             $properties[] = $this->getPropertiesFromIdentifierAndTable($pageIdentifier, 'pages');
         }
         return $properties;
+    }
+
+    /**
+     * Extend page records with more page records with sys_language_uid>0
+     * @return void
+     */
+    protected function extendPagesWithTranslations(): void
+    {
+        foreach ($this->jsonArray['records']['pages'] as $pageProperties) {
+            $records = $this->getRecordsFromPageAndTable($pageProperties['uid'], 'pages', ' and sys_language_uid>0');
+            $this->jsonArray['records']['pages'] = array_merge($this->jsonArray['records']['pages'], $records);
+        }
     }
 
     /**
@@ -292,16 +305,17 @@ class Export
     /**
      * @param int $pageIdentifier
      * @param string $tableName
+     * @param string $addWhere
      * @return array
      */
-    protected function getRecordsFromPageAndTable(int $pageIdentifier, string $tableName): array
+    protected function getRecordsFromPageAndTable(int $pageIdentifier, string $tableName, string $addWhere = ''): array
     {
         $queryBuilder = DatabaseUtility::getQueryBuilderForTable($tableName);
         $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
         return (array)$queryBuilder
             ->select('*')
             ->from($tableName)
-            ->where('pid=' . $pageIdentifier)
+            ->where('pid=' . $pageIdentifier . $addWhere)
             ->execute()
             ->fetchAll();
     }

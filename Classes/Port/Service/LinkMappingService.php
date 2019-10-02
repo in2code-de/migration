@@ -125,7 +125,7 @@ class LinkMappingService
             if (isset($this->getPropertiesWithRelations()[$tableName])
                 && in_array($fieldName, $this->getPropertiesWithRelations()[$tableName])) {
                 if (!empty($value)) {
-                    $properties[$fieldName] = $this->updateValueWithSimpleLinks($value);
+                    $properties[$fieldName] = $this->updateValueWithSimpleLinks((string)$value);
                 }
             }
         }
@@ -178,7 +178,7 @@ class LinkMappingService
         $sql = 'select ExtractValue(' . $fieldName . ', \'' . $configuration['selection'] . '\') value from '
             . $tableName . ' where uid=' . (int)$identifier;
         $value = (string)$connection->executeQuery($sql)->fetchColumn(0);
-        $newValue = $this->updateValueWithSimpleLinks($value);
+        $newValue = $this->updateValueWithSimpleLinks((string)$value);
         if (!empty($newValue)) {
             $sql = 'update ' . $tableName . ' set '
                 . $fieldName . ' = UpdateXML(' . $fieldName . ', \''

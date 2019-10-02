@@ -366,11 +366,12 @@ class Import
     }
 
     /**
-     * Do some magic with the record properties:
+     * Do some magic with record properties:
      * - Remove uid field
      * - Remove not existing fields (compare with db structure of the target system)
      * - Update tstamp field (if any)
      * - Update pid field with the new from mapping
+     * - Update l18n_parent/l10n_parent/l10n_source value
      *
      * @param array $properties
      * @param string $tableName
@@ -392,6 +393,13 @@ class Import
         foreach (array_keys($properties) as $field) {
             if (DatabaseUtility::isFieldExistingInTable($field, $tableName) === false) {
                 unset($properties[$field]);
+            }
+        }
+        $languageFields = ['l10n_parent', 'l10n_source', 'l18n_parent'];
+        foreach ($languageFields as $languageField) {
+            if (!empty($properties[$languageField])) {
+                $properties[$languageField]
+                    = $this->mappingService->getNewFromOld((int)$properties[$languageField], $tableName);
             }
         }
         return $properties;
