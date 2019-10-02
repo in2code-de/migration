@@ -21,7 +21,7 @@ class FileHelper implements SingletonInterface
     /**
      * Cache storages
      * [
-     *      1 => "fileadmin"
+     *      1 => "fileadmin/"
      * ]
      *
      * @var array
@@ -29,6 +29,8 @@ class FileHelper implements SingletonInterface
     protected $storages = [];
 
     /**
+     * Search for sys_file_reference properties
+     *
      * @param string $tableName
      * @param string $fieldName
      * @param int $uid
@@ -44,6 +46,8 @@ class FileHelper implements SingletonInterface
     }
 
     /**
+     * Search for sys_file properties
+     *
      * @param int $identifier
      * @return array
      * @throws DBALException
@@ -55,6 +59,8 @@ class FileHelper implements SingletonInterface
     }
 
     /**
+     * Search for sys_file records
+     *
      * @param string $tableName
      * @param string $fieldName
      * @param int $uid
@@ -72,10 +78,54 @@ class FileHelper implements SingletonInterface
     }
 
     /**
-     * Return "fileadmin" from sys_file_storage.uid
+     * Search for sys_file.uid
+     *
+     * @param string $identifier "/download/file.pdf" (must start with a leading slash)
+     * @param int $storage "1"
+     * @return int
+     */
+    public function findFileIdentifierFromIdentifierAndStorage(string $identifier, int $storage): int
+    {
+        if (StringUtility::startsWith($identifier, '/') === false) {
+            $identifier = '/' . $identifier;
+        }
+        $queryBuilder = DatabaseUtility::getQueryBuilderForTable('sys_file');
+        return (int)$queryBuilder
+            ->select('uid')
+            ->from('sys_file')
+            ->where(
+                $queryBuilder->expr()->eq('identifier', $queryBuilder->createNamedParameter($identifier)),
+                $queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter($storage, \PDO::PARAM_INT))
+            )
+            ->execute()
+            ->fetchColumn(0);
+    }
+
+    /**
+     * Search for sys_file_storage.uid
+     *
+     * @param string $path
+     * @return int
+     * @throws DBALException
+     */
+    public function findIdentifierFromStoragePath(string $path): int
+    {
+        if (in_array($path, $this->storages) === false) {
+            $sql = 'select uid from sys_file_storage where ExtractValue(configuration, ';
+            $sql .= '\'//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="basePath"]/value\') = "';
+            $sql .= $path . '";';
+            $connection = DatabaseUtility::getConnectionForTable('sys_file_storage');
+            $identifier = (int)$connection->executeQuery($sql)->fetchColumn(0);
+            $this->storages[$identifier] = $path;
+        }
+        return array_search($path, $this->storages);
+    }
+
+    /**
+     * Return path (like "fileadmin/") from sys_file_storage.uid
      *
      * @param int $identifier
-     * @return string
+     * @return string path with trailing slash
      * @throws DBALException
      */
     public function findStoragePathFromIdentifier(int $identifier): string
@@ -85,13 +135,15 @@ class FileHelper implements SingletonInterface
             $sql .= '/language/field[@index="basePath"]/value\') path from sys_file_storage where uid='
                 . (int)$identifier;
             $connection = DatabaseUtility::getConnectionForTable('sys_file_storage');
-            $storage = rtrim((string)$connection->executeQuery($sql)->fetchColumn(0), '/');
+            $storage = (string)$connection->executeQuery($sql)->fetchColumn(0);
             $this->storages[$identifier] = $storage;
         }
         return $this->storages[$identifier];
     }
 
     /**
+     * Copy a file to a new target and create a reference to it
+     *
      * @param string $relativeFile e.g. uploads/pics/image.jpg
      * @param string $targetFolder e.g. fileadmin/new/
      * @param string $tableName for sys_file_reference e.g. tx_news_domain_model_news
@@ -226,7 +278,7 @@ class FileHelper implements SingletonInterface
      */
     protected function substituteFileadminFromPathAndName(string $pathAndName, int $storageIdentifier): string
     {
-        $substituteString = $this->findStoragePathFromIdentifier($storageIdentifier) . '/';
+        $substituteString = $this->findStoragePathFromIdentifier($storageIdentifier);
         if (StringUtility::startsWith($pathAndName, $substituteString)) {
             $pathAndName = substr($pathAndName, strlen($substituteString));
         }

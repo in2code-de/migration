@@ -2,7 +2,10 @@
 declare(strict_types=1);
 namespace In2code\Migration\Port\Service;
 
+use Doctrine\DBAL\DBALException;
+use In2code\Migration\Migration\Helper\FileHelper;
 use In2code\Migration\Utility\ArrayUtility;
+use In2code\Migration\Utility\ObjectUtility;
 
 /**
  * Class LinkRelationService
@@ -68,6 +71,7 @@ class LinkRelationService
     /**
      * @param array $jsonArray
      * @return int[]
+     * @throws DBALException
      */
     public function getFileIdentifiersFromLinks(array $jsonArray): array
     {
@@ -78,6 +82,7 @@ class LinkRelationService
                     foreach ($fields as $field) {
                         if (!empty($row[$field])) {
                             $identifiers += $this->searchForFileLinks($row[$field]);
+                            $identifiers += $this->searchForClassicFileLinks($row[$field]);
                         }
                     }
                 }
@@ -87,6 +92,8 @@ class LinkRelationService
     }
 
     /**
+     * Search for links in RTE text like "<a href="t3://file?uid=123">link</a>"
+     *
      * @param string $content
      * @return int[] file identifiers
      */
@@ -95,6 +102,36 @@ class LinkRelationService
         preg_match_all('~t3://file\?uid=(\d+)~', $content, $result);
         if (!empty($result[1])) {
             return ArrayUtility::intArray($result[1]);
+        }
+        return [];
+    }
+
+    /**
+     * Search for oldschool links in RTE text like:
+     *  <a href="fileadmin/file.pdf">link</a> OR
+     *  <img src="fileadmin/image.jpg">
+     *
+     * @param string $content
+     * @return array
+     * @throws DBALException
+     */
+    protected function searchForClassicFileLinks(string $content): array
+    {
+        $folders = implode('|', $this->configuration['addFilesFromFileadminLinks']['paths']);
+        preg_match_all('~(href|src)="((' . $folders . ')([^"]+))"~', $content, $result);
+        if (count($result[0]) > 0) {
+            $files = [];
+            foreach (array_keys($result[0]) as $key) {
+                $identifier = $result[4][$key];
+                $storageFolder = $result[3][$key];
+                $fileHelper = ObjectUtility::getObjectManager()->get(FileHelper::class);
+                $storageIdentifier = $fileHelper->findIdentifierFromStoragePath($storageFolder);
+                $file = $fileHelper->findFileIdentifierFromIdentifierAndStorage($identifier, $storageIdentifier);
+                if ($file > 0) {
+                    $files[] = $file;
+                }
+            }
+            return $files;
         }
         return [];
     }

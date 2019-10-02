@@ -151,6 +151,8 @@ class Export
     }
 
     /**
+     * Build a basic array with pages
+     *
      * @return array
      */
     protected function getPageProperties(): array
@@ -163,6 +165,8 @@ class Export
     }
 
     /**
+     * Add records (like tt_content) to pages
+     *
      * @return void
      * @throws DBALException
      */
@@ -181,6 +185,8 @@ class Export
     }
 
     /**
+     * Attach files from related sys_file_reference records
+     *
      * @return void
      * @throws DBALException
      */
@@ -195,6 +201,8 @@ class Export
     }
 
     /**
+     * Attach files from links in RTE fields
+     *
      * @return void
      * @throws DBALException
      */
@@ -210,6 +218,8 @@ class Export
     }
 
     /**
+     * Try to find mm relations that should be added
+     *
      * @return void
      * @throws DBALException
      */
@@ -241,6 +251,8 @@ class Export
     }
 
     /**
+     * Attach a file to the array by given sys_file.uid
+     *
      * @param int $fileIdentifier
      * @return void
      * @throws DBALException

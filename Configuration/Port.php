@@ -19,7 +19,6 @@ return [
         'sys_category_record_mm'
     ],
 
-
     /**
      * Update links with new identifiers when importing records (after the import).
      * Here you can define which fields handle those links.
@@ -111,7 +110,6 @@ return [
         ],
     ],
 
-
     /**
      * Special relations with MM-tables for ex- and import (tables are ignored if they don't exist in the system,
      * sys_file_reference is handled separately)
@@ -153,6 +151,17 @@ return [
         ]
     ],
 
+    /**
+     * Attach files from oldschool links or embedded images in RTE fields like
+     * <a href="fileadmin/file.pdf">file</a> OR
+     * <img src="fileadmin/image.jpg">
+     */
+    'addFilesFromFileadminLinks' => [
+        'paths' => [
+            // don't forget the trailing slash
+            'fileadmin/'
+        ]
+    ],
 
     /**
      * Check if the file is already existing while importing (compare path and name - no size or date)
