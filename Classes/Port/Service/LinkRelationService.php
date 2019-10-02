@@ -100,22 +100,6 @@ class LinkRelationService
     }
 
     /**
-     * Search for t3://file?uid=123
-     *
-     * @param string $value
-     * @return string
-     */
-    protected function updateFileLinks(string $value): string
-    {
-        $value = preg_replace_callback(
-            '~(t3://file\?uid=)(\d+)~',
-            [$this, 'updateFileLinksCallback'],
-            $value
-        );
-        return $value;
-    }
-
-    /**
      * @return array
      */
     protected function getPropertiesWithLinks(): array
