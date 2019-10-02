@@ -181,7 +181,7 @@ class Import
     {
         if (is_array($this->jsonArray['records']['sys_file'])) {
             foreach ($this->jsonArray['records']['sys_file'] as $properties) {
-                if ($this->isFileRecordAlradyExisting($properties['identifier'], (int)$properties['storage'])) {
+                if ($this->isFileRecordAlreadyExisting($properties['identifier'], (int)$properties['storage'])) {
                     $newUid = $this->findFileUidByStorageAndIdentifier(
                         $properties['identifier'],
                         (int)$properties['storage']
@@ -344,7 +344,7 @@ class Import
      * @param int $storage
      * @return bool
      */
-    protected function isFileRecordAlradyExisting(string $identifier, int $storage): bool
+    protected function isFileRecordAlreadyExisting(string $identifier, int $storage): bool
     {
         return $this->findFileUidByStorageAndIdentifier($identifier, $storage) > 0;
     }
