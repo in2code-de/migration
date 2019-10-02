@@ -452,6 +452,8 @@ class Import
     }
 
     /**
+     * Getter can be used in signals
+     *
      * @return array
      */
     public function getJsonArray(): array
@@ -460,6 +462,8 @@ class Import
     }
 
     /**
+     * Setter can be used in signals
+     *
      * @param array $jsonArray
      * @return Import
      */
@@ -467,5 +471,15 @@ class Import
     {
         $this->jsonArray = $jsonArray;
         return $this;
+    }
+
+    /**
+     * Getter can be used in signals
+     *
+     * @return array
+     */
+    public function getConfiguration(): array
+    {
+        return $this->configuration;
     }
 }
