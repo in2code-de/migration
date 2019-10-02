@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
+use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Utility\DatabaseUtility;
 
 /**
@@ -32,7 +33,6 @@ class RemoveFileRelationsPropertyHelper extends AbstractPropertyHelper implement
 
     /**
      * @return void
-     * @throws \Exception
      */
     public function manipulate(): void
     {
@@ -47,7 +47,7 @@ class RemoveFileRelationsPropertyHelper extends AbstractPropertyHelper implement
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws ConfigurationException
      */
     public function shouldMigrate(): bool
     {
