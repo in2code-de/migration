@@ -130,7 +130,7 @@ class Export
      */
     protected function getJson(): string
     {
-        return json_encode($this->jsonArray);
+        return json_encode($this->jsonArray, JSON_HEX_TAG);
     }
 
     /**
