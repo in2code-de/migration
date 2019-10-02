@@ -33,11 +33,6 @@ class Export
     protected $recursive = 99;
 
     /**
-     * @var bool
-     */
-    protected $addFiles = true;
-
-    /**
      * Hold the complete configuration like
      *
      *  'excludedTables' => [
@@ -191,7 +186,7 @@ class Export
      */
     protected function extendWithFiles(): void
     {
-        if ($this->addFiles === true) {
+        if ($this->configuration['addFilesToJson'] === true) {
             foreach ((array)$this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
                 $fileIdentifier = (int)$referenceProperties['uid_local'];
                 $this->extendWithFilesBasic($fileIdentifier);
@@ -205,10 +200,12 @@ class Export
      */
     protected function extendWithFilesFromLinks(): void
     {
-        $linkRelationService = ObjectUtility::getObjectManager()->get(LinkRelationService::class, $this->configuration);
-        $identifiers = $linkRelationService->getFileIdentifiersFromLinks($this->jsonArray);
-        foreach ($identifiers as $fileIdentifier) {
-            $this->extendWithFilesBasic($fileIdentifier);
+        if ($this->configuration['addFilesToJson'] === true) {
+            $linkRelationService = ObjectUtility::getObjectManager()->get(LinkRelationService::class, $this->configuration);
+            $identifiers = $linkRelationService->getFileIdentifiersFromLinks($this->jsonArray);
+            foreach ($identifiers as $fileIdentifier) {
+                $this->extendWithFilesBasic($fileIdentifier);
+            }
         }
     }
 

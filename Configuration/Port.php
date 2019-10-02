@@ -158,5 +158,12 @@ return [
      * Check if the file is already existing while importing (compare path and name - no size or date)
      * and decide if it should be overwritten or not
      */
-    'overwriteFiles' => false
+    'overwriteFiles' => false,
+
+    /**
+     * Decide if the related files (also linked files) should be added to json file or not. If files are not added,
+     * the json will be much smaller on the one hand but on the other hand, you have to take care that fileadmin will
+     * be synced manually
+     */
+    'addFilesToJson' => true
 ];
