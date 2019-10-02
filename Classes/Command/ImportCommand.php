@@ -60,8 +60,8 @@ class ImportCommand extends AbstractPortCommand
         );
         try {
             $this->checkTarget((int)$input->getArgument('pid'));
-            $importService->import();
-            $message = 'success!';
+            $pages = $importService->import();
+            $message = 'Success. ' . $pages . ' new pages imported!';
         } catch (\Exception $exception) {
             $message = $exception->getMessage() . ' (Errorcode ' . $exception->getCode() . ')';
         }

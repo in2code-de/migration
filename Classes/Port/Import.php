@@ -126,12 +126,12 @@ class Import
     }
 
     /**
-     * @return bool
+     * @return int
      * @throws DBALException
      * @throws InvalidSlotException
      * @throws InvalidSlotReturnException
      */
-    public function import(): bool
+    public function import(): int
     {
         $this->importPages();
         $this->importRecords();
@@ -141,7 +141,7 @@ class Import
         $this->importMmRecords();
         $this->updateLinks();
         $this->signalDispatch(__CLASS__, 'afterImport', [$this]);
-        return true;
+        return count($this->jsonArray['records']['pages']);
     }
 
     /**
