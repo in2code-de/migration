@@ -13,6 +13,7 @@ class MappingService
      * Example mapping configuration:
      *  [
      *      'pages' => [
+     *          // old => new
      *          1 => 2,
      *          4 => 6
      *      ],

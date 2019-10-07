@@ -9,7 +9,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class LinkMappingService
- * will change links after an import with new identifiers
+ * will change links (in fields or in FlexForm) after an import with new identifiers
  */
 class LinkMappingService
 {
@@ -23,20 +23,12 @@ class LinkMappingService
      *      'propertiesWithLinks' => [
      *          'tt_content' => [
      *              'bodytext'
-     *          ],
-     *          'tx_news_domain_model_news' => [
-     *              'bodytext'
      *          ]
      *      ],
      *      'propertiesWithRelations' => [
-     *          'pages' => [
-     *              'shortcut'
-     *          ],
-     *          'tt_content' => [
-     *              'header_link'
-     *          ],
-     *          'sys_file_reference' => [
-     *              'link'
+     *          [
+     *              'field' => 'header_link',
+     *              'table' => 'pages'
      *          ]
      *      ],
      *      'propertiesWithRelationsInFlexForms' => [
@@ -48,11 +40,12 @@ class LinkMappingService
      *                          'Ctype' => 'list',
      *                          'list_type' => 9
      *                      ],
-     *                      'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value'
+     *                      'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value',
+     *                      'table' => 'pages'
      *                  ]
      *              ]
      *          ]
-     *      ],
+     *      ]
      *  ]
      *
      * @var array
@@ -97,6 +90,8 @@ class LinkMappingService
     }
 
     /**
+     * Update links in RTE
+     *
      * @param array $properties
      * @param string $tableName
      * @return array
@@ -121,11 +116,12 @@ class LinkMappingService
      */
     protected function updatePropertiesWithNewRelationMapping(array $properties, string $tableName): array
     {
-        foreach ($properties as $fieldName => $value) {
-            if (isset($this->getPropertiesWithRelations()[$tableName])
-                && in_array($fieldName, $this->getPropertiesWithRelations()[$tableName])) {
-                if (!empty($value)) {
-                    $properties[$fieldName] = $this->updateValueWithSimpleLinks((string)$value);
+        if (isset($this->getPropertiesWithRelations()[$tableName])) {
+            foreach ($this->getPropertiesWithRelations()[$tableName] as $configuration) {
+                $field = $configuration['field'];
+                $table = $configuration['table'];
+                if (array_key_exists($field, $properties)) {
+                    $properties[$field] = $this->updateValueWithSimpleLinks((string)$properties[$field], $table);
                 }
             }
         }
@@ -140,24 +136,32 @@ class LinkMappingService
      */
     protected function updatePropertiesWithNewRelationsInFlexForms(array $properties, string $tableName): void
     {
-        foreach ($properties as $fieldName => $value) {
-            if (isset($this->getPropertiesWithRelationsInFlexForms()[$tableName])
-                && array_key_exists($fieldName, $this->getPropertiesWithRelationsInFlexForms()[$tableName])) {
-                if (!empty($value)) {
-                    foreach ($this->getPropertiesWithRelationsInFlexForms()[$tableName][$fieldName] as $configuration) {
-                        $conditionFits = true;
-                        foreach ($configuration['condition'] as $field => $value) {
-                            if ($properties[$field] !== $value) {
-                                $conditionFits = true;
-                            }
-                        }
-                        if ($conditionFits === true) {
-                            $this->updateFlexFormValue($properties['uid'], $tableName, $fieldName, $configuration);
+        if (isset($this->getPropertiesWithRelationsInFlexForms()[$tableName])) {
+            foreach ($this->getPropertiesWithRelationsInFlexForms()[$tableName] as $field => $configurations) {
+                if (array_key_exists($field, $properties) && !empty($properties[$field])) {
+                    foreach ($configurations as $configuration) {
+                        if ($this->isConditionFittingForFlexFormRelations($properties, $configuration)) {
+                            $this->updateFlexFormValue($properties['uid'], $tableName, $field, $configuration);
                         }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * @param array $properties
+     * @param array $configuration
+     * @return bool
+     */
+    protected function isConditionFittingForFlexFormRelations(array $properties, array $configuration): bool
+    {
+        foreach ($configuration['condition'] as $field => $value) {
+            if (array_key_exists($field, $properties) && $properties[$field] !== $value) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -178,7 +182,7 @@ class LinkMappingService
         $sql = 'select ExtractValue(' . $fieldName . ', \'' . $configuration['selection'] . '\') value from '
             . $tableName . ' where uid=' . (int)$identifier;
         $value = (string)$connection->executeQuery($sql)->fetchColumn(0);
-        $newValue = $this->updateValueWithSimpleLinks((string)$value);
+        $newValue = $this->updateValueWithSimpleLinks((string)$value, $configuration['table']);
         if (!empty($newValue)) {
             $sql = 'update ' . $tableName . ' set '
                 . $fieldName . ' = UpdateXML(' . $fieldName . ', \''
@@ -189,6 +193,8 @@ class LinkMappingService
     }
 
     /**
+     * Update links in RTE
+     *
      * @param string $value
      * @return string
      */
@@ -201,16 +207,18 @@ class LinkMappingService
     }
 
     /**
+     * Update fields that keeps relations (like tt_content.header_link)
+     *
      * @param string $value
+     * @param string $table
      * @return string
      */
-    protected function updateValueWithSimpleLinks(string $value): string
+    protected function updateValueWithSimpleLinks(string $value, string $table): string
     {
         if (StringUtility::isIntegerListOrInteger($value)) {
-            $newValue = $this->updatePageLinksSimple($value);
+            $newValue = $this->updateRecordLinksSimple($value, $table);
         } else {
-            $value = $this->updatePageLinks($value);
-            $newValue = $this->updateFileLinks($value);
+            $newValue = $this->updateValueWithNewLinkMapping($value);
         }
         return $newValue;
     }
@@ -235,14 +243,15 @@ class LinkMappingService
      * Search for "123" or "123,124"
      *
      * @param string $value
+     * @param string $table Link to this kind of records
      * @return string
      */
-    protected function updatePageLinksSimple(string $value): string
+    protected function updateRecordLinksSimple(string $value, string $table): string
     {
         $identifiers = GeneralUtility::intExplode(',', $value);
         $newIdentifiers = [];
         foreach ($identifiers as $identifier) {
-            $newIdentifiers[] = $this->mappingService->getNewPidFromOldPid($identifier);
+            $newIdentifiers[] = $this->mappingService->getNewFromOld($identifier, $table);
         }
         return (string)implode(',', $newIdentifiers);
     }

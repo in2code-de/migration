@@ -47,8 +47,8 @@ return [
         ],
 
         /**
-         * Simple PIDs in single fields:
-         * Define simple fields that only hold relations
+         * Simple UIDs in single fields:
+         * Define simple fields that only hold relations (mostly to pages records)
          *
          * Example content (like pages.shortcut or tt_content.header_link) with relations/links:
          *  - "123" (link to page 123)
@@ -57,22 +57,40 @@ return [
          */
         'propertiesWithRelations' => [
             'pages' => [
-                'shortcut'
+                [
+                    'field' => 'shortcut',
+                    'table' => 'pages'
+                ]
             ],
             'tt_content' => [
-                'header_link',
-                'records',
-                'pages',
-                'tx_gridelements_container'
+                [
+                    'field' => 'header_link',
+                    'table' => 'pages'
+                ],
+                [
+                    'field' => 'records',
+                    'table' => 'pages'
+                ],
+                [
+                    'field' => 'pages',
+                    'table' => 'pages'
+                ],
+                [
+                    'field' => 'tx_gridelements_container',
+                    'table' => 'tt_content'
+                ]
             ],
             'sys_file_reference' => [
-                'link'
+                [
+                    'field' => 'link',
+                    'table' => 'pages'
+                ]
             ]
         ],
 
         /**
-         * Simple PIDs in FlexForm value fields:
-         * Define some FlexForm fields where PIDs should be updated
+         * Simple UIDs in FlexForm value fields:
+         * Define some FlexForm fields where UIDs of records (mostly pages) should be updated
          *
          *  - "123" (link to page 123)
          *  - "123,124" (link to two pages)
@@ -85,25 +103,37 @@ return [
                         // tt_news update flexform PIDitemDisplay
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 9
+                            'list_type' => '9'
                         ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value'
+                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value',
+                        'table' => 'pages'
                     ],
                     [
                         // tt_news update flexform backPid
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 9
+                            'list_type' => '9'
                         ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="backPid"]/value'
+                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="backPid"]/value',
+                        'table' => 'pages'
                     ],
                     [
                         // tt_news update flexform pages
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 9
+                            'list_type' => '9'
                         ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="pages"]/value'
+                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="pages"]/value',
+                        'table' => 'pages'
+                    ],
+                    [
+                        // tt_news update flexform pages
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => '9'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="categorySelection"]/value',
+                        'table' => 'tt_news_cat'
                     ]
                 ]
             ]

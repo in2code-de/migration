@@ -23,20 +23,12 @@ class LinkRelationService
      *      'propertiesWithLinks' => [
      *          'tt_content' => [
      *              'bodytext'
-     *          ],
-     *          'tx_news_domain_model_news' => [
-     *              'bodytext'
      *          ]
      *      ],
      *      'propertiesWithRelations' => [
-     *          'pages' => [
-     *              'shortcut'
-     *          ],
-     *          'tt_content' => [
-     *              'header_link'
-     *          ],
-     *          'sys_file_reference' => [
-     *              'link'
+     *          [
+     *              'field' => 'header_link',
+     *              'table' => 'pages'
      *          ]
      *      ],
      *      'propertiesWithRelationsInFlexForms' => [
@@ -48,11 +40,17 @@ class LinkRelationService
      *                          'Ctype' => 'list',
      *                          'list_type' => 9
      *                      ],
-     *                      'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value'
+     *                      'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value',
+     *                      'table' => 'pages'
      *                  ]
      *              ]
      *          ]
-     *      ],
+     *      ]
+     *  ],
+     *  'addFilesFromFileadminLinks' => [
+     *      'paths' => [
+     *          'fileadmin/'
+     *      ]
      *  ]
      *
      * @var array
@@ -112,7 +110,7 @@ class LinkRelationService
      *  <img src="fileadmin/image.jpg">
      *
      * @param string $content
-     * @return array
+     * @return int[]
      * @throws DBALException
      */
     protected function searchForClassicFileLinks(string $content): array

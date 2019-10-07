@@ -42,10 +42,12 @@ class Export
      *      'pages' => [
      *          [
      *              'table' => 'sys_category_record_mm',
-     *              'relation' => 'pages.uid = sys_category_record_mm.uid_foreign and tablename="pages" and '
-     *                  . 'fieldname="categories"',
-     *              'targetTable' => 'sys_category',
-     *              'targetRelation' => 'sys_category.uid = sys_category_record_mm.uid_local'
+     *              'uid_local' => 'sys_category',
+     *              'uid_foreign' => 'pages',
+     *              'additional' => [
+     *                  'tablenames' => 'pages',
+     *                  'fieldname' => 'categories'
+     *              ]
      *          ]
      *      ]
      *  ]
