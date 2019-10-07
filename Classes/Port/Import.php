@@ -429,7 +429,7 @@ class Import
         $content = file_get_contents($this->file);
         $array = json_decode($content, true);
         if ($array === null) {
-            throw new ConfigurationException('No json configuration found in given file', 1569913542);
+            throw new ConfigurationException('No data in in given json file', 1569913542);
         }
         $this->jsonArray = $array;
         $this->setPidForFirstPage();
