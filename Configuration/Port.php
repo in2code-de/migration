@@ -85,6 +85,12 @@ return [
                     'field' => 'link',
                     'table' => 'pages'
                 ]
+            ],
+            'tt_news_cat' => [
+                [
+                    'field' => 'parent_category',
+                    'table' => 'tt_news_cat'
+                ]
             ]
         ],
 
