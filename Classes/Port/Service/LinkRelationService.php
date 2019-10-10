@@ -79,8 +79,8 @@ class LinkRelationService
                 foreach ($jsonArray['records'][$table] as $row) {
                     foreach ($fields as $field) {
                         if (!empty($row[$field])) {
-                            $identifiers += $this->searchForFileLinks($row[$field]);
-                            $identifiers += $this->searchForClassicFileLinks($row[$field]);
+                            $identifiers = array_merge($identifiers, $this->searchForFileLinks($row[$field]));
+                            $identifiers = array_merge($identifiers, $this->searchForClassicFileLinks($row[$field]));
                         }
                     }
                 }
