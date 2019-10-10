@@ -174,8 +174,10 @@ class Export
     protected function extendPagesWithTranslations(): void
     {
         foreach ($this->jsonArray['records']['pages'] as $pageProperties) {
-            $records = $this->getRecordsFromPageAndTable($pageProperties['uid'], 'pages', ' and sys_language_uid>0');
-            $this->jsonArray['records']['pages'] = array_merge($this->jsonArray['records']['pages'], $records);
+            if ((int)$pageProperties['uid'] > 0) {
+                $records = $this->getRecordsFromPageAndTable((int)$pageProperties['uid'], 'pages', ' and sys_language_uid>0');
+                $this->jsonArray['records']['pages'] = array_merge($this->jsonArray['records']['pages'], $records);
+            }
         }
     }
 
