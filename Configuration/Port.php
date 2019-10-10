@@ -14,6 +14,7 @@ return [
         'sys_note',
         'sys_history',
         'sys_file_storage',
+        'sys_filemounts',
         'tx_extensionmanager_domain_model_extension',
         'tx_extensionmanager_domain_model_repository',
         'sys_category_record_mm'
