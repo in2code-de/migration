@@ -2,9 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
-use Doctrine\DBAL\DBALException;
 use In2code\Migration\Exception\ConfigurationException;
-use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\TcaUtility;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
@@ -16,7 +14,6 @@ use TYPO3\CMS\Core\DataHandling\SlugHelper;
  *
  *  Configuration example:
  *      'configuration' => [
- *          'field' => 'title',
  *          'conditions' => [
  *              'CType' => [
  *                  'text',
@@ -33,25 +30,8 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
      * @var array
      */
     protected $checkForConfiguration = [
-        'conditions',
-        'field'
+        'conditions'
     ];
-
-    /**
-     * @return void
-     * @throws ConfigurationException
-     * @throws DBALException
-     */
-    public function initialize(): void
-    {
-        if (DatabaseUtility::isFieldExistingInTable((string)$this->getConfigurationByKey('field'), $this->table)
-            === false) {
-            throw new ConfigurationException(
-                'Field ' . $this->getConfigurationByKey('field') . ' does not exist in table ' . $this->table,
-                1570026428
-            );
-        }
-    }
 
     /**
      * @return void
