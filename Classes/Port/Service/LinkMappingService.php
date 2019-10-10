@@ -200,9 +200,11 @@ class LinkMappingService
      */
     protected function updateValueWithNewLinkMapping(string $value): string
     {
-        $value = $this->updatePageLinks($value);
-        $value = $this->updateFileLinks($value);
-        $value = $this->updateRteImages($value);
+        if (!empty($value)) {
+            $value = $this->updatePageLinks($value);
+            $value = $this->updateFileLinks($value);
+            $value = $this->updateRteImages($value);
+        }
         return $value;
     }
 
@@ -215,10 +217,13 @@ class LinkMappingService
      */
     protected function updateValueWithSimpleLinks(string $value, string $table): string
     {
-        if (StringUtility::isIntegerListOrInteger($value)) {
-            $newValue = $this->updateRecordLinksSimple($value, $table);
-        } else {
-            $newValue = $this->updateValueWithNewLinkMapping($value);
+        $newValue = $value;
+        if (!empty($value)) {
+            if (StringUtility::isIntegerListOrInteger($value)) {
+                $newValue = $this->updateRecordLinksSimple($value, $table);
+            } else {
+                $newValue = $this->updateValueWithNewLinkMapping($value);
+            }
         }
         return $newValue;
     }
