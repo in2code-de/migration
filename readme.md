@@ -528,6 +528,7 @@ Example CLI call
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 5.3.0      | 2019-10-11 | Task       | Port: Support links to records, some bugfixes, some cleanup                      |
 | 5.2.0      | 2019-10-02 | Feature    | Export: Attach also files that simply linked in RTE + add localized records      |
 | 5.1.0      | 2019-10-02 | Feature    | Bugfix with missing tags, toggle file includes, added SlugPropertyHelper         |
 | 5.0.0      | 2019-10-01 | Feature    | Port and Migration is now based on an extend-extension with a configuration file |
