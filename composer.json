@@ -18,7 +18,6 @@
     "ext-json": "*"
   },
   "replace": {
-    "migration": "self.version",
     "typo3-ter/migration": "self.version"
   },
   "autoload": {
