@@ -87,6 +87,38 @@ return [
                     'table' => 'pages'
                 ]
             ],
+            'tx_powermail_domain_model_mail' => [
+                [
+                    'field' => 'feuser',
+                    'table' => 'fe_users'
+                ]
+            ],
+            'tx_powermail_domain_model_answer' => [
+                [
+                    'field' => 'field',
+                    'table' => 'tx_powermail_domain_model_field'
+                ],
+                [
+                    'field' => 'mail',
+                    'table' => 'tx_powermail_domain_model_mail'
+                ]
+            ],
+            'tx_powermail_domain_model_page' => [
+                [
+                    'field' => 'forms',
+                    'table' => 'tx_powermail_domain_model_form'
+                ]
+            ],
+            'tx_powermail_domain_model_field' => [
+                [
+                    'field' => 'pages',
+                    'table' => 'tx_powermail_domain_model_page'
+                ],
+                [
+                    'field' => 'content_element',
+                    'table' => 'tt_content'
+                ]
+            ],
             'tt_news_cat' => [
                 [
                     'field' => 'parent_category',
@@ -107,7 +139,34 @@ return [
             'tt_content' => [
                 'pi_flexform' => [
                     [
-                        // tt_news update flexform PIDitemDisplay
+                        // powermail: form selection
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'powermail_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.form"]/value',
+                        'table' => 'tx_powermail_domain_model_form'
+                    ],
+                    [
+                        // powermail: where to save mails
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'powermail_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.pid"]/value',
+                        'table' => 'pages'
+                    ],
+                    [
+                        // powermail: where to save mails
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'powermail_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="thx"]/language/field[@index="settings.flexform.thx.redirect"]/value',
+                        'table' => 'pages'
+                    ],
+                    [
+                        // tt_news PIDitemDisplay
                         'condition' => [
                             'Ctype' => 'list',
                             'list_type' => '9'
@@ -116,7 +175,7 @@ return [
                         'table' => 'pages'
                     ],
                     [
-                        // tt_news update flexform backPid
+                        // tt_news backPid
                         'condition' => [
                             'Ctype' => 'list',
                             'list_type' => '9'
@@ -125,7 +184,7 @@ return [
                         'table' => 'pages'
                     ],
                     [
-                        // tt_news update flexform pages
+                        // tt_news pages
                         'condition' => [
                             'Ctype' => 'list',
                             'list_type' => '9'
@@ -134,7 +193,7 @@ return [
                         'table' => 'pages'
                     ],
                     [
-                        // tt_news update flexform pages
+                        // tt_news pages
                         'condition' => [
                             'Ctype' => 'list',
                             'list_type' => '9'
