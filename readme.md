@@ -1,4 +1,4 @@
-# TYPO3 Migration and Importer Boilerplate
+# TYPO3 Migration Framework
 
 ## Description
 
