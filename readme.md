@@ -96,6 +96,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 5.4.0      | 2019-11-06 | Feature    | Small features: Handle defect links, port config for powermail, etc...           |
 | 5.3.0      | 2019-10-11 | Task       | Port: Support links to records, some bugfixes, some cleanup                      |
 | 5.2.0      | 2019-10-02 | Feature    | Export: Attach also files that simply linked in RTE + add localized records      |
 | 5.1.0      | 2019-10-02 | Feature    | Bugfix with missing tags, toggle file includes, added SlugPropertyHelper         |
