@@ -12,7 +12,7 @@ use TYPO3\CMS\Core\DataHandling\SlugHelper;
  * to set a new slug based on a fieldname. If pages is the table with the slug, automatically parent pages will be used
  * to create a slug
  *
- *  Configuration example:
+ *  Configuration examples:
  *      'configuration' => [
  *          'conditions' => [
  *              'CType' => [
@@ -20,6 +20,19 @@ use TYPO3\CMS\Core\DataHandling\SlugHelper;
  *                  'header',
  *                  'html',
  *                  'table'
+ *              ]
+ *          ]
+ *      ]
+ *
+ *      'configuration' => [
+ *          'conditions' => [
+ *              'CType' => [
+ *                  'text'
+ *              ]
+ *          ],
+ *          'conditionsNegate' => [
+ *              'uid' => [
+ *                  '1'
  *              ]
  *          ]
  *      ]
@@ -54,6 +67,31 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
      */
     public function shouldMigrate(): bool
     {
-        return $this->shouldMigrateByDefaultConditions();
+        return $this->shouldMigrateByDefaultConditions() && $this->shouldMigrateByNegateConditions();
+    }
+
+    /**
+     *  'configuration' => [
+     *      'conditionsNegate' => [
+     *          'uid' => [
+     *              '1'
+     *          ]
+     *      ]
+     *  ]
+     *
+     * @return bool
+     */
+    protected function shouldMigrateByNegateConditions(): bool
+    {
+        $isFitting = true;
+        if ($this->getConfigurationByKey('conditionsNegate') !== null) {
+            foreach ($this->getConfigurationByKey('conditionsNegate') as $field => $values) {
+                if (in_array($this->getPropertyFromRecord($field), $values)) {
+                    $isFitting = false;
+                    break;
+                }
+            }
+        }
+        return $isFitting;
     }
 }
