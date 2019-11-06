@@ -124,7 +124,10 @@ class LinkRelationService
                 $storageFolder = $result[3][$key];
                 $fileHelper = ObjectUtility::getObjectManager()->get(FileHelper::class);
                 $storageIdentifier = $fileHelper->findIdentifierFromStoragePath($storageFolder);
-                $file = $fileHelper->findFileIdentifierFromIdentifierAndStorage($identifier, $storageIdentifier);
+                $file = $fileHelper->findFileIdentifierFromIdentifierAndStorage(
+                    $this->cleanFilePath($identifier),
+                    $storageIdentifier
+                );
                 if ($file > 0) {
                     $files[] = $file;
                 }
@@ -132,6 +135,17 @@ class LinkRelationService
             return $files;
         }
         return [];
+    }
+
+    /**
+     * Clean double slashes
+     *
+     * @param string $filePath
+     * @return string
+     */
+    protected function cleanFilePath(string $filePath): string
+    {
+        return str_replace('//', '/', $filePath);
     }
 
     /**
