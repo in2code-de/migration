@@ -5,6 +5,7 @@ namespace In2code\Migration\Command;
 use In2code\Migration\Exception\ConfigurationException;
 use Symfony\Component\Console\Command\Command;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
  * Class AbstractPortCommand to deliver a basic configuration for Export- and ImportCommand
@@ -20,7 +21,10 @@ abstract class AbstractPortCommand extends Command
      */
     protected function getCompleteConfiguration(string $configurationPath): array
     {
-        $path = GeneralUtility::getFileAbsFileName($configurationPath);
+        $path = $configurationPath;
+        if (PathUtility::isAbsolutePath($configurationPath) === false) {
+            $path = GeneralUtility::getFileAbsFileName($configurationPath);
+        }
         if (is_file($path) === false) {
             throw new ConfigurationException('File not found on ' . $path, 1569837808);
         }
