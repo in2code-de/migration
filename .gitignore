@@ -1,5 +1,6 @@
 msi.iws
 .idea/
+.php_cs.cache
 nbproject/
 .DS_Store
 .DS_Store?

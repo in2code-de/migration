@@ -11,12 +11,11 @@ class FileUtility
 {
 
     /**
-     * @param string $filename relative filename like "fileadmin/file.jpg"
+     * @param string $file absolute filename like "/var/www/domain.org/public/fileadmin/file.jpg"
      * @return string
      */
-    public static function getBase64CodeFromFile(string $filename): string
+    public static function getBase64CodeFromFile(string $file): string
     {
-        $file = GeneralUtility::getFileAbsFileName($filename);
         if (is_file($file)) {
             $content = file_get_contents($file);
             return base64_encode($content);

@@ -267,8 +267,10 @@ return [
 
     /**
      * Decide if the related files (also linked files) should be added to json file or not. If files are not added,
-     * the json will be much smaller on the one hand but on the other hand, you have to take care that fileadmin will
-     * be synced manually
+     * the json will be much smaller because only the absolute URI is added to json. If you will import the file on the
+     * same system (where an URI like /var/www/domain.org/public/fileadmin/file.pdf) is available, the import will try
+     * to get the resource from original URI.
+     * This will also help you if you run into a memory limit issue while exporting.
      */
-    'addFilesToJson' => true
+    'addFilesToJson' => false
 ];

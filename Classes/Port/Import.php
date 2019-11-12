@@ -83,6 +83,11 @@ class Import
      *              'path' => 'fileadmin/file.pdf',
      *              'base64' => 'base64:abcdef1234567890'
      *              'fileIdentifier' => 12345
+     *          ],
+     *          12346 => [
+     *              'path' => 'fileadmin/file.pdf',
+     *              'uri' => '/var/www/domain.org/public/fileadmin/file.pdf'
+     *              'fileIdentifier' => 12346
      *          ]
      *      ],
      *      'mm' => [
@@ -132,6 +137,7 @@ class Import
      * @throws DBALException
      * @throws InvalidSlotException
      * @throws InvalidSlotReturnException
+     * @throws FileNotFoundException
      */
     public function import(): int
     {
@@ -139,7 +145,7 @@ class Import
         $this->importRecords();
         $this->importFileRecords();
         $this->importFileReferenceRecords();
-        $this->importImages();
+        $this->importFiles();
         $this->importMmRecords();
         $this->updateLinks();
         $this->signalDispatch(__CLASS__, 'afterImport', [$this]);
@@ -210,15 +216,28 @@ class Import
     }
 
     /**
+     * Write physical files to filesystem
+     *
      * @return void
+     * @throws FileNotFoundException
      */
-    protected function importImages(): void
+    protected function importFiles(): void
     {
         if (is_array($this->jsonArray['files'])) {
             foreach ($this->jsonArray['files'] as $properties) {
+                $content = '';
+                if (!empty($properties['uri'])) {
+                    if (is_file($properties['uri']) === false) {
+                        throw new FileNotFoundException($properties['uri'] . ' can not be read', 1573578707);
+                    }
+                    $content = FileUtility::getBase64CodeFromFile($properties['uri']);
+                }
+                if (!empty($properties['base64'])) {
+                    $content = $properties['base64'];
+                }
                 FileUtility::writeFileFromBase64Code(
                     $properties['path'],
-                    $properties['base64'],
+                    $content,
                     $this->configuration['overwriteFiles']
                 );
             }
@@ -282,7 +301,7 @@ class Import
     protected function getMmConfigurationForRecord(array $properties, string $tableMm): array
     {
         $configurationMm = [];
-        foreach ((array)$this->configuration['relations'] as $table => $configurations) {
+        foreach ((array)$this->configuration['relations'] as $configurations) {
             foreach ($configurations as $configuration) {
                 if ($configuration['table'] === $tableMm) {
                     if (!empty($configuration['additional'])) {
@@ -464,6 +483,7 @@ class Import
     /**
      * Getter can be used in signals
      *
+     * @noinspection PhpUnused
      * @return array
      */
     public function getJsonArray(): array
@@ -474,6 +494,7 @@ class Import
     /**
      * Setter can be used in signals
      *
+     * @noinspection PhpUnused
      * @param array $jsonArray
      * @return Import
      */

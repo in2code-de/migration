@@ -292,10 +292,11 @@ class Export
             'path' => $pathAndFilename,
             'fileIdentifier' => (int)$fileProperties['uid']
         ];
+        $absolutePaF = GeneralUtility::getFileAbsFileName($pathAndFilename);
         if ($this->configuration['addFilesToJson'] === true) {
-            $fileArray['base64'] = FileUtility::getBase64CodeFromFile($pathAndFilename);
+            $fileArray['base64'] = FileUtility::getBase64CodeFromFile($absolutePaF);
         } else {
-            $fileArray['uri'] = GeneralUtility::getFileAbsFileName($pathAndFilename);
+            $fileArray['uri'] = $absolutePaF;
         }
         $this->jsonArray['files'][(int)$fileProperties['uid']] = $fileArray;
     }
