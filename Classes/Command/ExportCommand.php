@@ -4,6 +4,7 @@ namespace In2code\Migration\Command;
 
 use Doctrine\DBAL\DBALException;
 use In2code\Migration\Exception\ConfigurationException;
+use In2code\Migration\Exception\JsonCanNotBeCreatedException;
 use In2code\Migration\Port\Export;
 use In2code\Migration\Utility\ObjectUtility;
 use Symfony\Component\Console\Input\InputArgument;
@@ -49,6 +50,7 @@ class ExportCommand extends AbstractPortCommand
      * @throws InvalidSlotException
      * @throws InvalidSlotReturnException
      * @throws ConfigurationException
+     * @throws JsonCanNotBeCreatedException
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {

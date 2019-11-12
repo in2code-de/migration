@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace In2code\Migration\Port;
 
 use Doctrine\DBAL\DBALException;
+use In2code\Migration\Exception\JsonCanNotBeCreatedException;
 use In2code\Migration\Port\Service\LinkRelationService;
 use In2code\Migration\Signal\SignalTrait;
 use In2code\Migration\Utility\DatabaseUtility;
@@ -124,6 +125,7 @@ class Export
      * @throws DBALException
      * @throws InvalidSlotException
      * @throws InvalidSlotReturnException
+     * @throws JsonCanNotBeCreatedException
      */
     public function export(): string
     {
@@ -134,10 +136,18 @@ class Export
 
     /**
      * @return string
+     * @throws JsonCanNotBeCreatedException
      */
     protected function getJson(): string
     {
-        return json_encode($this->jsonArray, JSON_HEX_TAG);
+        $result = json_encode($this->jsonArray, JSON_HEX_TAG);
+        if ($result === false) {
+            throw new JsonCanNotBeCreatedException(
+                'JSON can not be created from array. Maybe there is a charset issue in your data?',
+                1573585866
+            );
+        }
+        return $result;
     }
 
     /**
