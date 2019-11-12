@@ -96,6 +96,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 6.0.0      | 2019-11-12 | Feature    | Port with file URI instead of embedding, absolute config path is supported now   |
 | 5.4.0      | 2019-11-06 | Feature    | Small features: Handle defect links, port config for powermail, etc...           |
 | 5.3.0      | 2019-10-11 | Task       | Port: Support links to records, some bugfixes, some cleanup                      |
 | 5.2.0      | 2019-10-02 | Feature    | Export: Attach also files that simply linked in RTE + add localized records      |
