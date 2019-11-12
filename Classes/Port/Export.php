@@ -80,6 +80,11 @@ class Export
      *              'path' => 'fileadmin/file.pdf',
      *              'base64' => 'base64:abcdef1234567890'
      *              'fileIdentifier' => 12345
+     *          ],
+     *          12346 => [
+     *              'path' => 'fileadmin/file.pdf',
+     *              'uri' => '/var/www/domain.org/public/fileadmin/file.pdf'
+     *              'fileIdentifier' => 12346
      *          ]
      *      ],
      *      'mm' => [
@@ -175,7 +180,11 @@ class Export
     {
         foreach ($this->jsonArray['records']['pages'] as $pageProperties) {
             if ((int)$pageProperties['uid'] > 0) {
-                $records = $this->getRecordsFromPageAndTable((int)$pageProperties['uid'], 'pages', ' and sys_language_uid>0');
+                $records = $this->getRecordsFromPageAndTable(
+                    (int)$pageProperties['uid'],
+                    'pages',
+                    ' and sys_language_uid>0'
+                );
                 $this->jsonArray['records']['pages'] = array_merge($this->jsonArray['records']['pages'], $records);
             }
         }
@@ -209,11 +218,9 @@ class Export
      */
     protected function extendWithFiles(): void
     {
-        if ($this->configuration['addFilesToJson'] === true) {
-            foreach ((array)$this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
-                $fileIdentifier = (int)$referenceProperties['uid_local'];
-                $this->extendWithFilesBasic($fileIdentifier);
-            }
+        foreach ((array)$this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
+            $fileIdentifier = (int)$referenceProperties['uid_local'];
+            $this->extendWithFilesBasic($fileIdentifier);
         }
     }
 
@@ -225,12 +232,10 @@ class Export
      */
     protected function extendWithFilesFromLinks(): void
     {
-        if ($this->configuration['addFilesToJson'] === true) {
-            $linkRelationService = ObjectUtility::getObjectManager()->get(LinkRelationService::class, $this->configuration);
-            $identifiers = $linkRelationService->getFileIdentifiersFromLinks($this->jsonArray);
-            foreach ($identifiers as $fileIdentifier) {
-                $this->extendWithFilesBasic($fileIdentifier);
-            }
+        $linkRelationService = ObjectUtility::getObjectManager()->get(LinkRelationService::class, $this->configuration);
+        $identifiers = $linkRelationService->getFileIdentifiersFromLinks($this->jsonArray);
+        foreach ($identifiers as $fileIdentifier) {
+            $this->extendWithFilesBasic($fileIdentifier);
         }
     }
 
@@ -279,15 +284,20 @@ class Export
         $fileProperties = $this->getPropertiesFromIdentifierAndTable($fileIdentifier, 'sys_file');
         $this->jsonArray['records']['sys_file'][(int)$fileProperties['uid']] = $fileProperties;
 
-        $relativePathAndFilename = DatabaseUtility::getFilePathAndNameByStorageAndIdentifier(
+        $pathAndFilename = DatabaseUtility::getFilePathAndNameByStorageAndIdentifier(
             (int)$fileProperties['storage'],
             $fileProperties['identifier']
         );
-        $this->jsonArray['files'][(int)$fileProperties['uid']] = [
-            'path' => $relativePathAndFilename,
-            'base64' => FileUtility::getBase64CodeFromFile($relativePathAndFilename),
+        $fileArray = [
+            'path' => $pathAndFilename,
             'fileIdentifier' => (int)$fileProperties['uid']
         ];
+        if ($this->configuration['addFilesToJson'] === true) {
+            $fileArray['base64'] = FileUtility::getBase64CodeFromFile($pathAndFilename);
+        } else {
+            $fileArray['uri'] = GeneralUtility::getFileAbsFileName($pathAndFilename);
+        }
+        $this->jsonArray['files'][(int)$fileProperties['uid']] = $fileArray;
     }
 
     /**
@@ -382,6 +392,7 @@ class Export
     }
 
     /**
+     * @noinspection PhpUnused
      * @param array $jsonArray
      * @return Export
      */
