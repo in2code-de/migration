@@ -30,7 +30,7 @@ class TcaUtility
     public static function getTableNamesToExport(array $excludedTables = []): array
     {
         $tables = self::getAllTableNames();
-        $excludedTables = ['pages'] + $excludedTables;
+        $excludedTables = array_merge(['pages'], $excludedTables);
         foreach ($tables as $key => $table) {
             if (in_array($table, $excludedTables) || DatabaseUtility::isFieldExistingInTable('pid', $table) === false) {
                 unset($tables[$key]);
