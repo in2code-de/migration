@@ -8,8 +8,8 @@ on CLI commands (to prevent timeouts, use a better performance, etc...).
 What can this extension do for you:
 * [Migration](Documentation/Migration.md) of table values
 * [Import](Documentation/Migration.md) tables values from other tables
-* [Export](Documentation/Port.md) of whole page branches with all records and files as json
-* [Import](Documentation/Port.md) of whole page branches with all records and files from json into an existing table (and gives new identifiers and relations)
+* [Port: Export](Documentation/Port.md) of whole page branches with all records and files as json
+* [Port: Import](Documentation/Port.md) of whole page branches with all records and files from json into an existing table (and gives new identifiers and relations)
 * [Page actions](Documentation/Helper.md) (move, copy and delete) from CLI
 
 This framework extension helped us (in2code) in some really large projects to migrate some stuff - e.g.:
@@ -96,6 +96,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 6.1.0      | 2019-12-05 | Feature    | Port: Import can now handle huge files (> 6GB) in fileadmin (if not embedded)    |
 | 6.0.0      | 2019-11-12 | Feature    | Port with file URI instead of embedding, absolute config path is supported now   |
 | 5.4.0      | 2019-11-06 | Feature    | Small features: Handle defect links, port config for powermail, etc...           |
 | 5.3.0      | 2019-10-11 | Task       | Port: Support links to records, some bugfixes, some cleanup                      |
