@@ -11,6 +11,7 @@ use In2code\Migration\Signal\SignalTrait;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
 use In2code\Migration\Utility\ObjectUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
 use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 
@@ -225,23 +226,45 @@ class Import
     {
         if (is_array($this->jsonArray['files'])) {
             foreach ($this->jsonArray['files'] as $properties) {
-                $content = '';
                 if (!empty($properties['uri'])) {
-                    if (is_file($properties['uri']) === false) {
-                        throw new FileNotFoundException($properties['uri'] . ' can not be read', 1573578707);
-                    }
-                    $content = FileUtility::getBase64CodeFromFile($properties['uri']);
+                    $this->importFileFromUri(
+                        $properties['uri'],
+                        $properties['path'],
+                        $this->configuration['overwriteFiles']
+                    );
                 }
                 if (!empty($properties['base64'])) {
-                    $content = $properties['base64'];
+                    $this->importFileFromBase64(
+                        $properties['base64'],
+                        $properties['path'],
+                        $this->configuration['overwriteFiles']
+                    );
                 }
-                FileUtility::writeFileFromBase64Code(
-                    $properties['path'],
-                    $content,
-                    $this->configuration['overwriteFiles']
-                );
             }
         }
+    }
+
+    /**
+     * @param string $uri Absolute URI like /var/www/fileadmin/start.pdf
+     * @param string $path Relative target path like fileadmin/folder/
+     * @param bool $overwriteFiles
+     * @return void
+     * @throws FileNotFoundException
+     */
+    protected function importFileFromUri(string $uri, string $path, bool $overwriteFiles): void
+    {
+        FileUtility::copyFile($uri, GeneralUtility::getFileAbsFileName($path), $overwriteFiles);
+    }
+
+    /**
+     * @param string $base64content
+     * @param string $path
+     * @param bool $overwriteFiles
+     * @return bool
+     */
+    protected function importFileFromBase64(string $base64content, string $path, bool $overwriteFiles): bool
+    {
+        FileUtility::writeFileFromBase64Code($path, $base64content, $overwriteFiles);
     }
 
     /**

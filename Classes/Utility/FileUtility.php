@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Utility;
 
+use In2code\Migration\Exception\FileNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -37,6 +38,22 @@ class FileUtility
             return GeneralUtility::writeFile($file, base64_decode($content));
         }
         return false;
+    }
+
+    /**
+     * @param string $fromPath Absolute path and filename
+     * @param string $toPath Absolute path and filename
+     * @param bool $overwrite should an possibly existing file be overwritten?
+     * @return void
+     * @throws FileNotFoundException
+     */
+    public static function copyFile(string $fromPath, string $toPath, bool $overwrite = false): void
+    {
+        if (is_file($fromPath) === false) {
+            throw new FileNotFoundException($fromPath . ' can not be read', 1573578707);
+        }
+        self::createFolderIfNotExists($toPath);
+        exec('cp ' . ($overwrite === false ? '-n ' : '') . $fromPath . ' ' . $toPath);
     }
 
     /**
