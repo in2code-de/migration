@@ -5,7 +5,10 @@ namespace In2code\Migration\Migration\PropertyHelpers;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\TcaUtility;
+use TYPO3\CMS\Core\DataHandling\Model\RecordState;
+use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 
 /**
  * Class SlugPropertyHelper
@@ -48,6 +51,7 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
 
     /**
      * @return void
+     * @throws SiteNotFoundException
      */
     public function manipulate(): void
     {
@@ -58,7 +62,17 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
             TcaUtility::getTcaOfField($this->getPropertyName(), $this->table)['config']
         );
         $slug = $slugHelper->generate($this->getProperties(), $this->getPropertyFromRecord('pid'));
-        $this->setProperty($slug);
+        $uniqueSlug = $slugHelper->buildSlugForUniqueInSite($slug, $this->getRecordState());
+        $this->setProperty($uniqueSlug);
+    }
+
+    /**
+     * @return RecordState
+     */
+    protected function getRecordState(): RecordState
+    {
+        return ObjectUtility::getObjectManager()->get(RecordStateFactory::class, $this->table)
+            ->fromArray($this->getProperties());
     }
 
     /**
