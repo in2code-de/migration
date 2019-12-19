@@ -96,6 +96,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 6.2.0      | 2019-12-19 | Feature    | Migration: SlugPropertyHelper creates unique slugs in site now                   |
 | 6.1.0      | 2019-12-05 | Feature    | Port: Import can now handle huge files (> 6GB) in fileadmin (if not embedded)    |
 | 6.0.0      | 2019-11-12 | Feature    | Port with file URI instead of embedding, absolute config path is supported now   |
 | 5.4.0      | 2019-11-06 | Feature    | Small features: Handle defect links, port config for powermail, etc...           |
