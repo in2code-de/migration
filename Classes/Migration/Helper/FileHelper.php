@@ -4,6 +4,7 @@ namespace In2code\Migration\Migration\Helper;
 
 use Doctrine\DBAL\DBALException;
 use In2code\Migration\Exception\FileNotFoundException;
+use In2code\Migration\Exception\FileOrFolderCouldNotBeCreatedException;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\StringUtility;
@@ -154,6 +155,7 @@ class FileHelper implements SingletonInterface
      * @return void
      * @throws DBALException
      * @throws FileNotFoundException
+     * @throws FileOrFolderCouldNotBeCreatedException
      */
     public function copyFileAndCreateReference(
         string $relativeFile,
@@ -291,6 +293,7 @@ class FileHelper implements SingletonInterface
     /**
      * @param string $path absolute path
      * @return void
+     * @throws FileOrFolderCouldNotBeCreatedException
      */
     protected function createFolderIfNotExists(string $path): void
     {
@@ -298,7 +301,7 @@ class FileHelper implements SingletonInterface
             try {
                 GeneralUtility::mkdir_deep($path);
             } catch (\Exception $exception) {
-                throw new \LogicException('Folder ' . $path . ' cannot be created', 1569334703);
+                throw new FileOrFolderCouldNotBeCreatedException('Folder ' . $path . ' cannot be created', 1569334703);
             }
         }
     }
