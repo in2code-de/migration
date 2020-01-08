@@ -294,8 +294,12 @@ class FileHelper implements SingletonInterface
      */
     protected function createFolderIfNotExists(string $path): void
     {
-        if (!is_dir($path) && !GeneralUtility::mkdir($path)) {
-            throw new \LogicException('Folder ' . $path . ' cannot be created', 1569334703);
+        if (!is_dir($path)) {
+            try {
+                GeneralUtility::mkdir_deep($path);
+            } catch (\Exception $exception) {
+                throw new \LogicException('Folder ' . $path . ' cannot be created', 1569334703);
+            }
         }
     }
 }
