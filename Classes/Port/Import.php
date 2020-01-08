@@ -138,7 +138,6 @@ class Import
      * @throws DBALException
      * @throws InvalidSlotException
      * @throws InvalidSlotReturnException
-     * @throws FileNotFoundException
      */
     public function import(): int
     {
@@ -220,7 +219,6 @@ class Import
      * Write physical files to filesystem
      *
      * @return void
-     * @throws FileNotFoundException
      */
     protected function importFiles(): void
     {
@@ -249,7 +247,6 @@ class Import
      * @param string $path Relative target path like fileadmin/folder/
      * @param bool $overwriteFiles
      * @return void
-     * @throws FileNotFoundException
      */
     protected function importFileFromUri(string $uri, string $path, bool $overwriteFiles): void
     {

@@ -45,15 +45,13 @@ class FileUtility
      * @param string $toPath Absolute path and filename
      * @param bool $overwrite should an possibly existing file be overwritten?
      * @return void
-     * @throws FileNotFoundException
      */
     public static function copyFile(string $fromPath, string $toPath, bool $overwrite = false): void
     {
-        if (is_file($fromPath) === false) {
-            throw new FileNotFoundException($fromPath . ' can not be read', 1573578707);
+        if (is_file($fromPath) !== false) {
+            self::createFolderIfNotExists($toPath);
+            exec('cp ' . ($overwrite === false ? '-n ' : '') . $fromPath . ' ' . $toPath);
         }
-        self::createFolderIfNotExists($toPath);
-        exec('cp ' . ($overwrite === false ? '-n ' : '') . $fromPath . ' ' . $toPath);
     }
 
     /**
