@@ -67,7 +67,7 @@ class DatabaseHelper implements SingletonInterface
      *
      *      =>
      *
-     * 'pid=2 and title="test"'
+     * '`pid`=2 and `title`="test"'
      *
      * @param array $properties
      * @param array $excludeFields
@@ -87,9 +87,9 @@ class DatabaseHelper implements SingletonInterface
                     $whereString .= ' and ';
                 }
                 if (empty($propertyValue)) {
-                    $whereString .= '(' . $propertyName . '=\'\' or ' . $propertyName . ' is null)';
+                    $whereString .= '(`' . $propertyName . '`=\'\' or `' . $propertyName . '` is null)';
                 } else {
-                    $whereString .= $propertyName . '=';
+                    $whereString .= '`' . $propertyName . '`=';
                     if (is_numeric($propertyValue) === false) {
                         $propertyValue = StringUtility::quoteString($propertyValue);
                     }
