@@ -96,6 +96,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 6.4.0      | 2020-02-03 | Feature    | Allow manipulation of values while runtime for importers and migrators           |
 | 6.3.0      | 2020-01-31 | Task       | Port: Don't stop if file is missing, Fixes in FileHelper class                   |
 | 6.2.0      | 2019-12-19 | Feature    | Migration: SlugPropertyHelper creates unique slugs in site now                   |
 | 6.1.0      | 2019-12-05 | Feature    | Port: Import can now handle huge files (> 6GB) in fileadmin (if not embedded)    |
