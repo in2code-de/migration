@@ -30,6 +30,11 @@ class GeneralRepository
     protected $log = null;
 
     /**
+     * @var Queue
+     */
+    protected $queue = null;
+
+    /**
      * GeneralRepository constructor.
      * @param array $configuration
      * @param bool $enforce
@@ -39,6 +44,7 @@ class GeneralRepository
         $this->configuration = $configuration;
         $this->enforce = $enforce;
         $this->log = ObjectUtility::getObjectManager()->get(Log::class);
+        $this->queue = ObjectUtility::getObjectManager()->get(Queue::class);
     }
 
     /**
@@ -81,6 +87,12 @@ class GeneralRepository
             );
         }
         if ($this->getConfiguration('dryrun') === false) {
+            $properties = $this->queue->updatePropertiesWithPropertiesFromQueue(
+                $tableName,
+                (int)$properties['uid'],
+                $properties
+            );
+
             $connection = DatabaseUtility::getConnectionForTable($tableName);
             $connection->update($tableName, $properties, ['uid' => (int)$properties['uid']]);
             $this->log->addMessage('Record updated', $properties, $tableName);
@@ -97,6 +109,12 @@ class GeneralRepository
     public function insertRecord(array $properties, string $tableName)
     {
         if ($this->getConfiguration('dryrun') === false) {
+            $properties = $this->queue->updatePropertiesWithPropertiesFromQueue(
+                $tableName,
+                (int)$properties['uid'],
+                $properties
+            );
+
             $connection = DatabaseUtility::getConnectionForTable($tableName);
             $connection->insert($tableName, $properties);
             $this->log->addMessage('Record inserted', $properties, $tableName);
