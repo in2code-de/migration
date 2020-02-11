@@ -24,7 +24,8 @@ abstract class AbstractMigrator
     protected $tableName = '';
 
     /**
-     * Set some hard values (will be parsed with fluid engine)
+     * Set some hard values (will be parsed with fluid engine).
+     * So you can use {properties} for given properties.
      *  e.g.
      *      [
      *          'title' => 'New title',

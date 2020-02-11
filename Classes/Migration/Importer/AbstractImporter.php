@@ -49,11 +49,13 @@ abstract class AbstractImporter
     protected $mapping = [];
 
     /**
-     * Set some hard values (will be parsed with fluid engine)
+     * Set some hard values (will be parsed with fluid engine).
+     * So you can use {properties} for new and {propertiesOld} for all old properties.
      *  e.g.
      *      [
      *          'title' => 'New title',
-     *          'description' => 'Nice content with {properties.title}'
+     *          'description' => 'Nice content with {properties.title}',
+     *          'bodytext' => '<f:if condition="{propertiesOld.field1}"><f:then>{propertiesOld.field1}</f:then><f:else>{propertiesOld.field2}</f:else></f:if>'
      *      ]
      *
      * @var array
@@ -185,7 +187,7 @@ abstract class AbstractImporter
                 . ' (uid' . $propertiesOld['uid'] . '/pid' . $propertiesOld['pid'] . ') ...'
             );
             $properties = $this->createPropertiesFromMapping($propertiesOld);
-            $properties = $this->createPropertiesFromValues($properties);
+            $properties = $this->createPropertiesFromValues($properties, $propertiesOld);
             $properties = $this->createPropertiesFromPropertyHelpers($properties, $propertiesOld);
             $properties = $this->genericChanges($properties);
             $generalRepository->insertRecord($properties, $this->tableName);
@@ -214,13 +216,15 @@ abstract class AbstractImporter
 
     /**
      * @param array $properties
+     * @param array $propertiesOld
      * @return array
      */
-    protected function createPropertiesFromValues(array $properties): array
+    protected function createPropertiesFromValues(array $properties, array $propertiesOld): array
     {
         foreach ($this->values as $propertyName => $propertyValue) {
             $variables = [
                 'properties' => $properties,
+                'propertiesOld' => $propertiesOld,
                 'tableName' => $this->tableName
             ];
             $properties[$propertyName] = StringUtility::parseString($propertyValue, $variables);
