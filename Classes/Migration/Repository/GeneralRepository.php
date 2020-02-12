@@ -131,9 +131,9 @@ class GeneralRepository
      */
     protected function getWhereClause(string $tableName, string $additionalWhere): string
     {
-        $whereClause = '';
+        $whereClause = '1';
         if (DatabaseUtility::isFieldExistingInTable('deleted', $tableName)) {
-            $whereClause .= 'deleted=0';
+            $whereClause = 'deleted=0';
         }
         $whereClause = $this->getWhereClauseForLimitToRecord($whereClause, $tableName);
         $whereClause = $this->getWhereClauseForLimitToPage($whereClause, $tableName);
