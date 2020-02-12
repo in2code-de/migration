@@ -131,7 +131,10 @@ class GeneralRepository
      */
     protected function getWhereClause(string $tableName, string $additionalWhere): string
     {
-        $whereClause = 'deleted=0';
+        $whereClause = '';
+        if (DatabaseUtility::isFieldExistingInTable('deleted', $tableName)) {
+            $whereClause .= 'deleted=0';
+        }
         $whereClause = $this->getWhereClauseForLimitToRecord($whereClause, $tableName);
         $whereClause = $this->getWhereClauseForLimitToPage($whereClause, $tableName);
         if ($this->enforce === false && DatabaseUtility::isFieldExistingInTable('_migrated', $tableName)) {
