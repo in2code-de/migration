@@ -96,6 +96,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 6.5.1      | 2020-02-12 | Feature    | Migration: Don't use deleted=0 if there is no deleted field                      |
 | 6.5.0      | 2020-02-11 | Feature    | Allow usage of {propertiesOld} when using an importer now                        |
 | 6.4.0      | 2020-02-03 | Feature    | Allow manipulation of values while runtime for importers and migrators           |
 | 6.3.0      | 2020-01-31 | Task       | Port: Don't stop if file is missing, Fixes in FileHelper class                   |
