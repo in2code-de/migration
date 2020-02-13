@@ -95,6 +95,7 @@ class LinkMappingService
      * @param array $properties
      * @param string $tableName
      * @return array
+     * @throws DBALException
      */
     protected function updatePropertiesWithNewLinkMapping(array $properties, string $tableName): array
     {
@@ -113,6 +114,7 @@ class LinkMappingService
      * @param array $properties
      * @param string $tableName
      * @return array
+     * @throws DBALException
      */
     protected function updatePropertiesWithNewRelationMapping(array $properties, string $tableName): array
     {
@@ -197,6 +199,7 @@ class LinkMappingService
      *
      * @param string $value
      * @return string
+     * @throws DBALException
      */
     protected function updateValueWithNewLinkMapping(string $value): string
     {
@@ -204,6 +207,7 @@ class LinkMappingService
             $value = $this->updatePageLinks($value);
             $value = $this->updateFileLinks($value);
             $value = $this->updateRteImages($value);
+            $value = $this->updateSpecifiedIdentifiers($value);
         }
         return $value;
     }
@@ -214,6 +218,7 @@ class LinkMappingService
      * @param string $value
      * @param string $table
      * @return string
+     * @throws DBALException
      */
     protected function updateValueWithSimpleLinks(string $value, string $table): string
     {
@@ -290,6 +295,36 @@ class LinkMappingService
             [$this, 'updateFileLinksCallback'],
             $value
         );
+        return $value;
+    }
+
+    /**
+     * Search for "pages_123,tt_content_123,tx_news_domain_model_news_123"
+     *
+     * @param string $value
+     * @return string
+     * @throws DBALException
+     */
+    protected function updateSpecifiedIdentifiers(string $value): string
+    {
+        $identifiers = GeneralUtility::trimExplode(',', $value, true);
+        $newValue = '';
+        foreach ($identifiers as $identifier) {
+            if (DatabaseUtility::isSpecifiedIdentifier($identifier)) {
+                $table = DatabaseUtility::getTableFromSpecifiedIdentifier($identifier);
+                $newIdentifier = $this->mappingService->getNewFromOld(
+                    DatabaseUtility::getUidFromSpecifiedIdentifier($identifier),
+                    $table
+                );
+                if ($newValue !== '') {
+                    $newValue .= ',';
+                }
+                $newValue .= $table . '_' . $newIdentifier;
+            }
+        }
+        if ($newValue !== '') {
+            return $newValue;
+        }
         return $value;
     }
 

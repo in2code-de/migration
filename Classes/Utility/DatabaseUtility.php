@@ -7,6 +7,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
  * Class DatabaseUtility
@@ -97,6 +98,54 @@ class DatabaseUtility
     public static function getFilePathAndNameByStorageAndIdentifier(int $storage, string $identifier): string
     {
         return self::getPathFromStorage($storage) . ltrim($identifier, '/');
+    }
+
+    /**
+     * Check if string is a specified identifier
+     * like "tt_content_123" or "pages_123"
+     *
+     * @param string $identifier
+     * @return bool
+     * @throws DBALException
+     */
+    public static function isSpecifiedIdentifier(string $identifier): bool
+    {
+        return self::getUidFromSpecifiedIdentifier($identifier) > 0
+            && self::isTableExisting(self::getTableFromSpecifiedIdentifier($identifier));
+    }
+
+    /**
+     * "tt_content_123" => 123
+     *
+     * @param string $identifier
+     * @return int
+     */
+    public static function getUidFromSpecifiedIdentifier(string $identifier): int
+    {
+        if (stristr($identifier, '_') !== false) {
+            $parts = explode('_', $identifier);
+            $uid = end($parts);
+            if (MathUtility::canBeInterpretedAsInteger($uid)) {
+                return (int)$uid;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * "tt_content_123" => "tt_content"
+     *
+     * @param string $identifier
+     * @return string
+     */
+    public static function getTableFromSpecifiedIdentifier(string $identifier): string
+    {
+        if (stristr($identifier, '_') !== false) {
+            $parts = explode('_', $identifier);
+            unset($parts[count($parts) - 1]);
+            return implode('_', $parts);
+        }
+        return '';
     }
 
     /**
