@@ -60,6 +60,25 @@ class DatabaseHelper implements SingletonInterface
     }
 
     /**
+     * Get rootline of a pageidentifier (same pid and every parent pid up to 0)
+     *
+     * @param int $pageIdentifier
+     * @param int[] $rootline
+     * @return int[] e.g. [1000,100,10,1]
+     */
+    public function getRootline(int $pageIdentifier, array $rootline = []): array
+    {
+        $rootline[] = $pageIdentifier;
+        if ($pageIdentifier > 0) {
+            $parentPageIdentifier = $this->getParentPageIdentifier($pageIdentifier);
+            if ($parentPageIdentifier > 0) {
+                $rootline = $this->getRootline($parentPageIdentifier, $rootline);
+            }
+        }
+        return $rootline;
+    }
+
+    /**
      * [
      *      'pid' => 2,
      *      'title' => 'test'
@@ -117,5 +136,20 @@ class DatabaseHelper implements SingletonInterface
             $row['crdate'] = time();
         }
         return $row;
+    }
+
+    /**
+     * @param int $pageIdentifier
+     * @return int
+     */
+    protected function getParentPageIdentifier(int $pageIdentifier): int
+    {
+        $queryBuilder = DatabaseUtility::getQueryBuilderForTable('pages');
+        return (int)$queryBuilder
+            ->select('pid')
+            ->from('pages')
+            ->where('uid=' . (int)$pageIdentifier)
+            ->execute()
+            ->fetchColumn();
     }
 }
