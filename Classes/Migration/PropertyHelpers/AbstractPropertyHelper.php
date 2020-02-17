@@ -134,7 +134,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
     public function shouldMigrateByDefaultConditions(): bool
     {
         $isFitting = true;
-        foreach ($this->getConfigurationByKey('conditions') as $field => $values) {
+        foreach ((array)$this->getConfigurationByKey('conditions') as $field => $values) {
             if (!is_string($field) || !is_array($values)) {
                 throw new ConfigurationException(
                     'Misconfiguration of configuration of ' . get_called_class(),
