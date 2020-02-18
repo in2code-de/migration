@@ -44,6 +44,9 @@ return [
             ],
             'tx_news_domain_model_news' => [
                 'bodytext'
+            ],
+            'tx_in2faq_domain_model_question' => [
+                'answer'
             ]
         ],
 
@@ -200,6 +203,33 @@ return [
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="categorySelection"]/value',
                         'table' => 'tt_news_cat'
+                    ],
+                    [
+                        // in2faq pi1 categories
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'in2faq_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.categories"]/value',
+                        'table' => 'tx_in2faq_domain_model_category'
+                    ],
+                    [
+                        // in2faq pi1 startpid
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'in2faq_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.startpid"]/value',
+                        'table' => 'pages'
+                    ],
+                    [
+                        // in2faq pi2 filter categories
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'in2faq_pi2'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.categoryFilter.categories"]/value',
+                        'table' => 'tx_in2faq_domain_model_category'
                     ]
                 ]
             ]
@@ -243,6 +273,13 @@ return [
                 'table' => 'tt_news_related_mm',
                 'uid_local' => 'tt_news',
                 'uid_foreign' => 'tt_news'
+            ]
+        ],
+        'tx_in2faq_domain_model_question' => [
+            [
+                'table' => 'tx_in2faq_question_category_mm',
+                'uid_local' => 'tx_in2faq_domain_model_question',
+                'uid_foreign' => 'tx_in2faq_domain_model_category'
             ]
         ]
     ],
