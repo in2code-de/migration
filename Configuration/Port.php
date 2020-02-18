@@ -45,6 +45,9 @@ return [
             'tx_news_domain_model_news' => [
                 'bodytext'
             ],
+            'tx_news_domain_model_tag' => [
+                'seo_text'
+            ],
             'tx_in2faq_domain_model_question' => [
                 'answer'
             ]
@@ -82,6 +85,10 @@ return [
                 [
                     'field' => 'tx_gridelements_container',
                     'table' => 'tt_content'
+                ],
+                [
+                    'field' => 'tx_news_related_news',
+                    'table' => 'tx_news_domain_model_news'
                 ]
             ],
             'sys_file_reference' => [
@@ -120,6 +127,12 @@ return [
                 [
                     'field' => 'content_element',
                     'table' => 'tt_content'
+                ]
+            ],
+            'tx_news_domain_model_link' => [
+                [
+                    'field' => 'parent',
+                    'table' => 'tx_news_domain_model_news'
                 ]
             ],
             'tt_news_cat' => [
@@ -169,6 +182,51 @@ return [
                         'table' => 'pages'
                     ],
                     [
+                        // tx_news: categories
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'news_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.categories"]/value',
+                        'table' => 'sys_category'
+                    ],
+                    [
+                        // tx_news: startingpoint
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'news_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.startingpoint"]/value',
+                        'table' => 'pages'
+                    ],
+                    [
+                        // tx_news: detailPid
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'news_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.detailPid"]/value',
+                        'table' => 'pages'
+                    ],
+                    [
+                        // tx_news: listPid
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'news_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.listPid"]/value',
+                        'table' => 'pages'
+                    ],
+                    [
+                        // tx_news: backPid
+                        'condition' => [
+                            'Ctype' => 'list',
+                            'list_type' => 'news_pi1'
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.backPid"]/value',
+                        'table' => 'pages'
+                    ],
+                    [
                         // tt_news PIDitemDisplay
                         'condition' => [
                             'Ctype' => 'list',
@@ -205,7 +263,7 @@ return [
                         'table' => 'tt_news_cat'
                     ],
                     [
-                        // in2faq pi1 categories
+                        // in2faq categories
                         'condition' => [
                             'Ctype' => 'list',
                             'list_type' => 'in2faq_pi1'
@@ -214,7 +272,7 @@ return [
                         'table' => 'tx_in2faq_domain_model_category'
                     ],
                     [
-                        // in2faq pi1 startpid
+                        // in2faq startpid
                         'condition' => [
                             'Ctype' => 'list',
                             'list_type' => 'in2faq_pi1'
@@ -261,6 +319,27 @@ return [
                     'tablenames' => 'tt_content',
                     'fieldname' => 'categories'
                 ]
+            ]
+        ],
+        'tx_news_domain_model_news' => [
+            [
+                'table' => 'sys_category_record_mm',
+                'uid_local' => 'sys_category',
+                'uid_foreign' => 'tx_news_domain_model_news',
+                'additional' => [
+                    'tablenames' => 'tx_news_domain_model_news',
+                    'fieldname' => 'categories'
+                ]
+            ],
+            [
+                'table' => 'tx_news_domain_model_news_related_mm',
+                'uid_local' => 'tx_news_domain_model_news',
+                'uid_foreign' => 'tx_news_domain_model_news'
+            ],
+            [
+                'table' => 'tx_news_domain_model_news_tag_mm',
+                'uid_local' => 'tx_news_domain_model_news',
+                'uid_foreign' => 'tx_news_domain_model_tag'
             ]
         ],
         'tt_news' => [
