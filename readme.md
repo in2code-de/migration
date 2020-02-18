@@ -96,6 +96,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 6.7.0      | 2020-02-18 | Feature    | Port: Add configuration of EXT:news and in2faq, keep identifiers feature         |
 | 6.6.0      | 2020-02-13 | Feature    | Port: Support relations like "tt_content_123,pages_234" now                      |
 | 6.5.2      | 2020-02-12 | Bugfix     | Fix regression from 6.5.1                                                        |
 | 6.5.1      | 2020-02-12 | Bugfix     | Migration: Don't use deleted=0 if there is no deleted field                      |
