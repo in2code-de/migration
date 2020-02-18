@@ -124,7 +124,7 @@ class Import
      */
     public function __construct(string $file, int $pid, array $configuration = [])
     {
-        $this->mappingService = ObjectUtility::getObjectManager()->get(MappingService::class);
+        $this->mappingService = ObjectUtility::getObjectManager()->get(MappingService::class, $configuration);
         $this->file = $file;
         $this->pid = $pid;
         $this->configuration = $configuration;

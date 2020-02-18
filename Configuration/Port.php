@@ -248,6 +248,12 @@ return [
     ],
 
     /**
+     * If you import a json and some links points outside of this branch, identifiers can not be updated of course.
+     * Per default, those identifiers are replaced with 0. If you want, you can keep old identifiers in links.
+     */
+    'keepNotMatchingIdentifiers' => false,
+
+    /**
      * Attach files from oldschool links or embedded images in RTE fields like
      * <a href="fileadmin/file.pdf">file</a> OR
      * <img src="fileadmin/image.jpg">

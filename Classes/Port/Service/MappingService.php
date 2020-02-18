@@ -8,6 +8,7 @@ namespace In2code\Migration\Port\Service;
  */
 class MappingService
 {
+    const TABLE_NAME_PAGES = 'pages';
 
     /**
      * Example mapping configuration:
@@ -27,6 +28,27 @@ class MappingService
     protected $mapping = [];
 
     /**
+     * Hold the complete configuration like
+     *
+     *  'excludedTables' => [
+     *      'be_users'
+     *  ],
+     *  'keepNotMatchingIdentifiers' => false
+     *
+     * @var array
+     */
+    protected $configuration = [];
+
+    /**
+     * MappingService constructor.
+     * @param array $configuration
+     */
+    public function __construct(array $configuration)
+    {
+        $this->configuration = $configuration;
+    }
+
+    /**
      * @param int $new
      * @param int $old
      * @param string $tableName
@@ -44,7 +66,7 @@ class MappingService
      */
     public function setNewPid(int $new, int $old): void
     {
-        $this->mapping['pages'][$old] = $new;
+        $this->mapping[self::TABLE_NAME_PAGES][$old] = $new;
     }
 
     /**
@@ -54,6 +76,10 @@ class MappingService
      */
     public function getNewFromOld(int $old, string $tableName): int
     {
+        if ($this->configuration['keepNotMatchingIdentifiers'] === true
+            && empty($this->mapping[$tableName][$old])) {
+            return $old;
+        }
         return (int)$this->mapping[$tableName][$old];
     }
 
@@ -63,7 +89,11 @@ class MappingService
      */
     public function getNewPidFromOldPid(int $old): int
     {
-        return (int)$this->mapping['pages'][$old];
+        if ($this->configuration['keepNotMatchingIdentifiers'] === true
+            && empty($this->mapping[self::TABLE_NAME_PAGES][$old])) {
+            return $old;
+        }
+        return (int)$this->mapping[self::TABLE_NAME_PAGES][$old];
     }
 
     /**
