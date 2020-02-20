@@ -125,6 +125,6 @@ See documenation for a detailed description of all CLI commands
 
 ## Future Todos
 
-* Show and remove unused files as CommandController
-* Add some more relations to import and export (e.g. for tx_news) in the default configuration file
-* Add a fully functional generic importer - e.g. tt_news to tx_news
+* Migration: Log errors to file
+* Migration: Throw error if given key is not defined
+* New: Show and remove unused files as CommandController
