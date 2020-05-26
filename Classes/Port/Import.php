@@ -261,7 +261,7 @@ class Import
      */
     protected function importFileFromBase64(string $base64content, string $path, bool $overwriteFiles): bool
     {
-        FileUtility::writeFileFromBase64Code($path, $base64content, $overwriteFiles);
+        return FileUtility::writeFileFromBase64Code($path, $base64content, $overwriteFiles);
     }
 
     /**
