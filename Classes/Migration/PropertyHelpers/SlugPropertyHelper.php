@@ -59,6 +59,7 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
             $slug = $slugHelper->generate($this->getProperties(), $this->getPropertyFromRecord('pid'));
             $uniqueSlug = $slugHelper->buildSlugForUniqueInSite($slug, $this->getRecordState());
             $this->setProperty($uniqueSlug);
+            $this->log->addMessage('Set new slug "' . $uniqueSlug . '"');
         } catch (\Exception $exception) {
             $this->log->addError($exception->getMessage(), $this->getProperties(), $this->table);
         }
