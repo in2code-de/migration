@@ -96,6 +96,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 7.1.0      | 2020-08-21 | Task       | Small bugfix for writeFileFromBase64Code and add a message when adding slugs     |
 | 7.0.0      | 2020-05-04 | Task       | Update dependencies for TYPO3 9 and 10                                           |
 | 6.7.0      | 2020-02-18 | Feature    | Port: Add configuration of EXT:news and in2faq, keep identifiers feature         |
 | 6.6.0      | 2020-02-13 | Feature    | Port: Support relations like "tt_content_123,pages_234" now                      |
