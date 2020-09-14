@@ -235,7 +235,7 @@ class FileHelper implements SingletonInterface
      * @throws DBALException
      * @throws FileNotFoundException
      */
-    protected function indexFile($file, int $storageIdentifier): int
+    public function indexFile($file, int $storageIdentifier): int
     {
         $fileIdentifier = 0;
         if (file_exists(GeneralUtility::getFileAbsFileName($file))) {
