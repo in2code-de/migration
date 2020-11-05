@@ -20,7 +20,7 @@ class HelpCommand extends Command
      */
     public function configure()
     {
-        $this->setDescription('Make page actions like copy, move or delete from CLI');
+        $this->setDescription('Returns a list of the current pid and all sub-pids');
         $this->addArgument('startPid', InputArgument::REQUIRED, 'Start page identifier');
     }
 
