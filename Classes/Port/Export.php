@@ -274,7 +274,7 @@ class Export
                             if (empty($this->jsonArray['mm'][$tableMm])) {
                                 $this->jsonArray['mm'][$tableMm] = [];
                             }
-                            $this->jsonArray['mm'][$tableMm] += $rows;
+                            $this->jsonArray['mm'][$tableMm] = array_merge($this->jsonArray['mm'][$tableMm], $rows);
                         }
                     }
                 }
