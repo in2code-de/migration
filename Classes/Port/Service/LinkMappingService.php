@@ -122,7 +122,16 @@ class LinkMappingService
             foreach ($this->getPropertiesWithRelations()[$tableName] as $configuration) {
                 $field = $configuration['field'];
                 $table = $configuration['table'];
+                $condition = $configuration['condition'];
                 if (array_key_exists($field, $properties)) {
+                    if (!empty($condition)) {
+                        // Do not update value if conditions not met
+                        foreach ($condition as $conditionField => $conditionValue) {
+                            if (!array_key_exists($conditionField, $properties) || $properties[$conditionField] !== $conditionValue) {
+                                continue 2;
+                            }
+                        }
+                    }
                     $properties[$field] = $this->updateValueWithSimpleLinks((string)$properties[$field], $table);
                 }
             }
