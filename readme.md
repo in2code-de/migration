@@ -96,6 +96,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version    | Date       | State      | Description                                                                      |
 | ---------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 7.4.0      | 2021-07-05 | Feature    | Port: Support inline relations with a parent relation now                        |
 | 7.3.0      | 2021-03-17 | Task       | Fix command description, add extension key to composer.json, add autodeployment  |
 | 7.2.0      | 2020-09-14 | Feature    | Make FileHelper::indexFile a public function                                     |
 | 7.1.0      | 2020-08-21 | Task       | Small bugfix for writeFileFromBase64Code and add a message when adding slugs     |
