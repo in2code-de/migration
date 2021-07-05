@@ -167,7 +167,16 @@ return [
                     'field' => 'parent_category',
                     'table' => 'tt_news_cat'
                 ]
-            ]
+            ],
+            'tx_inline_relation' => [
+                [
+                    'field' => 'parent_record',
+                    'table' => 'tx_inline_origin',
+                    'conditions' => [
+                        'parent_table' => 'tx_inline_origin'
+                    ]
+                ]
+            ],
         ],
 
         /**
