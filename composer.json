@@ -14,7 +14,7 @@
   "require": {
     "ext-dom": "*",
     "ext-libxml": "*",
-    "typo3/cms-core": "^9.5 || ^10.4",
+    "typo3/cms-core": "^9.5 || ^10.4 || ^11.4",
     "ext-json": "*"
   },
   "replace": {
