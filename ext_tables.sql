@@ -1,7 +1,6 @@
 #
 # Some Examples how to extend tables with useful fields for migration
 #
-#
 # CREATE TABLE tx_powermail_domain_model_form (
 # 	_migrated tinyint(4) unsigned DEFAULT '0' NOT NULL,
 # );
@@ -9,4 +8,14 @@
 # 	_migrated tinyint(4) unsigned DEFAULT '0' NOT NULL,
 # 	_migrated_uid int(11) unsigned DEFAULT '0' NOT NULL,
 # 	_migrated_table varchar(255) DEFAULT '' NOT NULL
+# );
+
+#
+# Some Examples how to extend tables with useful fields for import
+#
+# CREATE TABLE tt_content (
+# 	_imported int(11) unsigned DEFAULT '0' NOT NULL,
+# );
+# CREATE TABLE pages (
+# 	_imported int(11) unsigned DEFAULT '0' NOT NULL,
 # );

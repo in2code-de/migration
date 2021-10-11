@@ -350,3 +350,18 @@ The most reason for very large export files are embedded files. You can turn of 
 
 On a few of our exports that we've done with this tool, there was a charset issue with tt_content.l18n_diffsource.
 At the moment you have to clean this column before exporting if you run into the same issue.
+
+#### Q: How to get the old identifier after importing?
+
+Just add a new field to your table with name "_imported"
+
+Example ext_tables.sql:
+
+```
+CREATE TABLE tt_content (
+ 	_imported int(11) unsigned DEFAULT '0' NOT NULL,
+);
+CREATE TABLE pages (
+	_imported int(11) unsigned DEFAULT '0' NOT NULL,
+);
+```

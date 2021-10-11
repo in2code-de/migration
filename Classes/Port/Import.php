@@ -373,6 +373,9 @@ class Import
         $oldIdentifier = (int)$properties['uid'];
         $connection = DatabaseUtility::getConnectionForTable($tableName);
         $properties = $this->prepareProperties($properties, $tableName);
+        if (DatabaseUtility::isFieldExistingInTable('_imported', $tableName)) {
+            $properties['_imported'] = $oldIdentifier;
+        }
         $connection->insert($tableName, $properties);
         $newIdentifier = (int)$connection->lastInsertId($tableName);
         if ($oldIdentifier > 0) {
