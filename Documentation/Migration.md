@@ -128,7 +128,7 @@ class ContentMigrator extends AbstractMigrator implements MigratorInterface
 }
 ```
 
-Example for an individual PropertyHelper class. Function `shouldImport()` decides if the current record should be
+Example for an individual PropertyHelper class. Function `shouldMigrate()` decides if the current record should be
 manipulated or not. Function `manipulate()` is the main method which contains the magic.
 A call of `$this-setProperty($newValue)` within manipulate the value of the current field.
 An `initialize()` is always called before `manipulate()` for your very first tasks.
@@ -184,7 +184,7 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
     /**
      * @return bool
      */
-    public function shouldImport(): bool
+    public function shouldMigrate(): bool
     {
         foreach ($this->getConfigurationByKey('search') as $searchterm) {
             if (stristr($this->getProperty(), $searchterm)) {
