@@ -49,7 +49,6 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
      */
     protected $migrationConfiguration = [];
 
-
     /**
      * @var array
      */
@@ -68,6 +67,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
      * @param string $propertyName
      * @param string $table
      * @param array $configuration
+     * @param array $migrationConfiguration
      * @throws ConfigurationException
      */
     public function __construct(
