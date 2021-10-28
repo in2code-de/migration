@@ -15,13 +15,15 @@ interface PropertyHelperInterface
      * @param string $propertyName
      * @param string $table
      * @param array $configuration
+     * @param array $migrationConfiguration
      */
     public function __construct(
         array $record,
         array $recordOld,
         string $propertyName,
         string $table,
-        array $configuration = []
+        array $configuration = [],
+        array $migrationConfiguration = []
     );
 
     /**

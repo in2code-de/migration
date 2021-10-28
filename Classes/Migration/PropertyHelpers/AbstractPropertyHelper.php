@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace In2code\Migration\Migration\PropertyHelpers;
 
 use In2code\Migration\Exception\ConfigurationException;
@@ -45,6 +47,12 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
     /**
      * @var array
      */
+    protected $migrationConfiguration = [];
+
+
+    /**
+     * @var array
+     */
     protected $checkForConfiguration = [];
 
     /**
@@ -54,6 +62,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
 
     /**
      * AbstractPropertyHelper constructor.
+     *
      * @param array $record
      * @param array $recordOld Original properties (not modified for migrators, old record properties for importers)
      * @param string $propertyName
@@ -61,13 +70,20 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
      * @param array $configuration
      * @throws ConfigurationException
      */
-    public function __construct(array $record, array $recordOld, string $propertyName, string $table, array $configuration = [])
-    {
+    public function __construct(
+        array $record,
+        array $recordOld,
+        string $propertyName,
+        string $table,
+        array $configuration = [],
+        array $migrationConfiguration = []
+    ) {
         $this->record = $record;
         $this->recordOld = $recordOld;
         $this->propertyName = $propertyName;
         $this->table = $table;
         $this->configuration = $configuration;
+        $this->migrationConfiguration = $migrationConfiguration;
         $this->log = ObjectUtility::getObjectManager()->get(Log::class);
 
         if ($this->checkForConfiguration !== []) {
