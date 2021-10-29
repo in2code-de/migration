@@ -204,7 +204,8 @@ abstract class AbstractMigrator
                     $propertiesOld,
                     $propertyName,
                     $this->tableName,
-                    (array)$helperConfiguration['configuration']
+                    (array)$helperConfiguration['configuration'],
+                    $this->configuration['configuration'] ?? []
                 );
                 $helperClass->initialize();
                 $properties = $helperClass->returnRecord();
