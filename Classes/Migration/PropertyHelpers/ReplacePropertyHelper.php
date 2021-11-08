@@ -58,9 +58,9 @@ class ReplacePropertyHelper extends AbstractPropertyHelper implements PropertyHe
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    protected function getValue(): string
+    protected function getValue()
     {
         $value = $this->getProperty();
         if ($this->getConfigurationByKey('startField') !== null) {
