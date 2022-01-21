@@ -2,13 +2,13 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
-use Doctrine\DBAL\DBALException;
-use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\StringUtility;
+use In2code\MigrationExtend\Migration\PropertyHelper\FlexFormHelper\FlexFormHelperInterface;
+use LogicException;
+use Throwable;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * Class FlexFormGeneratorPropertyHelper allows to create FlexForm entries from a FlexForm Template
@@ -26,18 +26,28 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  *                      ],
  *                      'flexFormTemplate' => 'EXT:in2template/Resources/Private/Migration/FlexForms/Contact.xml',
  *                      'flexFormField' => 'pi_flexform', // where to look at for additionalMapping
- *                      'overwriteValues' => [
+ *                      'overwriteValues' => [ // optional
  *                          'header' => 'This is the new header',
  *                          'header_layout' => '{properties.anyotherfield}'
  *                      ],
- *                      'additionalMapping' => [
+ *                      'additionalMapping' => [ // optional
  *                          [
- *                              // optional: create new variable "new" and use it with {additionalMapping.new}
+ *                              // new variable in templates {additionalMapping.new}
  *                              'variableName' => 'new',
  *                              'keyField' => 'flexForm:what_to_display', // "flexForm:path/path" or: "row:uid"
  *                              'mapping' => [ // could change the initial value to a new value (empty array disables)
  *                                  'LIST' => 'News->list',
  *                                  'SINGLE' => 'News->detail'
+ *                              ]
+ *                          ]
+ *                      ],
+ *                      'helpers' => [ // optional
+ *                          [
+ *                              // new variable in templates {helper.tile.foo}
+ *                              'className' => MyRecordHelper::class,
+ *                              'configuration' => [
+ *                                  'variableName' => 'tile',
+ *                                  'anyConfiguration' => 'foo'
  *                              ]
  *                          ]
  *                      ]
@@ -79,7 +89,8 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
         $arguments = [
             'row' => $this->record,
             'flexForm' => $this->getFlexFormValues((string)$this->getConfigurationByKey('flexFormField')),
-            'additionalMapping' => $this->buildFromAdditionalMapping()
+            'additionalMapping' => $this->buildFromAdditionalMapping(),
+            'helper' => $this->getHelperClasses()
         ];
         return StringUtility::parseString($this->getTemplateContent(), $arguments);
     }
@@ -104,7 +115,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
      */
     protected function getFlexFormValues(string $field = 'pi_flexform'): array
     {
-        $flexFormService = ObjectUtility::getObjectManager()->get(FlexFormService::class);
+        $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
         return (array)$flexFormService->convertFlexFormContentToArray($this->getPropertyFromRecord($field));
     }
 
@@ -126,6 +137,40 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
             }
         }
         return $additionalMapping;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getHelperClasses(): array
+    {
+        $variables = [];
+        $flexFormHelpers = $this->getConfigurationByKey('helpers');
+        if (!empty($flexFormHelpers)) {
+            foreach ($flexFormHelpers as $helperConfig) {
+                if (!class_exists($helperConfig['className'])) {
+                    throw new LogicException('Class ' . $helperConfig['className'] . ' does not exists', 1642760703);
+                }
+                if (empty($helperConfig['configuration']['variableName'])) {
+                    throw new LogicException('variableName is missing in configuration', 1642760707);
+                }
+                if (is_subclass_of($helperConfig['className'], FlexFormHelperInterface::class)) {
+                    /** @var FlexFormHelperInterface $helperClass */
+                    $helperClass = GeneralUtility::makeInstance(
+                        $helperConfig['className'],
+                        $this,
+                        (array)$helperConfig['configuration'],
+                        $this->getRecord(),
+                        $this->getRecordOld()
+                    );
+                    $helperClass->initialize();
+                    $variables[$helperConfig['configuration']['variableName']] = $helperClass->getVariable();
+                } else {
+                    throw new LogicException('Class does not implement ' . FlexFormHelperInterface::class, 1642760711);
+                }
+            }
+        }
+        return $variables;
     }
 
     /**
@@ -175,7 +220,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
             $fieldName = substr($keyField, strlen('flexForm:'));
             try {
                 $value = ArrayUtility::getValueByPath($properties, $fieldName, '/');
-            } catch (\Exception $e) {
+            } catch (Throwable $e) {
                 $value = '';
             }
         } elseif (stristr($keyField, 'row:')) {
