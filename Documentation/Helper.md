@@ -18,6 +18,23 @@ Example CLI call
 
 ```
 
+### ComplexDataHandlerCommand
+
+For more and complex operations, we have the complex datahandlercommand.
+Please consult the dokumentation before doing anything:
+
+[TCE (TYPO3 Core engine) & DataHandler](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ApiOverview/Typo3CoreEngine/Index.html)
+
+[Database: DataHandler basics (Formerly Known as TCEmain)](https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ApiOverview/Typo3CoreEngine/Database/Index.html#database-datahandler-basics-formerly-known-as-tcemain)
+
+Example CLI call
+
+```
+# synchronize the media of a page to its language-child
+./vendor/bin/typo3cms migration:complexdatahandler page 347 inlineLocalizeSynchronize '{"field":"media", "action":"synchronize", "language: 1}'
+
+```
+
 ### HelpCommand
 
 Simple show a commaseparated list of subpages to a page (helpful for further database commands)

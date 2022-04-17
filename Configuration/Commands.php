@@ -2,12 +2,17 @@
 declare(strict_types=1);
 
 use \In2code\Migration\Command\DataHandlerCommand;
+use \In2code\Migration\Command\ComplexDataHandlerCommand;
 use \In2code\Migration\Command\HelpCommand;
 use \In2code\Migration\Command\ExportCommand;
 use \In2code\Migration\Command\ImportCommand;
 use \In2code\Migration\Command\MigrateCommand;
 
 return [
+    'migration:complexdatahandler' => [
+        'class' => ComplexDataHandlerCommand::class,
+        'schedulable' => false
+    ],
     'migration:datahandler' => [
         'class' => DataHandlerCommand::class,
         'schedulable' => false
