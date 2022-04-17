@@ -1,0 +1,38 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  In2code\Migration\:
+    resource: '../Classes/*'
+
+  In2code\Migration\Command\DataHandlerCommand:
+    tags:
+      - name: 'console.command'
+        command: 'migration:datahandler'
+        description: 'Make page actions like copy, move or delete from CLI'
+
+  In2code\Migration\Command\HelpCommand:
+    tags:
+      - name: 'console.command'
+        command: 'migration:help'
+        description: 'Returns a list of the current pid and all sub-pid'
+
+  In2code\Migration\Command\ExportCommand:
+    tags:
+      - name: 'console.command'
+        command: 'migration:export'
+        description: 'Own export command to export whole pagetrees with all records to a file which contains a json and can be imported again with a different import command.'
+
+  In2code\Migration\Command\ImportCommand:
+    tags:
+      - name: 'console.command'
+        command: 'migration:import'
+        description: 'Importer command to import json export files into a current database. New uids will be inserted for records. Note: At the moment only sys_file_reference is supported as mm table (e.g. no sys_category_record_mm support)'
+
+  In2code\Migration\Command\MigrateCommand:
+    tags:
+      - name: 'console.command'
+        command: 'migration:migrate'
+        description: 'Start migration script'
