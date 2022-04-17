@@ -13,6 +13,12 @@ services:
         command: 'migration:datahandler'
         description: 'Make page actions like copy, move or delete from CLI'
 
+  In2code\Migration\Command\ComplexDataHandlerCommand:
+    tags:
+      - name: 'console.command'
+        command: 'migration:complexdatahandler'
+        description: 'Complex Datahandler für CLI - Handle with care!'
+
   In2code\Migration\Command\HelpCommand:
     tags:
       - name: 'console.command'
