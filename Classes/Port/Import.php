@@ -169,7 +169,10 @@ class Import
      */
     protected function importRecords(): void
     {
-        $excludedTables = ['pages', 'sys_file', 'sys_file_reference'] + $this->configuration['excludedTables'];
+        $excludedTables = array_merge(
+            ['pages', 'sys_file', 'sys_file_reference'],
+            $this->configuration['excludedTables']
+        );
         foreach (array_keys($this->jsonArray['records']) as $tableName) {
             if (in_array($tableName, $excludedTables) === false) {
                 foreach ($this->jsonArray['records'][$tableName] as $properties) {
