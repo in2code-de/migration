@@ -101,6 +101,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State      | Description                                                                      |
 | ----------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
+| 8.0.1       | 2022-05-10 | Bugfix     | Small fix in the import class for merging arrays with excluding tables           |
 | 8.0.0       | 2022-04-17 | Feature    | Support TYPO3 11 and drop older versions                                         |
 | 7.8.0       | 2022-04-17 | Feature    | Add an additional command for complex datahandler stuff on CLI                   |
 | 7.7.0       | 2022-01-21 | Feature    | Add helper classes to FlexFormGeneratorPropertyHelper for even more power        |
