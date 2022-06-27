@@ -337,6 +337,8 @@ class Export
     {
         $queryBuilder = DatabaseUtility::getQueryBuilderForTable($tableName);
         $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(StartTimeRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(EndTimeRestriction::class);
         return (array)$queryBuilder
             ->select('*')
             ->from($tableName)
