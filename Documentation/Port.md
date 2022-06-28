@@ -4,6 +4,8 @@
 
 Export a page branch into an json export file (with all files and relations)
 
+Exporting page 0 is not supported
+
 Example CLI call
 
 ```

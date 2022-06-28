@@ -38,6 +38,15 @@ class ExportCommand extends AbstractPortCommand
         );
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        parent::initialize($input, $output);
+
+        if ($input->hasArgument('pid') && $input->getArgument('pid') == 0) {
+            throw new \RuntimeException('Exporting page 0 is not supported', 1656413814095);
+        }
+    }
+
     /**
      * Own export command to export whole pagetrees with all records to a file which contains a json and can be
      * imported again with a different import command.
