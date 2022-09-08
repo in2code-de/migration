@@ -13,9 +13,10 @@
   "license": "GPL-2.0-or-later",
   "require": {
     "ext-dom": "*",
+    "ext-json": "*",
     "ext-libxml": "*",
-    "typo3/cms-core": "^11.5",
-    "ext-json": "*"
+    "ext-pdo": "*",
+    "typo3/cms-core": "^11.5"
   },
   "replace": {
     "typo3-ter/migration": "self.version"
