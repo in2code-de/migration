@@ -6,8 +6,9 @@ namespace In2code\Migration\Migration\PropertyHelpers;
 
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Log\Log;
-use In2code\Migration\Utility\ObjectUtility;
+use Throwable;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class AbstractPropertyHelper
@@ -84,7 +85,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
         $this->table = $table;
         $this->configuration = $configuration;
         $this->migrationConfiguration = $migrationConfiguration;
-        $this->log = ObjectUtility::getObjectManager()->get(Log::class);
+        $this->log = GeneralUtility::makeInstance(Log::class);
 
         if ($this->checkForConfiguration !== []) {
             foreach ($this->checkForConfiguration as $key) {
@@ -264,7 +265,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
             if (stristr($key, '.')) {
                 try {
                     return ArrayUtility::getValueByPath($this->configuration, $key, '.');
-                } catch (\Exception $exception) {
+                } catch (Throwable $exception) {
                     unset($exception);
                 }
             }
