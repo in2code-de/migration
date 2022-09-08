@@ -1,9 +1,5 @@
 <?php
 
-//#######################################################################
-// Extension Manager/Repository config file for ext "in2template".
-//#######################################################################
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'migration',
     'description' => 'This extension is a framework extension for any kind of database-migrations',
@@ -13,7 +9,7 @@ $EM_CONF[$_EXTKEY] = [
     'dependencies' => 'extbase, fluid',
     'state' => 'stable',
     'author_company' => 'in2code GmbH',
-    'version' => '8.ß.1',
+    'version' => '9.0.0',
     'autoload' => [
         'psr-4' => ['In2code\\Migration\\' => 'Classes']
     ],
