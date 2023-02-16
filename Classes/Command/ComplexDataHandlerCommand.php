@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -73,12 +74,9 @@ class ComplexDataHandlerCommand extends Command
 
         $command[$input->getArgument('table')][(int)$input->getArgument('uid')][$input->getArgument('action')]
             = $value;
+        Bootstrap::initializeBackendAuthentication();
         /** @var DataHandler $dataHandler */
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->BE_USER = $GLOBALS['BE_USER'];
-        $dataHandler->BE_USER->user['admin'] = 1;
-        $dataHandler->userid = $GLOBALS['BE_USER']->user['uid'];
-        $dataHandler->admin = true;
         $dataHandler->bypassAccessCheckForRecords = true;
         $dataHandler->copyTree = $input->getArgument('recursion');
         $dataHandler->deleteTree = true;
