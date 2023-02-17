@@ -93,50 +93,50 @@ See documenation for a detailed description of all CLI commands
 
 ## Breaking changes
 
-* Update to 7.6.0: This is only a small breaking change because contstructors in extended with a configuration array now. If you are using own propertyHelpers and you overwrote __construct(), you have also to pass the new variable now. 
-
+* Update to 7.6.0: This is only a small breaking change because constructors in extended with a configuration array now. If you are using own propertyHelpers and you overwrote __construct(), you have also to pass the new variable now. 
 
 
 ## Changelog
 
-| Version     | Date       | State      | Description                                                                      |
-| ----------- | ---------- | ---------- | -------------------------------------------------------------------------------- |
-| 9.0.0       | 2022-09-08 | Feature    | Add property helpers for gridelements to container migration                     |
-| 8.0.1       | 2022-05-10 | Bugfix     | Small fix in the import class for merging arrays with excluding tables           |
-| 8.0.0       | 2022-04-17 | Feature    | Support TYPO3 11 and drop older versions                                         |
-| 7.8.0       | 2022-04-17 | Feature    | Add an additional command for complex datahandler stuff on CLI                   |
-| 7.7.0       | 2022-01-21 | Feature    | Add helper classes to FlexFormGeneratorPropertyHelper for even more power        |
-| 7.6.1       | 2021-11-25 | Bugfix     | Replace property helper should also handle array values                          |
-| 7.6.0 (!!!) | 2021-10-29 | Feature    | Make configuration available in propertyHelper classes                           |
-| 7.5.0       | 2021-10-11 | Feature    | Import: Make the old identifiers available after importing                       |
-| 7.4.0       | 2021-07-05 | Feature    | Port: Support inline relations with a parent relation now                        |
-| 7.3.0       | 2021-03-17 | Task       | Fix command description, add extension key to composer.json, add autodeployment  |
-| 7.2.0       | 2020-09-14 | Feature    | Make FileHelper::indexFile a public function                                     |
-| 7.1.0       | 2020-08-21 | Task       | Small bugfix for writeFileFromBase64Code and add a message when adding slugs     |
-| 7.0.0       | 2020-05-04 | Task       | Update dependencies for TYPO3 9 and 10                                           |
-| 6.7.0       | 2020-02-18 | Feature    | Port: Add configuration of EXT:news and in2faq, keep identifiers feature         |
-| 6.6.0       | 2020-02-13 | Feature    | Port: Support relations like "tt_content_123,pages_234" now                      |
-| 6.5.2       | 2020-02-12 | Bugfix     | Fix regression from 6.5.1                                                        |
-| 6.5.1       | 2020-02-12 | Bugfix     | Migration: Don't use deleted=0 if there is no deleted field                      |
-| 6.5.0       | 2020-02-11 | Feature    | Allow usage of {propertiesOld} when using an importer now                        |
-| 6.4.0       | 2020-02-03 | Feature    | Allow manipulation of values while runtime for importers and migrators           |
-| 6.3.0       | 2020-01-31 | Task       | Port: Don't stop if file is missing, Fixes in FileHelper class                   |
-| 6.2.0       | 2019-12-19 | Feature    | Migration: SlugPropertyHelper creates unique slugs in site now                   |
-| 6.1.0       | 2019-12-05 | Feature    | Port: Import can now handle huge files (> 6GB) in fileadmin (if not embedded)    |
-| 6.0.0       | 2019-11-12 | Feature    | Port with file URI instead of embedding, absolute config path is supported now   |
-| 5.4.0       | 2019-11-06 | Feature    | Small features: Handle defect links, port config for powermail, etc...           |
-| 5.3.0       | 2019-10-11 | Task       | Port: Support links to records, some bugfixes, some cleanup                      |
-| 5.2.0       | 2019-10-02 | Feature    | Export: Attach also files that simply linked in RTE + add localized records      |
-| 5.1.0       | 2019-10-02 | Feature    | Bugfix with missing tags, toggle file includes, added SlugPropertyHelper         |
-| 5.0.0       | 2019-10-01 | Feature    | Port and Migration is now based on an extend-extension with a configuration file |
-| 4.0.1       | 2019-09-16 | Bugfix     | Restore deleted ArrayUtility class                                               |
-| 4.0.0       | 2019-09-13 | Task       | Complete rewrite for TYPO3 9 with symfony tasks and doctrine, etc...             |
-| 3.1.0       | 2019-03-19 | Feature    | Update RTE images, Export now with files from links                              |
-| 3.0.0       | 2019-02-08 | Task       | Add a working import and export command controller                               |
-| 2.0.0       | 2018-09-07 | Task       | Use extkey migration, add ImportExportCommandController, some improvements       |
-| 1.1.1       | 2018-09-07 | Task       | Add Changelog                                                                    |
-| 1.1.0       | 2017-07-28 | Task       | Add DataHandler and Help CommandControllers                                      |
-| 1.0.0       | 2017-07-26 | Task       | Initial release                                                                  |
+| Version     | Date       | State   | Description                                                                                                            |
+|-------------|------------|---------|------------------------------------------------------------------------------------------------------------------------|
+| 10.0.0      | 2023-03-17 | Task    | Some smaller PHP 8 related fixes, first code cleanup for TYPO3 12 (e.g. ObjectUtility::getObjectManager() was removed) |
+| 9.0.0       | 2022-09-08 | Feature | Add property helpers for gridelements to container migration                                                           |
+| 8.0.1       | 2022-05-10 | Bugfix  | Small fix in the import class for merging arrays with excluding tables                                                 |
+| 8.0.0       | 2022-04-17 | Feature | Support TYPO3 11 and drop older versions                                                                               |
+| 7.8.0       | 2022-04-17 | Feature | Add an additional command for complex datahandler stuff on CLI                                                         |
+| 7.7.0       | 2022-01-21 | Feature | Add helper classes to FlexFormGeneratorPropertyHelper for even more power                                              |
+| 7.6.1       | 2021-11-25 | Bugfix  | Replace property helper should also handle array values                                                                |
+| 7.6.0 (!!!) | 2021-10-29 | Feature | Make configuration available in propertyHelper classes                                                                 |
+| 7.5.0       | 2021-10-11 | Feature | Import: Make the old identifiers available after importing                                                             |
+| 7.4.0       | 2021-07-05 | Feature | Port: Support inline relations with a parent relation now                                                              |
+| 7.3.0       | 2021-03-17 | Task    | Fix command description, add extension key to composer.json, add autodeployment                                        |
+| 7.2.0       | 2020-09-14 | Feature | Make FileHelper::indexFile a public function                                                                           |
+| 7.1.0       | 2020-08-21 | Task    | Small bugfix for writeFileFromBase64Code and add a message when adding slugs                                           |
+| 7.0.0       | 2020-05-04 | Task    | Update dependencies for TYPO3 9 and 10                                                                                 |
+| 6.7.0       | 2020-02-18 | Feature | Port: Add configuration of EXT:news and in2faq, keep identifiers feature                                               |
+| 6.6.0       | 2020-02-13 | Feature | Port: Support relations like "tt_content_123,pages_234" now                                                            |
+| 6.5.2       | 2020-02-12 | Bugfix  | Fix regression from 6.5.1                                                                                              |
+| 6.5.1       | 2020-02-12 | Bugfix  | Migration: Don't use deleted=0 if there is no deleted field                                                            |
+| 6.5.0       | 2020-02-11 | Feature | Allow usage of {propertiesOld} when using an importer now                                                              |
+| 6.4.0       | 2020-02-03 | Feature | Allow manipulation of values while runtime for importers and migrators                                                 |
+| 6.3.0       | 2020-01-31 | Task    | Port: Don't stop if file is missing, Fixes in FileHelper class                                                         |
+| 6.2.0       | 2019-12-19 | Feature | Migration: SlugPropertyHelper creates unique slugs in site now                                                         |
+| 6.1.0       | 2019-12-05 | Feature | Port: Import can now handle huge files (> 6GB) in fileadmin (if not embedded)                                          |
+| 6.0.0       | 2019-11-12 | Feature | Port with file URI instead of embedding, absolute config path is supported now                                         |
+| 5.4.0       | 2019-11-06 | Feature | Small features: Handle defect links, port config for powermail, etc...                                                 |
+| 5.3.0       | 2019-10-11 | Task    | Port: Support links to records, some bugfixes, some cleanup                                                            |
+| 5.2.0       | 2019-10-02 | Feature | Export: Attach also files that simply linked in RTE + add localized records                                            |
+| 5.1.0       | 2019-10-02 | Feature | Bugfix with missing tags, toggle file includes, added SlugPropertyHelper                                               |
+| 5.0.0       | 2019-10-01 | Feature | Port and Migration is now based on an extend-extension with a configuration file                                       |
+| 4.0.1       | 2019-09-16 | Bugfix  | Restore deleted ArrayUtility class                                                                                     |
+| 4.0.0       | 2019-09-13 | Task    | Complete rewrite for TYPO3 9 with symfony tasks and doctrine, etc...                                                   |
+| 3.1.0       | 2019-03-19 | Feature | Update RTE images, Export now with files from links                                                                    |
+| 3.0.0       | 2019-02-08 | Task    | Add a working import and export command controller                                                                     |
+| 2.0.0       | 2018-09-07 | Task    | Use extkey migration, add ImportExportCommandController, some improvements                                             |
+| 1.1.1       | 2018-09-07 | Task    | Add Changelog                                                                                                          |
+| 1.1.0       | 2017-07-28 | Task    | Add DataHandler and Help CommandControllers                                                                            |
+| 1.0.0       | 2017-07-26 | Task    | Initial release                                                                                                        |
 
 
 
