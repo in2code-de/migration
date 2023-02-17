@@ -3,15 +3,13 @@ declare(strict_types=1);
 namespace In2code\Migration\Migration\Helper;
 
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Utility\DatabaseUtility;
-use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\StringUtility;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class DatabaseHelper
- */
 class DatabaseHelper implements SingletonInterface
 {
     /**
@@ -19,12 +17,9 @@ class DatabaseHelper implements SingletonInterface
      */
     protected $log = null;
 
-    /**
-     * DatabaseHelper constructor.
-     */
     public function __construct()
     {
-        $this->log = ObjectUtility::getObjectManager()->get(Log::class);
+        $this->log = GeneralUtility::makeInstance(Log::class);
     }
 
     /**
@@ -65,6 +60,7 @@ class DatabaseHelper implements SingletonInterface
      * @param int $pageIdentifier
      * @param int[] $rootline
      * @return int[] e.g. [1000,100,10,1]
+     * @throws Exception
      */
     public function getRootline(int $pageIdentifier, array $rootline = []): array
     {
@@ -141,6 +137,7 @@ class DatabaseHelper implements SingletonInterface
     /**
      * @param int $pageIdentifier
      * @return int
+     * @throws Exception
      */
     protected function getParentPageIdentifier(int $pageIdentifier): int
     {
@@ -150,6 +147,6 @@ class DatabaseHelper implements SingletonInterface
             ->from('pages')
             ->where('uid=' . (int)$pageIdentifier)
             ->execute()
-            ->fetchColumn();
+            ->fetchOne();
     }
 }

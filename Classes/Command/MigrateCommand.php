@@ -2,23 +2,17 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
+use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Start;
-use In2code\Migration\Utility\ObjectUtility;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class MigrateCommand
- */
 class MigrateCommand extends Command
 {
-
-    /**
-     * Configure the command
-     */
     public function configure()
     {
         $this->setDescription('Start migration script');
@@ -67,12 +61,12 @@ class MigrateCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int
-     * @throws \Exception
+     * @throws ConfigurationException
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $starter = ObjectUtility::getObjectManager()->get(Start::class);
+        $starter = GeneralUtility::makeInstance(Start::class);
         $starter->start($input, $output);
-        return 0;
+        return parent::SUCCESS;
     }
 }

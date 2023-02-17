@@ -5,13 +5,10 @@ namespace In2code\Migration\Migration\Repository;
 use Doctrine\DBAL\DBALException;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Utility\DatabaseUtility;
-use In2code\Migration\Utility\ObjectUtility;
+use LogicException;
 use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class GeneralRepository
- */
 class GeneralRepository
 {
     /**
@@ -34,17 +31,12 @@ class GeneralRepository
      */
     protected $queue = null;
 
-    /**
-     * GeneralRepository constructor.
-     * @param array $configuration
-     * @param bool $enforce
-     */
     public function __construct(array $configuration, bool $enforce)
     {
         $this->configuration = $configuration;
         $this->enforce = $enforce;
-        $this->log = ObjectUtility::getObjectManager()->get(Log::class);
-        $this->queue = ObjectUtility::getObjectManager()->get(Queue::class);
+        $this->log = GeneralUtility::makeInstance(Log::class);
+        $this->queue = GeneralUtility::makeInstance(Queue::class);
     }
 
     /**
@@ -73,15 +65,10 @@ class GeneralRepository
         return (array)$connection->executeQuery($query)->fetchAll();
     }
 
-    /**
-     * @param array $properties
-     * @param string $tableName
-     * @return void
-     */
     public function updateRecord(array $properties, string $tableName)
     {
         if (array_key_exists('uid', $properties) === false) {
-            throw new \LogicException(
+            throw new LogicException(
                 'Record of table ' . $tableName . ' needs a uid field for persisting',
                 1568277411
             );
@@ -101,11 +88,6 @@ class GeneralRepository
         }
     }
 
-    /**
-     * @param array $properties
-     * @param string $tableName
-     * @return void
-     */
     public function insertRecord(array $properties, string $tableName)
     {
         if ($this->getConfiguration('dryrun') === false) {
@@ -201,26 +183,18 @@ class GeneralRepository
         return $whereClause;
     }
 
-    /**
-     * @param int $startPage
-     * @return string
-     */
     protected function getTreeBranchesFromStartingPoint(int $startPage): string
     {
-        $queryGenerator = ObjectUtility::getObjectManager()->get(QueryGenerator::class);
+        $queryGenerator = GeneralUtility::makeInstance(QueryGenerator::class);
         return (string)$queryGenerator->getTreeList($startPage, 99, 0, 1);
     }
 
-    /**
-     * @param string $property
-     * @return mixed
-     */
     protected function getConfiguration(string $property)
     {
         if (array_key_exists($property, $this->configuration['configuration'])) {
             return $this->configuration['configuration'][$property];
         } else {
-            throw new \LogicException('Configuration key does not exist', 1568275508);
+            throw new LogicException('Configuration key does not exist', 1568275508);
         }
     }
 }

@@ -8,8 +8,8 @@ use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Migration\PropertyHelpers\PropertyHelperInterface;
 use In2code\Migration\Migration\Repository\GeneralRepository;
 use In2code\Migration\Utility\DatabaseUtility;
-use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\StringUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class AbstractImporter
@@ -149,15 +149,11 @@ abstract class AbstractImporter
      */
     protected $log = null;
 
-    /**
-     * AbstractMigrator constructor.
-     * @param array $configuration
-     */
     public function __construct(array $configuration)
     {
         $this->configuration = $configuration;
         $this->checkProperties();
-        $this->log = ObjectUtility::getObjectManager()->get(Log::class);
+        $this->log = GeneralUtility::makeInstance(Log::class);
         $this->truncateTable();
     }
 
@@ -169,8 +165,7 @@ abstract class AbstractImporter
     public function start(): void
     {
         $this->executeSqlStart();
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $generalRepository = ObjectUtility::getObjectManager()->get(
+        $generalRepository = GeneralUtility::makeInstance(
             GeneralRepository::class,
             $this->configuration,
             $this->enforce
@@ -257,8 +252,7 @@ abstract class AbstractImporter
                         1569574677
                     );
                 }
-                /** @var PropertyHelperInterface $helperClass */
-                $helperClass = ObjectUtility::getObjectManager()->get(
+                $helperClass = GeneralUtility::makeInstance(
                     $helperConfiguration['className'],
                     $properties,
                     $propertiesOld,

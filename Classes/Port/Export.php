@@ -8,7 +8,6 @@ use In2code\Migration\Port\Service\LinkRelationService;
 use In2code\Migration\Signal\SignalTrait;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
-use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\TcaUtility;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Database\QueryGenerator;
@@ -242,7 +241,7 @@ class Export
      */
     protected function extendWithFilesFromLinks(): void
     {
-        $linkRelationService = ObjectUtility::getObjectManager()->get(LinkRelationService::class, $this->configuration);
+        $linkRelationService = GeneralUtility::makeInstance(LinkRelationService::class, $this->configuration);
         $identifiers = $linkRelationService->getFileIdentifiersFromLinks($this->jsonArray);
         foreach ($identifiers as $fileIdentifier) {
             $this->extendWithFilesBasic($fileIdentifier);
@@ -352,7 +351,7 @@ class Export
      */
     protected function getPageIdentifiersForExport(): array
     {
-        $queryGenerator = ObjectUtility::getObjectManager()->get(QueryGenerator::class);
+        $queryGenerator = GeneralUtility::makeInstance(QueryGenerator::class);
         $list = $queryGenerator->getTreeList($this->pid, $this->recursive, 0, 1);
         return GeneralUtility::intExplode(',', $list);
     }

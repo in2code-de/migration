@@ -2,14 +2,11 @@
 declare(strict_types=1);
 namespace In2code\Migration\Signal;
 
-use In2code\Migration\Utility\ObjectUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
 use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 
-/**
- * Trait SignalTrait
- */
 trait SignalTrait
 {
     /**
@@ -30,7 +27,7 @@ trait SignalTrait
     protected function signalDispatch(string $signalClassName, string $signalName, array $arguments): array
     {
         if ($this->isSignalEnabled()) {
-            $signalSlotDispatcher = ObjectUtility::getObjectManager()->get(Dispatcher::class);
+            $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
             return $signalSlotDispatcher->dispatch($signalClassName, $signalName, $arguments);
         }
         return [];

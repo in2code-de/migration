@@ -2,13 +2,15 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
+use Doctrine\DBAL\Driver\Exception;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Helper\DatabaseHelper;
-use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\TcaUtility;
+use Throwable;
 use TYPO3\CMS\Core\DataHandling\Model\RecordState;
 use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class SlugPropertyHelper
@@ -44,13 +46,10 @@ use TYPO3\CMS\Core\DataHandling\SlugHelper;
  */
 class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelperInterface
 {
-    /**
-     * @return void
-     */
     public function manipulate(): void
     {
         try {
-            $slugHelper = ObjectUtility::getObjectManager()->get(
+            $slugHelper = GeneralUtility::makeInstance(
                 SlugHelper::class,
                 $this->table,
                 $this->propertyName,
@@ -60,23 +59,21 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
             $uniqueSlug = $slugHelper->buildSlugForUniqueInSite($slug, $this->getRecordState());
             $this->setProperty($uniqueSlug);
             $this->log->addMessage('Set new slug "' . $uniqueSlug . '"');
-        } catch (\Exception $exception) {
+        } catch (Throwable $exception) {
             $this->log->addError($exception->getMessage(), $this->getProperties(), $this->table);
         }
     }
 
-    /**
-     * @return RecordState
-     */
     protected function getRecordState(): RecordState
     {
-        return ObjectUtility::getObjectManager()->get(RecordStateFactory::class, $this->table)
+        return GeneralUtility::makeInstance(RecordStateFactory::class, $this->table)
             ->fromArray($this->getProperties());
     }
 
     /**
      * @return bool
      * @throws ConfigurationException
+     * @throws Exception
      */
     public function shouldMigrate(): bool
     {
@@ -118,12 +115,13 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
      *  ]
      *
      * @return bool
+     * @throws Exception
      */
     protected function shouldMigrateByStartIdentifiers(): bool
     {
         $isFitting = true;
         if ($this->getConfigurationByKey('startIdentifiers') !== null) {
-            $databaseHelper = ObjectUtility::getObjectManager()->get(DatabaseHelper::class);
+            $databaseHelper = GeneralUtility::makeInstance(DatabaseHelper::class);
             $rootline = $databaseHelper->getRootline($this->getPropertyFromRecord('uid'));
             $delta = array_intersect($rootline, $this->getConfigurationByKey('startIdentifiers'));
             return count($delta) > 0;

@@ -2,13 +2,15 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDtiver;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Port\Import;
 use In2code\Migration\Utility\DatabaseUtility;
-use In2code\Migration\Utility\ObjectUtility;
+use LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class ImportCommand
@@ -17,9 +19,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ImportCommand extends AbstractPortCommand
 {
-    /**
-     * Configure the command
-     */
     public function configure()
     {
         $description = 'Importer command to import json export files into a current database. ' .
@@ -51,8 +50,7 @@ class ImportCommand extends AbstractPortCommand
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $importService = ObjectUtility::getObjectManager()->get(
+        $importService = GeneralUtility::makeInstance(
             Import::class,
             $input->getArgument('file'),
             (int)$input->getArgument('pid'),
@@ -66,23 +64,20 @@ class ImportCommand extends AbstractPortCommand
             $message = $exception->getMessage() . ' (Errorcode ' . $exception->getCode() . ')';
         }
         $output->writeln($message);
-        return 0;
+        return parent::SUCCESS;
     }
 
-    /**
-     * @param int $pid
-     * @return void
-     */
     protected function checkTarget(int $pid)
     {
         if ($pid > 0 && $this->isPageExisting($pid) === false) {
-            throw new \LogicException('Target page with uid ' . $pid . ' is not existing', 1549535363);
+            throw new LogicException('Target page with uid ' . $pid . ' is not existing', 1549535363);
         }
     }
 
     /**
      * @param int $pid
      * @return bool
+     * @throws ExceptionDbalDtiver
      */
     protected function isPageExisting(int $pid): bool
     {
@@ -92,6 +87,6 @@ class ImportCommand extends AbstractPortCommand
                 ->from('pages')
                 ->where('uid=' . (int)$pid)
                 ->execute()
-                ->fetchColumn(0) > 0;
+                ->fetchOne() > 0;
     }
 }

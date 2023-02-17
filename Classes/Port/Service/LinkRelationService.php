@@ -5,7 +5,7 @@ namespace In2code\Migration\Port\Service;
 use Doctrine\DBAL\DBALException;
 use In2code\Migration\Migration\Helper\FileHelper;
 use In2code\Migration\Utility\ArrayUtility;
-use In2code\Migration\Utility\ObjectUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class LinkRelationService
@@ -122,7 +122,7 @@ class LinkRelationService
             foreach (array_keys($result[0]) as $key) {
                 $identifier = $result[4][$key];
                 $storageFolder = $result[3][$key];
-                $fileHelper = ObjectUtility::getObjectManager()->get(FileHelper::class);
+                $fileHelper = GeneralUtility::makeInstance(FileHelper::class);
                 $storageIdentifier = $fileHelper->findIdentifierFromStoragePath($storageFolder);
                 $file = $fileHelper->findFileIdentifierFromIdentifierAndStorage(
                     $this->cleanFilePath($identifier),

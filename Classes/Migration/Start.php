@@ -6,7 +6,6 @@ use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Importer\ImporterInterface;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Migration\Migrator\MigratorInterface;
-use In2code\Migration\Utility\ObjectUtility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -29,7 +28,7 @@ class Start
      */
     public function start(InputInterface $input, OutputInterface $output): void
     {
-        ObjectUtility::getObjectManager()->get(Log::class)->setOutput($output);
+        GeneralUtility::makeInstance(Log::class)->setOutput($output);
 
         $configuration = $this->getConfiguration($input);
         $this->startMigrators($configuration);
@@ -59,8 +58,7 @@ class Start
                 );
             }
             /** @var MigratorInterface $migration */
-            /** @noinspection PhpMethodParametersCountMismatchInspection */
-            $migration = ObjectUtility::getObjectManager()->get($migration['className'], $configuration);
+            $migration = GeneralUtility::makeInstance($migration['className'], $configuration);
             $migration->start();
         }
     }

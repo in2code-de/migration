@@ -105,7 +105,7 @@ class StringUtility
      */
     public static function parseString(string $string, array $variables = []): string
     {
-        $standaloneView = ObjectUtility::getObjectManager()->get(StandaloneView::class);
+        $standaloneView = GeneralUtility::makeInstance(StandaloneView::class);
         $standaloneView->setTemplateSource($string);
         $standaloneView->assignMultiple($variables);
         return (string)$standaloneView->render();

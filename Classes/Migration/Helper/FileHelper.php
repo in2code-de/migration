@@ -6,7 +6,6 @@ use Doctrine\DBAL\DBALException;
 use In2code\Migration\Exception\FileNotFoundException;
 use In2code\Migration\Exception\FileOrFolderCouldNotBeCreatedException;
 use In2code\Migration\Utility\DatabaseUtility;
-use In2code\Migration\Utility\ObjectUtility;
 use In2code\Migration\Utility\StringUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -200,7 +199,7 @@ class FileHelper implements SingletonInterface
         int $fileIdentifier,
         array $additionalProperties = []
     ): int {
-        $databaseHelper = ObjectUtility::getObjectManager()->get(DatabaseHelper::class);
+        $databaseHelper = GeneralUtility::makeInstance(DatabaseHelper::class);
         $properties = [
             'uid_local' => $fileIdentifier,
             'uid_foreign' => $recordIdentifier,
@@ -240,7 +239,7 @@ class FileHelper implements SingletonInterface
         $fileIdentifier = 0;
         if (file_exists(GeneralUtility::getFileAbsFileName($file))) {
             try {
-                $resourceFactory = ObjectUtility::getObjectManager()->get(ResourceFactory::class);
+                $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
                 $file = $resourceFactory->getFileObjectFromCombinedIdentifier(
                     $this->getCombinedIdentifier($file, $storageIdentifier)
                 );

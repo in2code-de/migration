@@ -10,7 +10,6 @@ use In2code\Migration\Port\Service\MappingService;
 use In2code\Migration\Signal\SignalTrait;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
-use In2code\Migration\Utility\ObjectUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
 use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
@@ -124,7 +123,7 @@ class Import
      */
     public function __construct(string $file, int $pid, array $configuration = [])
     {
-        $this->mappingService = ObjectUtility::getObjectManager()->get(MappingService::class, $configuration);
+        $this->mappingService = GeneralUtility::makeInstance(MappingService::class, $configuration);
         $this->file = $file;
         $this->pid = $pid;
         $this->configuration = $configuration;
@@ -355,7 +354,7 @@ class Import
      */
     protected function updateLinks(): void
     {
-        $linkService = ObjectUtility::getObjectManager()->get(
+        $linkService = GeneralUtility::makeInstance(
             LinkMappingService::class,
             $this->mappingService,
             $this->configuration

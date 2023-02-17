@@ -6,10 +6,10 @@ use Doctrine\DBAL\DBALException;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Exception\JsonCanNotBeCreatedException;
 use In2code\Migration\Port\Export;
-use In2code\Migration\Utility\ObjectUtility;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
 use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 
@@ -20,9 +20,6 @@ use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
  */
 class ExportCommand extends AbstractPortCommand
 {
-    /**
-     * Configure the command
-     */
     public function configure()
     {
         $description = 'Own export command to export whole pagetrees with all records to a file ' .
@@ -54,14 +51,13 @@ class ExportCommand extends AbstractPortCommand
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $exportService = ObjectUtility::getObjectManager()->get(
+        $exportService = GeneralUtility::makeInstance(
             Export::class,
             (int)$input->getArgument('pid'),
             (int)$input->getArgument('recursive'),
             $this->getCompleteConfiguration($input->getArgument('configuration'))
         );
         $output->writeln($exportService->export());
-        return 0;
+        return parent::SUCCESS;
     }
 }

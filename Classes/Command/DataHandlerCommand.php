@@ -10,15 +10,8 @@ use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class DataHandlerCommand
- */
 class DataHandlerCommand extends Command
 {
-
-    /**
-     * Configure the command
-     */
     public function configure()
     {
         $this->setDescription('Make page actions like copy, move or delete from CLI');
@@ -38,14 +31,6 @@ class DataHandlerCommand extends Command
         );
     }
 
-    /**
-     * Make page actions like copy, move or delete from CLI
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null
-     * @SuppressWarnings(PHPMD.Superglobals)
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $command = [];
@@ -60,13 +45,9 @@ class DataHandlerCommand extends Command
         $dataHandler->start([], $command);
         $dataHandler->process_cmdmap();
         $output->writeln($this->getMessage($dataHandler));
-        return 0;
+        return parent::SUCCESS;
     }
 
-    /**
-     * @param DataHandler $dataHandler
-     * @return string
-     */
     protected function getMessage(DataHandler $dataHandler)
     {
         $message = 'job successfully done!';
