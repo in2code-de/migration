@@ -56,7 +56,6 @@ class DataHandlerCommand extends Command
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->bypassAccessCheckForRecords = true;
         $dataHandler->copyTree = $input->getArgument('recursion');
-        $dataHandler->deleteTree = true;
         $dataHandler->neverHideAtCopy = true;
         $dataHandler->start([], $command);
         $dataHandler->process_cmdmap();
