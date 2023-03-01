@@ -426,7 +426,9 @@ class Import
      */
     protected function prepareProperties(array $properties, string $tableName): array
     {
-        unset($properties['uid']);
+        if (array_key_exists('uid', $properties)) {
+            unset($properties['uid']);
+        }
         if (DatabaseUtility::isFieldExistingInTable('tstamp', $tableName) === true) {
             $properties['tstamp'] = time();
         }
