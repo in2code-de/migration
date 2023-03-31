@@ -482,9 +482,8 @@ class Import
      */
     protected function setPidForFirstPage(): void
     {
-        foreach ($this->jsonArray['records']['pages'] as &$properties) {
+        foreach ($this->jsonArray['records']['pages'] as $properties) {
             $oldPid = (int)$properties['pid'];
-            $properties['pid'] = $this->pid;
             $this->mappingService->setNewPid($this->pid, $oldPid);
             break;
         }
