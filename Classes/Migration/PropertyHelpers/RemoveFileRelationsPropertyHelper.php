@@ -25,15 +25,12 @@ class RemoveFileRelationsPropertyHelper extends AbstractPropertyHelper implement
     /**
      * @var array
      */
-    protected $checkForConfiguration = [
+    protected array $checkForConfiguration = [
         'conditions',
         'tablenames',
         'fieldname'
     ];
 
-    /**
-     * @return void
-     */
     public function manipulate(): void
     {
         $whereClause = 'uid_foreign=' . $this->getPropertyFromRecord('uid')

@@ -2,38 +2,34 @@
 declare(strict_types=1);
 namespace In2code\Migration\Port;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
+use In2code\Migration\Events\ImportBeforeEvent;
+use In2code\Migration\Events\ImportInitialEvent;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Exception\FileNotFoundException;
 use In2code\Migration\Port\Service\LinkMappingService;
 use In2code\Migration\Port\Service\MappingService;
-use In2code\Migration\Signal\SignalTrait;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
-use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 
-/**
- * Class ImportService
- */
 class Import
 {
-    use SignalTrait;
-
     /**
      * Absolute file name with JSON export string
      *
      * @var string
      */
-    protected $file = '';
+    protected string $file = '';
 
     /**
      * Page to import into
      *
      * @var int
      */
-    protected $pid = 0;
+    protected int $pid = 0;
 
     /**
      * Hold the complete configuration like
@@ -57,7 +53,7 @@ class Import
      *
      * @var array
      */
-    protected $configuration = [];
+    protected array $configuration = [];
 
     /**
      * Example array from json file to import
@@ -104,39 +100,37 @@ class Import
      *
      * @var array
      */
-    protected $jsonArray = [];
+    protected array $jsonArray = [];
+
+    protected ?MappingService $mappingService = null;
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
-     * @var MappingService
-     */
-    protected $mappingService = null;
-
-    /**
-     * ImportService constructor.
      * @param string $file
      * @param int $pid
      * @param array $configuration
      * @throws ConfigurationException
      * @throws FileNotFoundException
-     * @throws InvalidSlotException
-     * @throws InvalidSlotReturnException
      */
     public function __construct(string $file, int $pid, array $configuration = [])
     {
+        $this->eventDispatcher = GeneralUtility::makeInstance(EventDispatcherInterface::class);
         $this->mappingService = GeneralUtility::makeInstance(MappingService::class, $configuration);
-        $this->file = $file;
-        $this->pid = $pid;
-        $this->configuration = $configuration;
+
+        /** @var ImportInitialEvent $event */
+        $event = $this->eventDispatcher->dispatch(new ImportInitialEvent($file, $pid, $configuration));
+        $this->file = $event->getFile();
+        $this->pid = $event->getPid();
+        $this->configuration = $event->getConfiguration();
+
         $this->checkFile();
         $this->setJson();
-        $this->signalDispatch(__CLASS__, 'beforeImport', [$this]);
     }
 
     /**
      * @return int
-     * @throws DBALException
-     * @throws InvalidSlotException
-     * @throws InvalidSlotReturnException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function import(): int
     {
@@ -147,13 +141,18 @@ class Import
         $this->importFiles();
         $this->importMmRecords();
         $this->updateLinks();
-        $this->signalDispatch(__CLASS__, 'afterImport', [$this]);
-        return count($this->jsonArray['records']['pages']);
+
+        /** @var ImportBeforeEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ImportBeforeEvent($this->jsonArray, $this->pid, $this->file, $this->configuration)
+        );
+        return count($event->getJsonArray()['records']['pages']);
     }
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbal
+     * @throws ExceptionDbalDriver
      */
     protected function importPages(): void
     {
@@ -164,7 +163,8 @@ class Import
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbal
+     * @throws ExceptionDbalDriver
      */
     protected function importRecords(): void
     {
@@ -185,7 +185,8 @@ class Import
      * Import records from table sys_file but only if they are not yet existing
      *
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function importFileRecords(): void
     {
@@ -206,7 +207,8 @@ class Import
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbal
+     * @throws ExceptionDbalDriver
      */
     protected function importFileReferenceRecords(): void
     {
@@ -255,12 +257,6 @@ class Import
         FileUtility::copyFile($uri, GeneralUtility::getFileAbsFileName($path), $overwriteFiles);
     }
 
-    /**
-     * @param string $base64content
-     * @param string $path
-     * @param bool $overwriteFiles
-     * @return bool
-     */
     protected function importFileFromBase64(string $base64content, string $path, bool $overwriteFiles): bool
     {
         return FileUtility::writeFileFromBase64Code($path, $base64content, $overwriteFiles);
@@ -268,7 +264,8 @@ class Import
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function importMmRecords(): void
     {
@@ -284,11 +281,6 @@ class Import
         }
     }
 
-    /**
-     * @param array $properties
-     * @param string $tableMm
-     * @return array
-     */
     protected function getNewPropertiesForMmRelation(array $properties, string $tableMm): array
     {
         $configuration = $this->getMmConfigurationForRecord($properties, $tableMm);
@@ -350,7 +342,8 @@ class Import
      * At the end links of already new imported records will be updated with new targets
      *
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbal
+     * @throws ExceptionDbalDriver
      */
     protected function updateLinks(): void
     {
@@ -368,7 +361,8 @@ class Import
      * @param array $properties
      * @param string $tableName
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function insertRecord(array $properties, string $tableName): void
     {
@@ -389,6 +383,8 @@ class Import
      * @param string $identifier
      * @param int $storage
      * @return bool
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function isFileRecordAlreadyExisting(string $identifier, int $storage): bool
     {
@@ -399,6 +395,7 @@ class Import
      * @param string $identifier
      * @param int $storage
      * @return int
+     * @throws ExceptionDbal
      */
     protected function findFileUidByStorageAndIdentifier(string $identifier, int $storage): int
     {
@@ -408,7 +405,7 @@ class Import
             ->from('sys_file')
             ->where('storage=' . $storage . ' and identifier="' . $identifier . '"')
             ->execute()
-            ->fetchColumn(0);
+            ->fetchOne();
     }
 
     /**
@@ -422,7 +419,8 @@ class Import
      * @param array $properties
      * @param string $tableName
      * @return array
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function prepareProperties(array $properties, string $tableName): array
     {
@@ -453,10 +451,6 @@ class Import
         return $properties;
     }
 
-    /**
-     * @param array $properties
-     * @return array
-     */
     protected function preparePropertiesForSysFileReference(array $properties): array
     {
         $properties['uid_local']
@@ -507,35 +501,17 @@ class Import
         }
     }
 
-    /**
-     * Getter can be used in signals
-     *
-     * @noinspection PhpUnused
-     * @return array
-     */
     public function getJsonArray(): array
     {
         return $this->jsonArray;
     }
 
-    /**
-     * Setter can be used in signals
-     *
-     * @noinspection PhpUnused
-     * @param array $jsonArray
-     * @return Import
-     */
     public function setJsonArray(array $jsonArray): self
     {
         $this->jsonArray = $jsonArray;
         return $this;
     }
 
-    /**
-     * Getter can be used in signals
-     *
-     * @return array
-     */
     public function getConfiguration(): array
     {
         return $this->configuration;

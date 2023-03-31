@@ -54,9 +54,9 @@ class MigrateCommand extends Command
 
     /**
      * Example calls:
-     *  ./vendor/bin/typo3cms migration:migrate --configuration /var/www/site.org/migrationconfiguration.php
-     *  ./vendor/bin/typo3cms migration:migrate -c /var/www/site.org/migrationconfiguration.php
-     *  ./vendor/bin/typo3cms migration:migrate -c /configurationfile.php -k content -p 123 -d 0
+     *  ./vendor/bin/typo3 migration:migrate --configuration /var/www/site.org/migrationconfiguration.php
+     *  ./vendor/bin/typo3 migration:migrate -c /var/www/site.org/migrationconfiguration.php
+     *  ./vendor/bin/typo3 migration:migrate -c /configurationfile.php -k content -p 123 -d 0
      *
      * @param InputInterface $input
      * @param OutputInterface $output

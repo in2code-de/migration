@@ -10,22 +10,13 @@ use In2code\Migration\Migration\PropertyHelpers\ReplaceCssClassesInHtmlStringPro
  */
 class ContentMigrator extends AbstractMigrator implements MigratorInterface
 {
-    /**
-     * @var string
-     */
-    protected $tableName = 'tt_content';
+    protected string $tableName = 'tt_content';
 
-    /**
-     * @var array
-     */
-    protected $values = [
+    protected array $values = [
         'editlock' => '0'
     ];
 
-    /**
-     * @var array
-     */
-    protected $propertyHelpers = [
+    protected array $propertyHelpers = [
         'bodytext' => [
             [
                 'className' => ReplaceCssClassesInHtmlStringPropertyHelper::class,

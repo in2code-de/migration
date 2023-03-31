@@ -2,7 +2,8 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Importer;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Migration\PropertyHelpers\PropertyHelperInterface;
@@ -11,9 +12,6 @@ use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\StringUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class AbstractImporter
- */
 abstract class AbstractImporter
 {
     /**
@@ -21,21 +19,21 @@ abstract class AbstractImporter
      *
      * @var string
      */
-    protected $tableName = '';
+    protected string $tableName = '';
 
     /**
      * Table name from migrate to
      *
      * @var string
      */
-    protected $tableNameOld = '';
+    protected string $tableNameOld = '';
 
     /**
      * Default fields
      *
      * @var array
      */
-    protected $mappingDefault = [
+    protected array $mappingDefault = [
         'uid' => 'uid',
         'pid' => 'pid'
     ];
@@ -46,7 +44,7 @@ abstract class AbstractImporter
      *
      * @var array
      */
-    protected $mapping = [];
+    protected array $mapping = [];
 
     /**
      * Set some hard values (will be parsed with fluid engine).
@@ -60,7 +58,7 @@ abstract class AbstractImporter
      *
      * @var array
      */
-    protected $values = [];
+    protected array $values = [];
 
     /**
      * PropertyHelpers are called after initial build via mapping
@@ -77,7 +75,7 @@ abstract class AbstractImporter
      *
      * @var array
      */
-    protected $propertyHelpers = [];
+    protected array $propertyHelpers = [];
 
     /**
      * Define some sql statements that should be executed at the beginning or at the end of this import
@@ -90,7 +88,7 @@ abstract class AbstractImporter
      *
      * @var array
      */
-    protected $sql = [
+    protected array $sql = [
         'start' => [],
         'end' => []
     ];
@@ -100,54 +98,51 @@ abstract class AbstractImporter
      *
      * @var bool
      */
-    protected $enforce = false;
+    protected bool $enforce = false;
 
     /**
      * Keep uid when importing to new table
      *
      * @var bool
      */
-    protected $keepIdentifiers = true;
+    protected bool $keepIdentifiers = true;
 
     /**
      * Truncate table before import
      *
      * @var bool
      */
-    protected $truncate = true;
+    protected bool $truncate = true;
 
     /**
      * Filter selection of old records like "and pid > 0" (to prevent elements in a workflow e.g.)
      *
      * @var string
      */
-    protected $additionalWhere = '';
+    protected string $additionalWhere = '';
 
     /**
      * Group selection of old records like "url"
      *
      * @var string
      */
-    protected $groupBy = '';
+    protected string $groupBy = '';
 
     /**
      * Overwrite default order by definition
      *
      * @var string
      */
-    protected $orderBy = 'pid,uid';
+    protected string $orderBy = 'pid,uid';
 
     /**
      * Complete configuration from configuration file
      *
      * @var array
      */
-    protected $configuration = [];
+    protected array $configuration = [];
 
-    /**
-     * @var Log
-     */
-    protected $log = null;
+    protected ?Log $log = null;
 
     public function __construct(array $configuration)
     {
@@ -160,7 +155,8 @@ abstract class AbstractImporter
     /**
      * @return void
      * @throws ConfigurationException
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function start(): void
     {
@@ -196,7 +192,7 @@ abstract class AbstractImporter
      *
      * @param array $oldProperties
      * @return array
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
      */
     protected function createPropertiesFromMapping(array $oldProperties): array
     {
@@ -209,11 +205,6 @@ abstract class AbstractImporter
         return $newRow;
     }
 
-    /**
-     * @param array $properties
-     * @param array $propertiesOld
-     * @return array
-     */
     protected function createPropertiesFromValues(array $properties, array $propertiesOld): array
     {
         foreach ($this->values as $propertyName => $propertyValue) {
@@ -271,7 +262,7 @@ abstract class AbstractImporter
     /**
      * @param array $properties
      * @return array
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
      */
     protected function genericChanges(array $properties): array
     {
@@ -290,9 +281,6 @@ abstract class AbstractImporter
         return $properties;
     }
 
-    /**
-     * @return void
-     */
     protected function checkProperties(): void
     {
         if ($this->tableName === '') {
@@ -307,8 +295,8 @@ abstract class AbstractImporter
     }
 
     /**
-     * @return array
-     * @throws DBALException
+     * @return array|string[]
+     * @throws ExceptionDbalDriver
      */
     protected function getMappingDefault(): array
     {
@@ -333,10 +321,6 @@ abstract class AbstractImporter
         return $mappingDefault;
     }
 
-    /**
-     * @param array $records
-     * @return void
-     */
     protected function finalMessage(array $records)
     {
         if ($this->configuration['configuration']['dryrun'] === false) {
@@ -364,7 +348,7 @@ abstract class AbstractImporter
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     protected function executeSqlStart(): void
     {
@@ -378,7 +362,7 @@ abstract class AbstractImporter
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     protected function executeSqlEnd(): void
     {

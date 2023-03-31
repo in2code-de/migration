@@ -2,16 +2,15 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
+use In2code\Migration\Service\TreeService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class HelpCommand adds some helper commands to the system
- */
 class HelpCommand extends Command
 {
     public function configure()
@@ -26,12 +25,13 @@ class HelpCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $queryGenerator = GeneralUtility::makeInstance(QueryGenerator::class);
-        $list = $queryGenerator->getTreeList((int)$input->getArgument('startPid'), 20, 0, 1);
-        $output->writeln($list);
+        $treeService = GeneralUtility::makeInstance(TreeService::class);
+        $output->writeln(implode(',', $treeService->getAllSubpageIdentifiers((int)$input->getArgument('startPid'))));
         return parent::SUCCESS;
     }
 }

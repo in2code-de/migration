@@ -25,7 +25,7 @@ class MappingService
      *
      * @var array
      */
-    protected $mapping = [];
+    protected array $mapping = [];
 
     /**
      * Hold the complete configuration like
@@ -37,43 +37,23 @@ class MappingService
      *
      * @var array
      */
-    protected $configuration = [];
+    protected array $configuration = [];
 
-    /**
-     * MappingService constructor.
-     * @param array $configuration
-     */
     public function __construct(array $configuration)
     {
         $this->configuration = $configuration;
     }
 
-    /**
-     * @param int $new
-     * @param int $old
-     * @param string $tableName
-     * @return void
-     */
     public function setNew(int $new, int $old, string $tableName): void
     {
         $this->mapping[$tableName][$old] = $new;
     }
 
-    /**
-     * @param int $new
-     * @param int $old
-     * @return void
-     */
     public function setNewPid(int $new, int $old): void
     {
         $this->mapping[self::TABLE_NAME_PAGES][$old] = $new;
     }
 
-    /**
-     * @param int $old
-     * @param string $tableName
-     * @return int
-     */
     public function getNewFromOld(int $old, string $tableName): int
     {
         if ($this->configuration['keepNotMatchingIdentifiers'] === true
@@ -83,10 +63,6 @@ class MappingService
         return (int)$this->mapping[$tableName][$old];
     }
 
-    /**
-     * @param int $old
-     * @return int
-     */
     public function getNewPidFromOldPid(int $old): int
     {
         if ($this->configuration['keepNotMatchingIdentifiers'] === true
@@ -96,18 +72,11 @@ class MappingService
         return (int)$this->mapping[self::TABLE_NAME_PAGES][$old];
     }
 
-    /**
-     * @param string $tableName
-     * @return bool
-     */
     public function isTableExisting(string $tableName): bool
     {
         return array_key_exists($tableName, $this->mapping);
     }
 
-    /**
-     * @return array
-     */
     public function getMapping(): array
     {
         return $this->mapping;

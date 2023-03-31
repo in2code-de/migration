@@ -2,7 +2,8 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Exception\JsonCanNotBeCreatedException;
 use In2code\Migration\Port\Export;
@@ -10,8 +11,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
-use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 
 /**
  * Class ExportCommand
@@ -38,16 +37,15 @@ class ExportCommand extends AbstractPortCommand
     /**
      * Own export command to export whole pagetrees with all records to a file which contains a json and can be
      * imported again with a different import command.
-     * Example CLI call: ./vendor/bin/typo3cms migration:export 123 > /home/user/export.json
+     * Example CLI call: ./vendor/bin/typo3 migration:export 123 > /home/user/export.json
      *
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int
-     * @throws DBALException
-     * @throws InvalidSlotException
-     * @throws InvalidSlotReturnException
      * @throws ConfigurationException
+     * @throws ExceptionDbalDriver
      * @throws JsonCanNotBeCreatedException
+     * @throws ExceptionDbal
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {

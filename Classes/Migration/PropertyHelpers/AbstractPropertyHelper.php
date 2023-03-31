@@ -10,59 +10,33 @@ use Throwable;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class AbstractPropertyHelper
- */
 abstract class AbstractPropertyHelper implements PropertyHelperInterface
 {
-
-    /**
-     * @var array
-     */
-    protected $record = [];
+    protected array $record = [];
 
     /**
      * Original properties (not modified for migrators, old record properties for importers)
      *
      * @var array
      */
-    protected $recordOld = [];
+    protected array $recordOld = [];
 
-    /**
-     * @var string
-     */
-    protected $table = '';
+    protected string $table = '';
 
     /**
      * Property to manipulate
      *
      * @var string
      */
-    protected $propertyName = '';
+    protected string $propertyName = '';
+
+    protected array $configuration = [];
+    protected array $migrationConfiguration = [];
+    protected array $checkForConfiguration = [];
+
+    protected ?Log $log = null;
 
     /**
-     * @var array
-     */
-    protected $configuration = [];
-
-    /**
-     * @var array
-     */
-    protected $migrationConfiguration = [];
-
-    /**
-     * @var array
-     */
-    protected $checkForConfiguration = [];
-
-    /**
-     * @var Log|null
-     */
-    protected $log = null;
-
-    /**
-     * AbstractPropertyHelper constructor.
-     *
      * @param array $record
      * @param array $recordOld Original properties (not modified for migrators, old record properties for importers)
      * @param string $propertyName
@@ -99,16 +73,10 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
         }
     }
 
-    /**
-     * @return void
-     */
     public function initialize(): void
     {
     }
 
-    /**
-     * @return array
-     */
     public function returnRecord(): array
     {
         if ($this->shouldMigrate()) {
@@ -117,16 +85,10 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
         return $this->getRecord();
     }
 
-    /**
-     * @return void
-     */
     public function manipulate(): void
     {
     }
 
-    /**
-     * @return bool
-     */
     public function shouldMigrate(): bool
     {
         return true;
@@ -166,25 +128,16 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
         return $isFitting;
     }
 
-    /**
-     * @return array
-     */
     public function getRecord(): array
     {
         return $this->record;
     }
 
-    /**
-     * @return array
-     */
     protected function getRecordOld(): array
     {
         return $this->recordOld;
     }
 
-    /**
-     * @return string
-     */
     public function getPropertyName(): string
     {
         return $this->propertyName;
@@ -227,26 +180,16 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
         $this->record[$this->propertyName] = $value;
     }
 
-    /**
-     * @return string
-     */
     public function getProperty(): string
     {
         return (string)$this->getPropertyFromRecord($this->getPropertyName());
     }
 
-    /**
-     * @return array
-     */
     public function getProperties(): array
     {
         return $this->record;
     }
 
-    /**
-     * @param array $properties
-     * @return void
-     */
     public function setProperties(array $properties): void
     {
         $this->record = $properties + $this->record;
@@ -258,32 +201,24 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
      */
     public function getConfigurationByKey(string $key)
     {
-        if (is_array($this->configuration)) {
-            if (!stristr($key, '.') && array_key_exists($key, $this->configuration)) {
-                return $this->configuration[$key];
-            }
-            if (stristr($key, '.')) {
-                try {
-                    return ArrayUtility::getValueByPath($this->configuration, $key, '.');
-                } catch (Throwable $exception) {
-                    unset($exception);
-                }
+        if (!stristr($key, '.') && array_key_exists($key, $this->configuration)) {
+            return $this->configuration[$key];
+        }
+        if (stristr($key, '.')) {
+            try {
+                return ArrayUtility::getValueByPath($this->configuration, $key, '.');
+            } catch (Throwable $exception) {
+                unset($exception);
             }
         }
         return null;
     }
 
-    /**
-     * @return bool
-     */
     public function isAlreadyMigrated(): bool
     {
         return !empty($this->getPropertyFromRecord('_migrated'));
     }
 
-    /**
-     * @return bool
-     */
     public function isHidden(): bool
     {
         return !empty($this->getPropertyFromRecord('hidden'));

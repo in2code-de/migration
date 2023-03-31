@@ -31,25 +31,15 @@ use In2code\Migration\Utility\StringUtility;
  */
 class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper implements PropertyHelperInterface
 {
-
-    /**
-     * @var array
-     */
-    protected $checkForConfiguration = [
+    protected array $checkForConfiguration = [
         'condition',
         'tags',
         'search',
         'replace'
     ];
 
-    /**
-     * @var string
-     */
-    protected $xmlDeclaration = '<?xml encoding="utf-8" ?>';
+    protected string $xmlDeclaration = '<?xml encoding="utf-8" ?>';
 
-    /**
-     * @return void
-     */
     public function manipulate(): void
     {
         $dom = new \DOMDocument();
@@ -83,9 +73,6 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
         }
     }
 
-    /**
-     * @return bool
-     */
     public function shouldMigrate(): bool
     {
         if ($this->isFittingCondition()) {
@@ -98,9 +85,6 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
         return false;
     }
 
-    /**
-     * @return bool
-     */
     protected function isFittingCondition(): bool
     {
         $isFitting = true;

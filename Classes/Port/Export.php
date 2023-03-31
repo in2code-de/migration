@@ -2,35 +2,26 @@
 declare(strict_types=1);
 namespace In2code\Migration\Port;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
+use In2code\Migration\Events\ExportBeforeEvent;
+use In2code\Migration\Events\ExportInitialEvent;
 use In2code\Migration\Exception\JsonCanNotBeCreatedException;
 use In2code\Migration\Port\Service\LinkRelationService;
-use In2code\Migration\Signal\SignalTrait;
+use In2code\Migration\Service\TreeService;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
 use In2code\Migration\Utility\TcaUtility;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use TYPO3\CMS\Core\Database\Query\Restriction\EndTimeRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
-use TYPO3\CMS\Core\Database\QueryGenerator;
+use TYPO3\CMS\Core\Database\Query\Restriction\StartTimeRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException;
-use TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException;
 
-/**
- * Class ExportService
- */
 class Export
 {
-    use SignalTrait;
-
-    /**
-     * @var int
-     */
-    protected $pid = 0;
-
-    /**
-     * @var int
-     */
-    protected $recursive = 99;
+    protected int $pid = 0;
+    protected int $recursive = 99;
 
     /**
      * Hold the complete configuration like
@@ -54,7 +45,7 @@ class Export
      *
      * @var array
      */
-    protected $configuration = [];
+    protected array $configuration = [];
 
     /**
      * Array that is build just before it's packed into a json file
@@ -101,35 +92,34 @@ class Export
      *
      * @var array
      */
-    protected $jsonArray = [];
+    protected array $jsonArray = [];
 
-    /**
-     * ExportService constructor.
-     * @param int $pid
-     * @param int $recursive
-     * @param array $configuration
-     * @throws InvalidSlotException
-     * @throws InvalidSlotReturnException
-     */
+    private EventDispatcherInterface $eventDispatcher;
+
     public function __construct(int $pid, int $recursive = 99, array $configuration = [])
     {
-        $this->pid = $pid;
-        $this->recursive = $recursive;
-        $this->configuration = $configuration;
-        $this->signalDispatch(__CLASS__, 'initial', [$this]);
+        $this->eventDispatcher = GeneralUtility::makeInstance(EventDispatcherInterface::class);
+        /** @var ExportInitialEvent $event */
+        $event = $this->eventDispatcher->dispatch(new ExportInitialEvent($pid, $recursive, $configuration));
+        $this->pid = $event->getPid();
+        $this->recursive = $event->getRecursive();
+        $this->configuration = $event->getConfiguration();
     }
 
     /**
      * @return string
-     * @throws DBALException
-     * @throws InvalidSlotException
-     * @throws InvalidSlotReturnException
      * @throws JsonCanNotBeCreatedException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function export(): string
     {
         $this->buildJson();
-        $this->signalDispatch(__CLASS__, 'beforeExport', [$this]);
+        /** @var ExportBeforeEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ExportBeforeEvent($this->jsonArray, $this->pid, $this->recursive, $this->configuration)
+        );
+        $this->jsonArray = $event->getJsonArray();
         return $this->getJson();
     }
 
@@ -151,7 +141,8 @@ class Export
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function buildJson(): void
     {
@@ -171,6 +162,8 @@ class Export
      * Build a basic array with pages
      *
      * @return array
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function getPageProperties(): array
     {
@@ -183,7 +176,10 @@ class Export
 
     /**
      * Extend page records with more page records with sys_language_uid>0
+     *
      * @return void
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function extendPagesWithTranslations(): void
     {
@@ -203,7 +199,8 @@ class Export
      * Add records (like tt_content) to pages
      *
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function extendWithOtherTables(): void
     {
@@ -223,7 +220,8 @@ class Export
      * Attach files from related sys_file_reference records
      *
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function extendWithFiles(): void
     {
@@ -237,7 +235,8 @@ class Export
      * Attach files from links in RTE fields
      *
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function extendWithFilesFromLinks(): void
     {
@@ -252,7 +251,8 @@ class Export
      * Try to find mm relations that should be added
      *
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function extendWithMmRelations(): void
     {
@@ -269,7 +269,7 @@ class Export
                                 ->from($tableMm)
                                 ->where($whereClause)
                                 ->execute()
-                                ->fetchAll();
+                                ->fetchAllAssociative();
                             if (empty($this->jsonArray['mm'][$tableMm])) {
                                 $this->jsonArray['mm'][$tableMm] = [];
                             }
@@ -286,7 +286,8 @@ class Export
      *
      * @param int $fileIdentifier
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function extendWithFilesBasic(int $fileIdentifier): void
     {
@@ -314,6 +315,7 @@ class Export
      * @param int $identifier
      * @param string $tableName
      * @return array
+     * @throws ExceptionDbal
      */
     protected function getPropertiesFromIdentifierAndTable(int $identifier, string $tableName): array
     {
@@ -323,7 +325,7 @@ class Export
             ->from($tableName)
             ->where('uid=' . $identifier)
             ->execute()
-            ->fetch();
+            ->fetchAssociative();
     }
 
     /**
@@ -331,6 +333,7 @@ class Export
      * @param string $tableName
      * @param string $addWhere
      * @return array
+     * @throws ExceptionDbal
      */
     protected function getRecordsFromPageAndTable(int $pageIdentifier, string $tableName, string $addWhere = ''): array
     {
@@ -338,29 +341,20 @@ class Export
         $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
         $queryBuilder->getRestrictions()->removeByType(StartTimeRestriction::class);
         $queryBuilder->getRestrictions()->removeByType(EndTimeRestriction::class);
-        return (array)$queryBuilder
+        return $queryBuilder
             ->select('*')
             ->from($tableName)
             ->where('pid=' . $pageIdentifier . $addWhere)
             ->execute()
-            ->fetchAll();
+            ->fetchAllAssociative();
     }
 
-    /**
-     * @return int[]
-     */
     protected function getPageIdentifiersForExport(): array
     {
-        $queryGenerator = GeneralUtility::makeInstance(QueryGenerator::class);
-        $list = $queryGenerator->getTreeList($this->pid, $this->recursive, 0, 1);
-        return GeneralUtility::intExplode(',', $list);
+        $treeService = GeneralUtility::makeInstance(TreeService::class);
+        return $treeService->getAllSubpageIdentifiers($this->pid);
     }
 
-    /**
-     * @param array $configuration
-     * @param string $table
-     * @return string
-     */
     protected function getWhereClauseForExtensionWithMmRelations(array $configuration, string $table): string
     {
         $identifiers = $this->getIdentifiersForTable($table);
@@ -380,10 +374,6 @@ class Export
         return '';
     }
 
-    /**
-     * @param string $tableName
-     * @return int[]
-     */
     protected function getIdentifiersForTable(string $tableName): array
     {
         $identifiers = [];
@@ -395,19 +385,11 @@ class Export
         return $identifiers;
     }
 
-    /**
-     * @return array
-     */
     public function getJsonArray(): array
     {
         return $this->jsonArray;
     }
 
-    /**
-     * @noinspection PhpUnused
-     * @param array $jsonArray
-     * @return Export
-     */
     public function setJsonArray(array $jsonArray): self
     {
         $this->jsonArray = $jsonArray;

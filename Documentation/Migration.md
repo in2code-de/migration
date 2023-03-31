@@ -199,10 +199,10 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
 Start migration from CLI:
 ```
 # Test it before on content elements on page 123
-./vendor/bin/typo3cms migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php --dryrun 1 --key content --limitToPage 123
+./vendor/bin/typo3 migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php --dryrun 1 --key content --limitToPage 123
 
 # Go for it
-./vendor/bin/typo3cms migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php --dryrun 0 --key content
+./vendor/bin/typo3 migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php --dryrun 0 --key content
 ```
 
 
@@ -325,10 +325,10 @@ class NewsImporter extends AbstractImporter implements ImporterInterface
 Start import from CLI:
 ```
 # Test it before on one news element with uid 123
-./vendor/bin/typo3cms migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php --dryrun 1 --key news --limitToRecord 123
+./vendor/bin/typo3 migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php --dryrun 1 --key news --limitToRecord 123
 
 # Go for it
-./vendor/bin/typo3cms migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php --dryrun 0 --key news
+./vendor/bin/typo3 migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php --dryrun 0 --key news
 ```
 
 
@@ -359,22 +359,22 @@ be filled automatically with useful values - just test
 ## Example CLI calls
 ```
 # Migrate and import everything which is tagged to "content" (Configuration from EXT:migration/Configuration/Migration.php is used)
-./vendor/bin/typo3cms migration:migrate --dryrun 0 --key content
+./vendor/bin/typo3 migration:migrate --dryrun 0 --key content
 
 # Migrate and import with your configuration
-./vendor/bin/typo3cms migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php
+./vendor/bin/typo3 migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php
 
 # Migrate and import everything which is tagged to "page" but test it (dryrun) and do it only for page with uid=1 and no subpages
-./vendor/bin/typo3cms migration:migrate --key page --dryrun 1 --limitToPage 1 --recursive 0
+./vendor/bin/typo3 migration:migrate --key page --dryrun 1 --limitToPage 1 --recursive 0
 
 # Migrate and import everything which is tagged to "content". Use only page with uid=123 and all subpages
-./vendor/bin/typo3cms migration:migrate --key content --dryrun 0 --limitToPage 123 --recursive 1
+./vendor/bin/typo3 migration:migrate --key content --dryrun 0 --limitToPage 123 --recursive 1
 
 # Migrate and import everything which is tagged to "news" but only for the record uid=123
-./vendor/bin/typo3cms migration:migrate --key news --dryrun 0 --limitToRecord 123
+./vendor/bin/typo3 migration:migrate --key news --dryrun 0 --limitToRecord 123
 
 # Use short wrtings instead of long names (with configuration, limit to record, dryrun and key)
-./vendor/bin/typo3cms migration:migrate -c typo3conf/ext/migration/Configuration/Migration.php -l 23 -d 0 -k content
+./vendor/bin/typo3 migration:migrate -c typo3conf/ext/migration/Configuration/Migration.php -l 23 -d 0 -k content
 ```
 
 Parameters of the migration:migrate command (overwrite your settins of your Migration.php):

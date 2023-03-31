@@ -74,13 +74,13 @@ If your migration comes along with a TYPO3 update (like from 6.2 to 9.5 or so), 
 
 ```
 # Example migration
-./vendor/bin/typo3cms migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php
+./vendor/bin/typo3 migration:migrate --configuration EXT:migration_extend/Configuration/Migration.php
 
 # Example export into json file
-./vendor/bin/typo3cms migration:export 123 > /home/user/export.json
+./vendor/bin/typo3 migration:export 123 > /home/user/export.json
 
 # Example import from json file
-./vendor/bin/typo3cms migration:import /home/user/export.json 123
+./vendor/bin/typo3 migration:import /home/user/export.json 123
 ```
 
 See documenation for a detailed description of all CLI commands

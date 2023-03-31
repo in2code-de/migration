@@ -2,8 +2,8 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Helper;
 
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\StringUtility;
@@ -12,10 +12,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DatabaseHelper implements SingletonInterface
 {
-    /**
-     * @var Log
-     */
-    protected $log = null;
+    protected ?Log $log = null;
 
     public function __construct()
     {
@@ -23,14 +20,15 @@ class DatabaseHelper implements SingletonInterface
     }
 
     /**
-     * Create a record if it does not exists yet in the database.
+     * Create a record if it does not exist yet in the database.
      * At the moment records will be added if it does not exist exactly with all properties. There is no update-logic
      * for same uids.
      *
      * @param string $tableName
      * @param array $row
      * @return int
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function createRecord(string $tableName, array $row): int
     {
@@ -60,7 +58,8 @@ class DatabaseHelper implements SingletonInterface
      * @param int $pageIdentifier
      * @param int[] $rootline
      * @return int[] e.g. [1000,100,10,1]
-     * @throws Exception
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function getRootline(int $pageIdentifier, array $rootline = []): array
     {
@@ -121,7 +120,7 @@ class DatabaseHelper implements SingletonInterface
      * @param array $row
      * @param string $tableName
      * @return array
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
      */
     protected function addTimeFieldsToRow(array $row, string $tableName): array
     {
@@ -137,7 +136,7 @@ class DatabaseHelper implements SingletonInterface
     /**
      * @param int $pageIdentifier
      * @return int
-     * @throws Exception
+     * @throws ExceptionDbal
      */
     protected function getParentPageIdentifier(int $pageIdentifier): int
     {

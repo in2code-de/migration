@@ -2,22 +2,19 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Helper;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Exception\FileNotFoundException;
 use In2code\Migration\Exception\FileOrFolderCouldNotBeCreatedException;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\StringUtility;
+use Throwable;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class FileHelper
- * brings some helper functions for file actions
- */
 class FileHelper implements SingletonInterface
 {
-
     /**
      * Cache storages
      * [
@@ -26,7 +23,7 @@ class FileHelper implements SingletonInterface
      *
      * @var array
      */
-    protected $storages = [];
+    protected array $storages = [];
 
     /**
      * Search for sys_file_reference properties
@@ -35,14 +32,15 @@ class FileHelper implements SingletonInterface
      * @param string $fieldName
      * @param int $uid
      * @return array
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     public function findReferencesFromRecord(string $tableName, string $fieldName, int $uid): array
     {
         $connection = DatabaseUtility::getConnectionForTable('sys_file_reference');
         $whereClause = 'tablenames="' . $tableName . '" and fieldname="' . $fieldName . '" and uid_foreign=' . $uid
             . ' and deleted = 0';
-        return (array)$connection->executeQuery('select * from sys_file_reference where ' . $whereClause)->fetchAll();
+        return $connection->executeQuery('select * from sys_file_reference where ' . $whereClause)
+            ->fetchAllAssociative();
     }
 
     /**
@@ -50,12 +48,12 @@ class FileHelper implements SingletonInterface
      *
      * @param int $identifier
      * @return array
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     public function findFileFromIdentifier(int $identifier): array
     {
         $connection = DatabaseUtility::getConnectionForTable('sys_file');
-        return (array)$connection->executeQuery('select * from sys_file where uid=' . (int)$identifier)->fetch();
+        return (array)$connection->executeQuery('select * from sys_file where uid=' . $identifier)->fetchAssociative();
     }
 
     /**
@@ -65,7 +63,8 @@ class FileHelper implements SingletonInterface
      * @param string $fieldName
      * @param int $uid
      * @return array
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function findFilesFromRecordReferences(string $tableName, string $fieldName, int $uid): array
     {
@@ -83,6 +82,7 @@ class FileHelper implements SingletonInterface
      * @param string $identifier "/download/file.pdf" (must start with a leading slash)
      * @param int $storage "1"
      * @return int
+     * @throws ExceptionDbal
      */
     public function findFileIdentifierFromIdentifierAndStorage(string $identifier, int $storage): int
     {
@@ -98,7 +98,7 @@ class FileHelper implements SingletonInterface
                 $queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter($storage, \PDO::PARAM_INT))
             )
             ->execute()
-            ->fetchColumn(0);
+            ->fetchOne();
     }
 
     /**
@@ -106,7 +106,7 @@ class FileHelper implements SingletonInterface
      *
      * @param string $path
      * @return int
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     public function findIdentifierFromStoragePath(string $path): int
     {
@@ -115,7 +115,7 @@ class FileHelper implements SingletonInterface
             $sql .= '\'//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="basePath"]/value\') = "';
             $sql .= $path . '";';
             $connection = DatabaseUtility::getConnectionForTable('sys_file_storage');
-            $identifier = (int)$connection->executeQuery($sql)->fetchColumn(0);
+            $identifier = (int)$connection->executeQuery($sql)->fetchOne();
             $this->storages[$identifier] = $path;
         }
         return array_search($path, $this->storages);
@@ -126,16 +126,15 @@ class FileHelper implements SingletonInterface
      *
      * @param int $identifier
      * @return string path with trailing slash
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     public function findStoragePathFromIdentifier(int $identifier): string
     {
         if (array_key_exists($identifier, $this->storages) === false) {
             $sql = 'select ExtractValue(configuration, \'//T3FlexForms/data/sheet[@index="sDEF"]';
-            $sql .= '/language/field[@index="basePath"]/value\') path from sys_file_storage where uid='
-                . (int)$identifier;
+            $sql .= '/language/field[@index="basePath"]/value\') path from sys_file_storage where uid=' . $identifier;
             $connection = DatabaseUtility::getConnectionForTable('sys_file_storage');
-            $storage = (string)$connection->executeQuery($sql)->fetchColumn(0);
+            $storage = (string)$connection->executeQuery($sql)->fetchOne();
             $this->storages[$identifier] = $storage;
         }
         return $this->storages[$identifier];
@@ -152,9 +151,10 @@ class FileHelper implements SingletonInterface
      * @param array $additionalProperties ['title' => 'a', 'link' => 'b', 'alternative' => 'c', 'description' => 'd']
      * @param int $storageIdentifier
      * @return void
-     * @throws DBALException
      * @throws FileNotFoundException
      * @throws FileOrFolderCouldNotBeCreatedException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function copyFileAndCreateReference(
         string $relativeFile,
@@ -190,7 +190,8 @@ class FileHelper implements SingletonInterface
      * @param int $fileIdentifier
      * @param array $additionalProperties [title, description, alternative, link, crop, autoplay, showinpreview]
      * @return int
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function createFileRelation(
         string $tableName,
@@ -215,7 +216,7 @@ class FileHelper implements SingletonInterface
      * @param string $targetFolder relative path like fileadmin/folder/
      * @return string new relative path and filename
      */
-    protected function copyFileToTargetFolder($file, $targetFolder): string
+    protected function copyFileToTargetFolder(string $file, string $targetFolder): string
     {
         if (!file_exists(GeneralUtility::getFileAbsFileName($targetFolder . basename($file)))
             && file_exists($file)
@@ -231,10 +232,11 @@ class FileHelper implements SingletonInterface
      * @param string $file relative path and filename
      * @param int $storageIdentifier
      * @return int
-     * @throws DBALException
      * @throws FileNotFoundException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
-    public function indexFile($file, int $storageIdentifier): int
+    public function indexFile(string $file, int $storageIdentifier): int
     {
         $fileIdentifier = 0;
         if (file_exists(GeneralUtility::getFileAbsFileName($file))) {
@@ -244,7 +246,7 @@ class FileHelper implements SingletonInterface
                     $this->getCombinedIdentifier($file, $storageIdentifier)
                 );
                 $fileIdentifier = (int)$file->getProperty('uid');
-            } catch (\Exception $exception) {
+            } catch (Throwable $exception) {
                 throw new FileNotFoundException(
                     'combined identifier ' . $this->getCombinedIdentifier($file, $storageIdentifier) . ' not found',
                     1569921743
@@ -261,12 +263,13 @@ class FileHelper implements SingletonInterface
      * @param string $file relative path and filename
      * @param int $storageIdentifier
      * @return string
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
-    protected function getCombinedIdentifier($file, int $storageIdentifier): string
+    protected function getCombinedIdentifier(string $file, int $storageIdentifier): string
     {
         $identifier = $this->substituteFileadminFromPathAndName($file, $storageIdentifier);
-        return (string)$storageIdentifier . ':' . $identifier;
+        return $storageIdentifier . ':' . $identifier;
     }
 
     /**
@@ -275,7 +278,8 @@ class FileHelper implements SingletonInterface
      * @param string $pathAndName
      * @param int $storageIdentifier
      * @return string
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function substituteFileadminFromPathAndName(string $pathAndName, int $storageIdentifier): string
     {
@@ -296,10 +300,10 @@ class FileHelper implements SingletonInterface
      */
     protected function createFolderIfNotExists(string $path): void
     {
-        if (!is_dir($path)) {
+        if (is_dir($path) === false) {
             try {
                 GeneralUtility::mkdir_deep($path);
-            } catch (\Exception $exception) {
+            } catch (Throwable $exception) {
                 throw new FileOrFolderCouldNotBeCreatedException('Folder ' . $path . ' cannot be created', 1569334703);
             }
         }

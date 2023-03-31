@@ -6,14 +6,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
-/**
- * Class StringUtility
- */
 class StringUtility
 {
-
     /**
-     * Parse every kind of Youtube URI and return video code
+     * Parse every kind of YouTube URI and return video code
      *
      *  Example URI:
      *      http://www.youtube.com/embed/6FjfewWAGdE?feature=player_detailpage
@@ -98,11 +94,6 @@ class StringUtility
         return stristr($haystack, $needle) && strrpos($haystack, $needle, -strlen($haystack)) !== false;
     }
 
-    /**
-     * @param string $string
-     * @param array $variables
-     * @return string
-     */
     public static function parseString(string $string, array $variables = []): string
     {
         $standaloneView = GeneralUtility::makeInstance(StandaloneView::class);
@@ -111,10 +102,6 @@ class StringUtility
         return (string)$standaloneView->render();
     }
 
-    /**
-     * @param string $string
-     * @return bool
-     */
     public static function isIntegerListOrInteger(string $string): bool
     {
         if (MathUtility::canBeInterpretedAsInteger($string)) {
@@ -126,19 +113,11 @@ class StringUtility
         return false;
     }
 
-    /**
-     * @param string $string
-     * @return string
-     */
     public static function quoteString(string $string): string
     {
         return '"' . str_replace('"', '\"', $string) . '"';
     }
 
-    /**
-     * @param string $string
-     * @return bool
-     */
     protected static function isIntegerList(string $string): bool
     {
         $identifiers = GeneralUtility::intExplode(',', $string, true);

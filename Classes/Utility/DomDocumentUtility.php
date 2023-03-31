@@ -2,12 +2,8 @@
 declare(strict_types=1);
 namespace In2code\Migration\Utility;
 
-/**
- * Class DomDocumentUtility
- */
 class DomDocumentUtility
 {
-
     /**
      * Wrap html with "<?xml encoding="utf-8" ?><html><body>|</body></html>"
      *

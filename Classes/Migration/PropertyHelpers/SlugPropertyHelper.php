@@ -2,7 +2,8 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
-use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Helper\DatabaseHelper;
 use In2code\Migration\Utility\TcaUtility;
@@ -73,7 +74,8 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
     /**
      * @return bool
      * @throws ConfigurationException
-     * @throws Exception
+     * @throws ExceptionDbal
+     * @throws ExceptionDbalDriver
      */
     public function shouldMigrate(): bool
     {
@@ -115,17 +117,17 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
      *  ]
      *
      * @return bool
-     * @throws Exception
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function shouldMigrateByStartIdentifiers(): bool
     {
-        $isFitting = true;
         if ($this->getConfigurationByKey('startIdentifiers') !== null) {
             $databaseHelper = GeneralUtility::makeInstance(DatabaseHelper::class);
             $rootline = $databaseHelper->getRootline($this->getPropertyFromRecord('uid'));
             $delta = array_intersect($rootline, $this->getConfigurationByKey('startIdentifiers'));
             return count($delta) > 0;
         }
-        return $isFitting;
+        return true;
     }
 }

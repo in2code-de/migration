@@ -2,7 +2,8 @@
 declare(strict_types=1);
 namespace In2code\Migration\Port\Service;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\StringUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -50,18 +51,10 @@ class LinkMappingService
      *
      * @var array
      */
-    protected $configuration = [];
+    protected array $configuration = [];
 
-    /**
-     * @var null
-     */
-    protected $mappingService = null;
+    protected ?MappingService $mappingService = null;
 
-    /**
-     * LinkMappingService constructor.
-     * @param MappingService $mappingService
-     * @param array $configuration
-     */
     public function __construct(MappingService $mappingService, array $configuration)
     {
         $this->mappingService = $mappingService;
@@ -70,7 +63,8 @@ class LinkMappingService
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function updateLinksAndRecordsInNewRecords(): void
     {
@@ -95,7 +89,6 @@ class LinkMappingService
      * @param array $properties
      * @param string $tableName
      * @return array
-     * @throws DBALException
      */
     protected function updatePropertiesWithNewLinkMapping(array $properties, string $tableName): array
     {
@@ -110,12 +103,6 @@ class LinkMappingService
         return $properties;
     }
 
-    /**
-     * @param array $properties
-     * @param string $tableName
-     * @return array
-     * @throws DBALException
-     */
     protected function updatePropertiesWithNewRelationMapping(array $properties, string $tableName): array
     {
         if (isset($this->getPropertiesWithRelations()[$tableName])) {
@@ -127,7 +114,8 @@ class LinkMappingService
                     if (!empty($conditions)) {
                         // Do not update value if conditions not met
                         foreach ($conditions as $conditionField => $conditionValue) {
-                            if (!array_key_exists($conditionField, $properties) || $properties[$conditionField] !== $conditionValue) {
+                            if (array_key_exists($conditionField, $properties) === false
+                                || $properties[$conditionField] !== $conditionValue) {
                                 continue 2;
                             }
                         }
@@ -143,7 +131,8 @@ class LinkMappingService
      * @param array $properties
      * @param string $tableName
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function updatePropertiesWithNewRelationsInFlexForms(array $properties, string $tableName): void
     {
@@ -160,11 +149,6 @@ class LinkMappingService
         }
     }
 
-    /**
-     * @param array $properties
-     * @param array $configuration
-     * @return bool
-     */
     protected function isConditionFittingForFlexFormRelations(array $properties, array $configuration): bool
     {
         foreach ($configuration['condition'] as $field => $value) {
@@ -181,7 +165,7 @@ class LinkMappingService
      * @param string $fieldName
      * @param array $configuration
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     protected function updateFlexFormValue(
         int $identifier,
@@ -191,14 +175,14 @@ class LinkMappingService
     ): void {
         $connection = DatabaseUtility::getConnectionForTable($tableName);
         $sql = 'select ExtractValue(' . $fieldName . ', \'' . $configuration['selection'] . '\') value from '
-            . $tableName . ' where uid=' . (int)$identifier;
-        $value = (string)$connection->executeQuery($sql)->fetchColumn(0);
-        $newValue = $this->updateValueWithSimpleLinks((string)$value, $configuration['table']);
+            . $tableName . ' where uid=' . $identifier;
+        $value = (string)$connection->executeQuery($sql)->fetchOne();
+        $newValue = $this->updateValueWithSimpleLinks($value, $configuration['table']);
         if (!empty($newValue)) {
             $sql = 'update ' . $tableName . ' set '
                 . $fieldName . ' = UpdateXML(' . $fieldName . ', \''
                 . $configuration['selection'] . '\', concat(\'<value index="vDEF">\', \''
-                . $newValue . '\', \'</value>\' )) WHERE uid=' . (int)$identifier;
+                . $newValue . '\', \'</value>\' )) WHERE uid=' . $identifier;
         }
         $connection->executeQuery($sql);
     }
@@ -208,7 +192,6 @@ class LinkMappingService
      *
      * @param string $value
      * @return string
-     * @throws DBALException
      */
     protected function updateValueWithNewLinkMapping(string $value): string
     {
@@ -227,7 +210,6 @@ class LinkMappingService
      * @param string $value
      * @param string $table
      * @return string
-     * @throws DBALException
      */
     protected function updateValueWithSimpleLinks(string $value, string $table): string
     {
@@ -250,12 +232,11 @@ class LinkMappingService
      */
     protected function updatePageLinks(string $value): string
     {
-        $value = preg_replace_callback(
+        return preg_replace_callback(
             '~(t3://page\?uid=)(\d+)~',
             [$this, 'updatePageLinksCallback'],
             $value
         );
-        return $value;
     }
 
     /**
@@ -272,7 +253,7 @@ class LinkMappingService
         foreach ($identifiers as $identifier) {
             $newIdentifiers[] = $this->mappingService->getNewFromOld($identifier, $table);
         }
-        return (string)implode(',', $newIdentifiers);
+        return implode(',', $newIdentifiers);
     }
 
     /**
@@ -283,12 +264,11 @@ class LinkMappingService
      */
     protected function updateFileLinks(string $value): string
     {
-        $value = preg_replace_callback(
+        return preg_replace_callback(
             '~(t3://file\?uid=)(\d+)~',
             [$this, 'updateFileLinksCallback'],
             $value
         );
-        return $value;
     }
 
     /**
@@ -299,12 +279,11 @@ class LinkMappingService
      */
     protected function updateRteImages(string $value): string
     {
-        $value = preg_replace_callback(
+        return preg_replace_callback(
             '~(data-htmlarea-file-uid=")(\d+)~',
             [$this, 'updateFileLinksCallback'],
             $value
         );
-        return $value;
     }
 
     /**
@@ -312,7 +291,6 @@ class LinkMappingService
      *
      * @param string $value
      * @return string
-     * @throws DBALException
      */
     protected function updateSpecifiedIdentifiers(string $value): string
     {
@@ -370,27 +348,23 @@ class LinkMappingService
      * @param int $identifier
      * @param string $tableName
      * @return array
+     * @throws ExceptionDbal
      */
     protected function getPropertiesFromIdentifierAndTable(int $identifier, string $tableName): array
     {
         $queryBuilder = DatabaseUtility::getQueryBuilderForTable($tableName, true);
-        $rows = (array)$queryBuilder
+        $rows = $queryBuilder
             ->select('*')
             ->from($tableName)
             ->where('uid=' . $identifier)
             ->execute()
-            ->fetchAll();
+            ->fetchAllAssociative();
         if (!empty($rows[0]['uid'])) {
             return $rows[0];
         }
         return [];
     }
 
-    /**
-     * @param array $properties
-     * @param string $tableName
-     * @return void
-     */
     protected function updateRecord(array $properties, string $tableName): void
     {
         if (!empty($properties['uid'])) {
@@ -403,10 +377,6 @@ class LinkMappingService
         }
     }
 
-    /**
-     * @param $tableName
-     * @return bool
-     */
     protected function isTableInAnyLinkConfiguration($tableName): bool
     {
         return array_key_exists($tableName, $this->getPropertiesWithLinks())
@@ -414,25 +384,16 @@ class LinkMappingService
             || array_key_exists($tableName, $this->getPropertiesWithRelationsInFlexForms());
     }
 
-    /**
-     * @return array
-     */
     protected function getPropertiesWithLinks(): array
     {
         return (array)$this->configuration['linkMapping']['propertiesWithLinks'];
     }
 
-    /**
-     * @return array
-     */
     protected function getPropertiesWithRelations(): array
     {
         return (array)$this->configuration['linkMapping']['propertiesWithRelations'];
     }
 
-    /**
-     * @return array
-     */
     protected function getPropertiesWithRelationsInFlexForms(): array
     {
         return (array)$this->configuration['linkMapping']['propertiesWithRelationsInFlexForms'];

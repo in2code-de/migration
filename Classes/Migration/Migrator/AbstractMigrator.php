@@ -2,18 +2,17 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Migrator;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Migration\PropertyHelpers\PropertyHelperInterface;
 use In2code\Migration\Migration\Repository\GeneralRepository;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\StringUtility;
+use LogicException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class AbstractMigrator
- */
 abstract class AbstractMigrator
 {
     /**
@@ -21,7 +20,7 @@ abstract class AbstractMigrator
      *
      * @var string
      */
-    protected $tableName = '';
+    protected string $tableName = '';
 
     /**
      * Set some hard values (will be parsed with fluid engine).
@@ -34,7 +33,7 @@ abstract class AbstractMigrator
      *
      * @var array
      */
-    protected $values = [];
+    protected array $values = [];
 
     /**
      * PropertyHelpers are called after initial build via mapping
@@ -51,7 +50,7 @@ abstract class AbstractMigrator
      *
      * @var array
      */
-    protected $propertyHelpers = [];
+    protected array $propertyHelpers = [];
 
     /**
      * Define some sql statements that should be executed at the beginning or at the end of this migration
@@ -64,7 +63,7 @@ abstract class AbstractMigrator
      *
      * @var array
      */
-    protected $sql = [
+    protected array $sql = [
         'start' => [],
         'end' => []
     ];
@@ -74,40 +73,37 @@ abstract class AbstractMigrator
      *
      * @var bool
      */
-    protected $enforce = false;
+    protected bool $enforce = false;
 
     /**
      * Filter selection of old records like "and pid > 0" (to prevent elements in a workflow e.g.)
      *
      * @var string
      */
-    protected $additionalWhere = '';
+    protected string $additionalWhere = '';
 
     /**
      * Group selection of old records like "url"
      *
      * @var string
      */
-    protected $groupBy = '';
+    protected string $groupBy = '';
 
     /**
      * Overwrite default order by definition
      *
      * @var string
      */
-    protected $orderBy = 'pid,uid';
+    protected string $orderBy = 'pid,uid';
 
     /**
      * Complete configuration from configuration file
      *
      * @var array
      */
-    protected $configuration = [];
+    protected array $configuration = [];
 
-    /**
-     * @var Log
-     */
-    protected $log = null;
+    protected ?Log $log = null;
 
     public function __construct(array $configuration)
     {
@@ -119,7 +115,8 @@ abstract class AbstractMigrator
     /**
      * @return void
      * @throws ConfigurationException
-     * @throws DBALException
+     * @throws ExceptionDbal
+     * @throws ExceptionDbalDriver
      */
     public function start(): void
     {
@@ -148,15 +145,11 @@ abstract class AbstractMigrator
         $this->finalMessage($records);
     }
 
-    /**
-     * @param array $properties
-     * @return array
-     */
     protected function manipulatePropertiesWithValues(array $properties): array
     {
         foreach ($this->values as $propertyName => $propertyValue) {
             if (array_key_exists($propertyName, $properties) === false) {
-                throw new \LogicException('Property ' . $propertyName . ' does not exist', 1568278136);
+                throw new LogicException('Property ' . $propertyName . ' does not exist', 1568278136);
             }
             $variables = [
                 'properties' => $properties,
@@ -208,21 +201,14 @@ abstract class AbstractMigrator
         return $properties;
     }
 
-    /**
-     * @return void
-     */
     protected function checkProperties(): void
     {
         if ($this->tableName === '') {
-            throw new \LogicException('No tablename given', 1568276662);
+            throw new LogicException('No tablename given', 1568276662);
         }
     }
 
-    /**
-     * @param array $records
-     * @return void
-     */
-    protected function finalMessage(array $records)
+    protected function finalMessage(array $records): void
     {
         if ($this->configuration['configuration']['dryrun'] === false) {
             $message = count($records) . ' record(s) successfully migrated in ' . $this->tableName;
@@ -234,7 +220,7 @@ abstract class AbstractMigrator
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     protected function executeSqlStart(): void
     {
@@ -248,7 +234,7 @@ abstract class AbstractMigrator
 
     /**
      * @return void
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     protected function executeSqlEnd(): void
     {

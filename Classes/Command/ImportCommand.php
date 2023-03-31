@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
-use Doctrine\DBAL\Driver\Exception as ExceptionDbalDtiver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Port\Import;
 use In2code\Migration\Utility\DatabaseUtility;
@@ -10,6 +10,7 @@ use LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -41,7 +42,7 @@ class ImportCommand extends AbstractPortCommand
      * Importer command to import json export files into a current database. New uids will be inserted for records.
      * Note: At the moment only sys_file_reference is supported as mm table (e.g. no sys_category_record_mm support)
      *
-     * Example CLI call: ./vendor/bin/typo3cms migration:import /home/user/export.json 123
+     * Example CLI call: ./vendor/bin/typo3 migration:import /home/user/export.json 123
      *
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -60,7 +61,7 @@ class ImportCommand extends AbstractPortCommand
             $this->checkTarget((int)$input->getArgument('pid'));
             $pages = $importService->import();
             $message = 'Success. ' . $pages . ' new pages imported!';
-        } catch (\Exception $exception) {
+        } catch (Throwable $exception) {
             $message = $exception->getMessage() . ' (Errorcode ' . $exception->getCode() . ')';
         }
         $output->writeln($message);
@@ -77,16 +78,16 @@ class ImportCommand extends AbstractPortCommand
     /**
      * @param int $pid
      * @return bool
-     * @throws ExceptionDbalDtiver
+     * @throws ExceptionDbal
      */
     protected function isPageExisting(int $pid): bool
     {
         $queryBuilder = DatabaseUtility::getQueryBuilderForTable('pages', true);
         return (int)$queryBuilder
-                ->select('uid')
-                ->from('pages')
-                ->where('uid=' . (int)$pid)
-                ->execute()
-                ->fetchOne() > 0;
+            ->select('uid')
+            ->from('pages')
+            ->where('uid=' . (int)$pid)
+            ->execute()
+            ->fetchOne() > 0;
     }
 }

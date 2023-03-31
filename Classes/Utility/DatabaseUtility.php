@@ -2,30 +2,18 @@
 declare(strict_types=1);
 namespace In2code\Migration\Utility;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
-/**
- * Class DatabaseUtility
- */
 class DatabaseUtility
 {
-    /**
-     * Cache existing fields
-     *
-     * @var array
-     */
-    protected static $fieldsExisting = [];
+    protected static array $fieldsExisting = [];
 
-    /**
-     * @param string $tableName
-     * @param bool $removeRestrictions
-     * @return QueryBuilder
-     */
     public static function getQueryBuilderForTable(string $tableName, bool $removeRestrictions = false): QueryBuilder
     {
         /** @var QueryBuilder $queryBuilder */
@@ -36,10 +24,6 @@ class DatabaseUtility
         return $queryBuilder;
     }
 
-    /**
-     * @param string $tableName
-     * @return Connection
-     */
     public static function getConnectionForTable(string $tableName): Connection
     {
         return GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($tableName);
@@ -48,13 +32,13 @@ class DatabaseUtility
     /**
      * @param string $tableName
      * @return bool
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     public static function isTableExisting(string $tableName): bool
     {
         $existing = false;
         $connection = self::getConnectionForTable($tableName);
-        $queryResult = $connection->query('show tables;')->fetchAll();
+        $queryResult = $connection->executeQuery('show tables;')->fetchAllAssociative();
         foreach ($queryResult as $tableProperties) {
             if (in_array($tableName, array_values($tableProperties))) {
                 $existing = true;
@@ -68,14 +52,14 @@ class DatabaseUtility
      * @param string $fieldName
      * @param string $tableName
      * @return bool
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     public static function isFieldExistingInTable(string $fieldName, string $tableName): bool
     {
         $found = false;
         if (isset(self::$fieldsExisting[$tableName][$fieldName]) === false) {
             $connection = self::getConnectionForTable($tableName);
-            $queryResult = $connection->query('describe ' . $tableName . ';')->fetchAll();
+            $queryResult = $connection->executeQuery('describe ' . $tableName . ';')->fetchAllAssociative();
             foreach ($queryResult as $fieldProperties) {
                 if ($fieldProperties['Field'] === $fieldName) {
                     $found = true;
@@ -93,7 +77,8 @@ class DatabaseUtility
      * @param int $storage
      * @param string $identifier
      * @return string
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public static function getFilePathAndNameByStorageAndIdentifier(int $storage, string $identifier): string
     {
@@ -106,7 +91,7 @@ class DatabaseUtility
      *
      * @param string $identifier
      * @return bool
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
      */
     public static function isSpecifiedIdentifier(string $identifier): bool
     {
@@ -151,13 +136,13 @@ class DatabaseUtility
     /**
      * @param int $storage
      * @return string
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     protected static function getPathFromStorage(int $storage): string
     {
         $sql = 'select ExtractValue(configuration, \'//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="basePath"]/value\') path from sys_file_storage where uid = "' . $storage . '"';
         $connection = self::getConnectionForTable('sys_file_storage');
-        $path = $connection->executeQuery($sql)->fetchColumn(0);
+        $path = $connection->executeQuery($sql)->fetchOne();
         return (string)$path;
     }
 }

@@ -2,34 +2,22 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Repository;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Migration\Log\Log;
+use In2code\Migration\Service\TreeService;
 use In2code\Migration\Utility\DatabaseUtility;
 use LogicException;
-use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class GeneralRepository
 {
-    /**
-     * @var array
-     */
-    protected $configuration = [];
+    protected array $configuration = [];
 
-    /**
-     * @var bool
-     */
-    protected $enforce = false;
+    protected bool $enforce = false;
 
-    /**
-     * @var Log
-     */
-    protected $log = null;
-
-    /**
-     * @var Queue
-     */
-    protected $queue = null;
+    protected ?Log $log = null;
+    protected ?Queue $queue = null;
 
     public function __construct(array $configuration, bool $enforce)
     {
@@ -41,11 +29,12 @@ class GeneralRepository
 
     /**
      * @param string $tableName
-     * @param string $additionalWhere add an additional where like "and pid>0"
+     * @param string $additionalWhere add additional where like "and pid>0"
      * @param string $groupby add a groupby definition
      * @param string $orderby overwrite order by "pid,uid"
      * @return array
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     public function getRecords(
         string $tableName,
@@ -62,10 +51,10 @@ class GeneralRepository
         if ($orderby !== '') {
             $query .= ' order by ' . $orderby;
         }
-        return (array)$connection->executeQuery($query)->fetchAll();
+        return $connection->executeQuery($query)->fetchAllAssociative();
     }
 
-    public function updateRecord(array $properties, string $tableName)
+    public function updateRecord(array $properties, string $tableName): void
     {
         if (array_key_exists('uid', $properties) === false) {
             throw new LogicException(
@@ -88,7 +77,7 @@ class GeneralRepository
         }
     }
 
-    public function insertRecord(array $properties, string $tableName)
+    public function insertRecord(array $properties, string $tableName): void
     {
         if ($this->getConfiguration('dryrun') === false) {
             $properties = $this->queue->updatePropertiesWithPropertiesFromQueue(
@@ -109,7 +98,7 @@ class GeneralRepository
      * @param string $tableName
      * @param string $additionalWhere
      * @return string
-     * @throws DBALException
+     * @throws ExceptionDbalDriver
      */
     protected function getWhereClause(string $tableName, string $additionalWhere): string
     {
@@ -128,29 +117,23 @@ class GeneralRepository
         return $whereClause;
     }
 
-    /**
-     * @param string $whereClause
-     * @param string $tableName
-     * @return string
-     */
     protected function getWhereClauseForLimitToRecord(string $whereClause, string $tableName): string
     {
         if ($this->getConfiguration('limitToRecord') !== null) {
             if (is_numeric($this->getConfiguration('limitToRecord')) && $this->getConfiguration('limitToRecord') > 0) {
                 $whereClause .= ' and uid=' . (int)$this->getConfiguration('limitToRecord');
             }
-            if (!is_numeric($this->getConfiguration('limitToRecord'))) {
+            if (is_numeric($this->getConfiguration('limitToRecord')) === false) {
                 $parts = GeneralUtility::trimExplode(':', $this->getConfiguration('limitToRecord'), true);
                 if ($tableName === $parts[0]) {
                     if (is_numeric($parts[1]) && $parts[1] > 0) {
                         $whereClause .= ' and uid=' . (int)$parts[1];
                         return $whereClause;
                     }
-                    return $whereClause;
                 } else {
                     $whereClause .= ' and 1=2';
-                    return $whereClause;
                 }
+                return $whereClause;
             }
         }
         return $whereClause;
@@ -160,9 +143,11 @@ class GeneralRepository
      * @param string $whereClause
      * @param string $tableName
      * @return string
+     * @throws ExceptionDbalDriver
      */
     protected function getWhereClauseForLimitToPage(string $whereClause, string $tableName): string
     {
+        $treeService = GeneralUtility::makeInstance(TreeService::class);
         if ($this->getConfiguration('limitToPage') !== null) {
             $field = 'pid';
             if ($tableName === 'pages') {
@@ -171,22 +156,15 @@ class GeneralRepository
             if ($this->getConfiguration('limitToPage') > 0) {
                 if ($this->getConfiguration('recursive') === true) {
                     $whereClause .= ' and ' . $field . ' in (';
-                    $whereClause .=
-                        $this->getTreeBranchesFromStartingPoint((int)$this->getConfiguration('limitToPage')) . ')';
-                    return $whereClause;
+                    $whereClause .= $treeService->getAllSubpageIdentifiers((int)$this->getConfiguration('limitToPage'));
+                    $whereClause .= ')';
                 } else {
                     $whereClause .= ' and ' . $field . '=' . (int)$this->getConfiguration('limitToPage');
-                    return $whereClause;
                 }
+                return $whereClause;
             }
         }
         return $whereClause;
-    }
-
-    protected function getTreeBranchesFromStartingPoint(int $startPage): string
-    {
-        $queryGenerator = GeneralUtility::makeInstance(QueryGenerator::class);
-        return (string)$queryGenerator->getTreeList($startPage, 99, 0, 1);
     }
 
     protected function getConfiguration(string $property)

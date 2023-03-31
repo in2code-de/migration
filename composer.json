@@ -12,11 +12,12 @@
   "type": "typo3-cms-extension",
   "license": "GPL-2.0-or-later",
   "require": {
+    "php": "^7.4 || ^8.0",
     "ext-dom": "*",
     "ext-json": "*",
     "ext-libxml": "*",
     "ext-pdo": "*",
-    "typo3/cms-core": "^11.5"
+    "typo3/cms-core": "^11.5 || ^12.0"
   },
   "replace": {
     "typo3-ter/migration": "self.version"

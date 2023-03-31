@@ -8,13 +8,13 @@ Example CLI call
 
 ```
 # Copy tree with beginning pid 123 into page with pid 234
-./vendor/bin/typo3cms migration:datahandler 123 copy 234
+./vendor/bin/typo3 migration:datahandler 123 copy 234
 
 # Move tree with beginning pid 123 into page with pid 234
-./vendor/bin/typo3cms migration:datahandler 123 move 234
+./vendor/bin/typo3 migration:datahandler 123 move 234
 
 # Delete complete tree with beginning pid 123
-./vendor/bin/typo3cms migration:datahandler 123 delete 0 99
+./vendor/bin/typo3 migration:datahandler 123 delete 0 99
 
 ```
 
@@ -31,7 +31,7 @@ Example CLI call
 
 ```
 # synchronize the media of a page to its language-child
-./vendor/bin/typo3cms migration:complexdatahandler page 347 inlineLocalizeSynchronize '{"field":"media", "action":"synchronize", "language: 1}'
+./vendor/bin/typo3 migration:complexdatahandler page 347 inlineLocalizeSynchronize '{"field":"media", "action":"synchronize", "language: 1}'
 
 ```
 
@@ -43,5 +43,5 @@ Example CLI call
 
 ```
 # Show a commaseparated list of a page with pid 123 and its subpages
-./vendor/bin/typo3cms migration:help 123
+./vendor/bin/typo3 migration:help 123
 ```

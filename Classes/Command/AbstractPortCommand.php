@@ -7,9 +7,6 @@ use Symfony\Component\Console\Command\Command;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
-/**
- * Class AbstractPortCommand to deliver a basic configuration for Export- and ImportCommand
- */
 abstract class AbstractPortCommand extends Command
 {
     const CONFIGURATION_PATH = 'EXT:migration/Configuration/Port.php';
@@ -29,7 +26,6 @@ abstract class AbstractPortCommand extends Command
             throw new ConfigurationException('File not found on ' . $path, 1569837808);
         }
         /** @noinspection PhpIncludeInspection */
-        $configuration = require_once $path;
-        return $configuration;
+        return require_once $path;
     }
 }

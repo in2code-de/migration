@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Port\Service;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Migration\Helper\FileHelper;
 use In2code\Migration\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -55,22 +55,13 @@ class LinkRelationService
      *
      * @var array
      */
-    protected $configuration = [];
+    protected array $configuration = [];
 
-    /**
-     * LinkRelationService constructor.
-     * @param array $configuration
-     */
     public function __construct(array $configuration)
     {
         $this->configuration = $configuration;
     }
 
-    /**
-     * @param array $jsonArray
-     * @return int[]
-     * @throws DBALException
-     */
     public function getFileIdentifiersFromLinks(array $jsonArray): array
     {
         $identifiers = [];
@@ -111,7 +102,7 @@ class LinkRelationService
      *
      * @param string $content
      * @return int[]
-     * @throws DBALException
+     * @throws ExceptionDbal
      */
     protected function searchForClassicFileLinks(string $content): array
     {
@@ -148,9 +139,6 @@ class LinkRelationService
         return str_replace('//', '/', $filePath);
     }
 
-    /**
-     * @return array
-     */
     protected function getPropertiesWithLinks(): array
     {
         return (array)$this->configuration['linkMapping']['propertiesWithLinks'];

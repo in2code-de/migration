@@ -29,18 +29,11 @@ namespace In2code\Migration\Migration\PropertyHelpers;
  */
 class ReplacePropertyHelper extends AbstractPropertyHelper implements PropertyHelperInterface
 {
-
-    /**
-     * @var array
-     */
-    protected $checkForConfiguration = [
+    protected array $checkForConfiguration = [
         'search',
         'replace'
     ];
 
-    /**
-     * @return void
-     */
     public function manipulate(): void
     {
         $value = $this->getValue();

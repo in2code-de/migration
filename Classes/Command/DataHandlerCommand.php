@@ -48,7 +48,7 @@ class DataHandlerCommand extends Command
         return parent::SUCCESS;
     }
 
-    protected function getMessage(DataHandler $dataHandler)
+    protected function getMessage(DataHandler $dataHandler): string
     {
         $message = 'job successfully done!';
         if (!empty($dataHandler->errorLog)) {

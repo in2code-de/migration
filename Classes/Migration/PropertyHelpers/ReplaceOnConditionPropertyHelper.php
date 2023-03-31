@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
+use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Utility\StringUtility;
 
 /**
@@ -45,28 +46,18 @@ use In2code\Migration\Utility\StringUtility;
  */
 class ReplaceOnConditionPropertyHelper extends AbstractPropertyHelper implements PropertyHelperInterface
 {
-    /**
-     * @return array
-     */
-    protected $checkForConfiguration = [
+    protected array $checkForConfiguration = [
         'conditions',
         'replace'
     ];
 
-    /**
-     * @return void
-     * @throws \Exception
-     */
     public function manipulate(): void
     {
         $this->setSingleValue();
         $this->setMultipleValues();
     }
 
-    /**
-     * @return void
-     */
-    protected function setSingleValue()
+    protected function setSingleValue(): void
     {
         if ($this->getConfigurationByKey('replace.value') !== null) {
             $newValue = StringUtility::parseString(
@@ -80,10 +71,7 @@ class ReplaceOnConditionPropertyHelper extends AbstractPropertyHelper implements
         }
     }
 
-    /**
-     * @return void
-     */
-    protected function setMultipleValues()
+    protected function setMultipleValues(): void
     {
         if ($this->getConfigurationByKey('replace.values') !== null) {
             $properties = [];
@@ -98,7 +86,7 @@ class ReplaceOnConditionPropertyHelper extends AbstractPropertyHelper implements
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws ConfigurationException
      */
     public function shouldMigrate(): bool
     {

@@ -28,9 +28,6 @@ class GridelementsToContainerParentPropertyHelper extends AbstractPropertyHelper
         }
     }
 
-    /**
-     * @return void
-     */
     public function manipulate(): void
     {
         $types = $this->getConfigurationByKey('types');
@@ -40,9 +37,6 @@ class GridelementsToContainerParentPropertyHelper extends AbstractPropertyHelper
         $this->setProperties($properties);
     }
 
-    /**
-     * @return bool
-     */
     public function shouldMigrate(): bool
     {
         return $this->getPropertyFromRecordOld('CType') === 'gridelements_pi1'

@@ -10,22 +10,13 @@ use In2code\Migration\Migration\PropertyHelpers\ReplaceOnConditionPropertyHelper
  */
 class PageMigrator extends AbstractMigrator implements MigratorInterface
 {
-    /**
-     * @var string
-     */
-    protected $tableName = 'pages';
+    protected string $tableName = 'pages';
 
-    /**
-     * @var array
-     */
-    protected $values = [
+    protected array $values = [
         'hidden' => '1'
     ];
 
-    /**
-     * @var array
-     */
-    protected $propertyHelpers = [
+    protected array $propertyHelpers = [
         'seo_title' => [
             [
                 'className' => ReplaceOnConditionPropertyHelper::class,

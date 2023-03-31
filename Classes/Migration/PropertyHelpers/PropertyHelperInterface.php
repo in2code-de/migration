@@ -2,21 +2,8 @@
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
-/**
- * Interface PropertyHelperInterface
- */
 interface PropertyHelperInterface
 {
-
-    /**
-     * PropertyHelperInterface constructor.
-     * @param array $record
-     * @param array $recordOld
-     * @param string $propertyName
-     * @param string $table
-     * @param array $configuration
-     * @param array $migrationConfiguration
-     */
     public function __construct(
         array $record,
         array $recordOld,
@@ -33,9 +20,6 @@ interface PropertyHelperInterface
      */
     public function initialize(): void;
 
-    /**
-     * @return array
-     */
     public function returnRecord(): array;
 
     /**

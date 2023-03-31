@@ -3,7 +3,6 @@ declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
 use In2code\Migration\Utility\StringUtility;
-use In2code\MigrationExtend\Migration\PropertyHelper\FlexFormHelper\FlexFormHelperInterface;
 use LogicException;
 use Throwable;
 use TYPO3\CMS\Core\Service\FlexFormService;
@@ -63,17 +62,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements PropertyHelperInterface
 {
-    /**
-     * @var array
-     */
-    protected $checkForConfiguration = [
+    protected array $checkForConfiguration = [
         'condition',
         'flexFormTemplate'
     ];
 
-    /**
-     * @return void
-     */
     public function manipulate(): void
     {
         $this->propertiesFromOverwriteValuesConfiguration();
@@ -81,9 +74,6 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
         $this->log->addMessage('New FlexForm value set for content.uid ' . $this->getPropertyFromRecord('uid'));
     }
 
-    /**
-     * @return string
-     */
     protected function buildFlexFormString(): string
     {
         $arguments = [
@@ -95,10 +85,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
         return StringUtility::parseString($this->getTemplateContent(), $arguments);
     }
 
-    /**
-     * @return void
-     */
-    protected function propertiesFromOverwriteValuesConfiguration()
+    protected function propertiesFromOverwriteValuesConfiguration(): void
     {
         $values = [];
         if ($this->getConfigurationByKey('overwriteValues') !== null) {
@@ -109,19 +96,12 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
         }
     }
 
-    /**
-     * @param string $field
-     * @return array
-     */
     protected function getFlexFormValues(string $field = 'pi_flexform'): array
     {
         $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
         return (array)$flexFormService->convertFlexFormContentToArray($this->getPropertyFromRecord($field));
     }
 
-    /**
-     * @return array
-     */
     protected function buildFromAdditionalMapping(): array
     {
         $additionalMapping = [];
@@ -139,9 +119,6 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
         return $additionalMapping;
     }
 
-    /**
-     * @return array
-     */
     protected function getHelperClasses(): array
     {
         $variables = [];
@@ -173,9 +150,6 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
         return $variables;
     }
 
-    /**
-     * @return string
-     */
     protected function getTemplateContent(): string
     {
         $pathAndFilename = $this->getConfigurationByKey('flexFormTemplate');
@@ -183,11 +157,6 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
         return (string)file_get_contents($absolute);
     }
 
-    /**
-     * Check if this record should be parsed or not
-     *
-     * @return bool
-     */
     public function shouldMigrate(): bool
     {
         foreach ($this->getConfigurationByKey('condition') as $field => $value) {
@@ -212,16 +181,16 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
      * @param string $field
      * @return string
      */
-    protected function getValueFromKeyField(string $keyField, $field = 'pi_flexform'): string
+    protected function getValueFromKeyField(string $keyField, string $field = 'pi_flexform'): string
     {
         $value = '';
         if (stristr($keyField, 'flexForm:')) {
             $properties = $this->getFlexFormValues($field);
             $fieldName = substr($keyField, strlen('flexForm:'));
             try {
-                $value = ArrayUtility::getValueByPath($properties, $fieldName, '/');
+                $value = ArrayUtility::getValueByPath($properties, $fieldName);
             } catch (Throwable $e) {
-                $value = '';
+                // value is already an empty string here
             }
         } elseif (stristr($keyField, 'row:')) {
             $properties = $this->record;
@@ -233,11 +202,6 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
         return $value;
     }
 
-    /**
-     * @param string $value
-     * @param array $mapping
-     * @return string
-     */
     protected function resolveValueByMapping(string $value, array $mapping = []): string
     {
         if (array_key_exists($value, $mapping)) {

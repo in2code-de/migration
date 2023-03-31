@@ -2,15 +2,10 @@
 declare(strict_types=1);
 namespace In2code\Migration\Utility;
 
-use In2code\Migration\Exception\FileNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class FileUtility
- */
 class FileUtility
 {
-
     /**
      * @param string $file absolute filename like "/var/www/domain.org/public/fileadmin/file.jpg"
      * @return string
@@ -54,14 +49,10 @@ class FileUtility
         }
     }
 
-    /**
-     * @param string $pathAndFilename
-     * @return void
-     */
-    protected static function createFolderIfNotExists(string $pathAndFilename)
+    protected static function createFolderIfNotExists(string $pathAndFilename): void
     {
         $path = self::getPathFromPathAndFilename($pathAndFilename);
-        if (!is_dir($path)) {
+        if (is_dir($path) === false) {
             try {
                 GeneralUtility::mkdir_deep($path);
             } catch (\Exception $exception) {
@@ -70,11 +61,7 @@ class FileUtility
         }
     }
 
-    /**
-     * @param string $pathAndFilename
-     * @return string
-     */
-    protected static function getPathFromPathAndFilename($pathAndFilename)
+    protected static function getPathFromPathAndFilename(string $pathAndFilename): string
     {
         $pathInfo = pathinfo($pathAndFilename);
         return $pathInfo['dirname'];

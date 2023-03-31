@@ -8,20 +8,10 @@ namespace In2code\Migration\Migration\Importer;
  */
 class NewsImporter extends AbstractImporter implements ImporterInterface
 {
-    /**
-     * @var string
-     */
-    protected $tableName = 'tx_news_domain_model_news';
+    protected string $tableName = 'tx_news_domain_model_news';
+    protected string $tableNameOld = 'tt_news';
 
-    /**
-     * @var string
-     */
-    protected $tableNameOld = 'tt_news';
-
-    /**
-     * @var array
-     */
-    protected $mapping = [
+    protected array $mapping = [
         'type' => 'type',
         'title' => 'title',
         'short' => 'teaser',
@@ -42,39 +32,33 @@ class NewsImporter extends AbstractImporter implements ImporterInterface
         'l18n_parent' => 'l10n_parent',
         'l18n_diffsource' => 'l10n_diffsource',
 
-        'category' => 'categories'
+        'category' => 'categories',
     ];
 
-    /**
-     * @var array
-     */
-    protected $values = [
-        'hidden' => '0'
+    protected array $values = [
+        'hidden' => '0',
     ];
 
-    /**
-     * @var array
-     */
-    protected $propertyHelpers = [
+    protected array $propertyHelpers = [
 //        'categories' => [
 //            [
-//                'className' => CreateNewsCategoryRelationPropertyHelper::class
-//            ]
+//                'className' => CreateNewsCategoryRelationPropertyHelper::class,
+//            ],
 //        ],
 //        'fal_media' => [
 //            [
-//                'className' => CreateNewsImageRelationAndMoveImagePropertyHelper::class
-//            ]
+//                'className' => CreateNewsImageRelationAndMoveImagePropertyHelper::class,
+//            ],
 //        ],
 //        'fal_related_files' => [
 //            [
-//                'className' => CreateNewsFileRelationsPropertyHelper::class
-//            ]
+//                'className' => CreateNewsFileRelationsPropertyHelper::class,
+//            ],
 //        ],
 //        'related' => [
 //            [
-//                'className' => CreateNewsRelatedRelationsPropertyHelper::class
-//            ]
-//        ]
+//                'className' => CreateNewsRelatedRelationsPropertyHelper::class,
+//            ],
+//        ],
     ];
 }

@@ -16,7 +16,7 @@ class ComplexDataHandlerCommand extends Command
     public function configure()
     {
         $this->setDescription('Complex Datahandler für CLI - Handle with care!' . chr(10) .
-            'Please consult the documentaion before using this command:' . chr(10) .
+            'Please consult the documentation before using this command:' . chr(10) .
             'https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ApiOverview/Typo3CoreEngine/Index.html' . chr(10) .
             'and' . chr(10) .
             'https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ApiOverview/Typo3CoreEngine/Database/Index.html' . chr(10) .
@@ -28,7 +28,7 @@ class ComplexDataHandlerCommand extends Command
         $this->addArgument(
             'value',
             InputArgument::OPTIONAL,
-            'The value for the command. Must be a JSON oder Integer > 0. E. g. {"field":"images", "action":"synchronize", "language: 1}',
+            'The value for the command. Must be a JSON oder Integer > 0. E. g. {"field":"images", "action":"synchronize", "language": 1}',
             ''
         );
         $this->addArgument(
@@ -72,7 +72,7 @@ class ComplexDataHandlerCommand extends Command
         return parent::SUCCESS;
     }
 
-    protected function getMessage(DataHandler $dataHandler)
+    protected function getMessage(DataHandler $dataHandler): string
     {
         $message = 'job successfully done!';
         if (!empty($dataHandler->errorLog)) {

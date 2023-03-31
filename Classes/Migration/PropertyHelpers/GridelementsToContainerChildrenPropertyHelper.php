@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
 use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
+use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Utility\DatabaseUtility;
 use PDO;
@@ -37,6 +38,7 @@ class GridelementsToContainerChildrenPropertyHelper extends AbstractPropertyHelp
 
     /**
      * @return void
+     * @throws ExceptionDbal
      * @throws ExceptionDbalDriver
      */
     public function manipulate(): void
@@ -53,6 +55,7 @@ class GridelementsToContainerChildrenPropertyHelper extends AbstractPropertyHelp
 
     /**
      * @return bool
+     * @throws ExceptionDbal
      * @throws ExceptionDbalDriver
      */
     public function shouldMigrate(): bool
@@ -69,7 +72,7 @@ class GridelementsToContainerChildrenPropertyHelper extends AbstractPropertyHelp
     /**
      * @param string $propertyName
      * @return int|string|null
-     * @throws ExceptionDbalDriver
+     * @throws ExceptionDbal
      */
     protected function getParentProperty(string $propertyName)
     {

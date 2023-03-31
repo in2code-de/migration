@@ -23,7 +23,7 @@ class Queue implements SingletonInterface
      *
      * @var array
      */
-    protected $queue = [];
+    protected array $queue = [];
 
     /**
      * Update your properties with properties from the queue

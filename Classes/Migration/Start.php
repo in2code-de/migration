@@ -10,15 +10,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class Start
- */
 class Start
 {
-    /**
-     * @var string
-     */
-    protected $defaultConfiguration = 'EXT:migration/Configuration/Migration.php';
+    protected string $defaultConfiguration = 'EXT:migration/Configuration/Migration.php';
 
     /**
      * @param InputInterface $input
@@ -63,10 +57,6 @@ class Start
         }
     }
 
-    /**
-     * @param array $configuration
-     * @return array
-     */
     protected function getMigrationDefinitions(array $configuration): array
     {
         $key = $configuration['configuration']['key'];
