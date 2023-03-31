@@ -156,7 +156,7 @@ class Import
      */
     protected function importPages(): void
     {
-        foreach ($this->jsonArray['records']['pages'] as $properties) {
+        foreach ($this->jsonArray['records']['pages'] ?? [] as $properties) {
             $this->insertRecord($properties, 'pages');
         }
     }
@@ -172,7 +172,7 @@ class Import
             ['pages', 'sys_file', 'sys_file_reference'],
             $this->configuration['excludedTables']
         );
-        foreach (array_keys($this->jsonArray['records']) as $tableName) {
+        foreach (array_keys($this->jsonArray['records'] ?? []) as $tableName) {
             if (in_array($tableName, $excludedTables) === false) {
                 foreach ($this->jsonArray['records'][$tableName] as $properties) {
                     $this->insertRecord($properties, $tableName);
@@ -190,17 +190,15 @@ class Import
      */
     protected function importFileRecords(): void
     {
-        if (is_array($this->jsonArray['records']['sys_file'])) {
-            foreach ($this->jsonArray['records']['sys_file'] as $properties) {
-                if ($this->isFileRecordAlreadyExisting($properties['identifier'], (int)$properties['storage'])) {
-                    $newUid = $this->findFileUidByStorageAndIdentifier(
-                        $properties['identifier'],
-                        (int)$properties['storage']
-                    );
-                    $this->mappingService->setNew($newUid, (int)$properties['uid'], 'sys_file');
-                } else {
-                    $this->insertRecord($properties, 'sys_file');
-                }
+        foreach ($this->jsonArray['records']['sys_file'] ?? [] as $properties) {
+            if ($this->isFileRecordAlreadyExisting($properties['identifier'], (int)$properties['storage'])) {
+                $newUid = $this->findFileUidByStorageAndIdentifier(
+                    $properties['identifier'],
+                    (int)$properties['storage']
+                );
+                $this->mappingService->setNew($newUid, (int)$properties['uid'], 'sys_file');
+            } else {
+                $this->insertRecord($properties, 'sys_file');
             }
         }
     }
@@ -212,10 +210,8 @@ class Import
      */
     protected function importFileReferenceRecords(): void
     {
-        if (is_array($this->jsonArray['records']['sys_file_reference'])) {
-            foreach ($this->jsonArray['records']['sys_file_reference'] as $properties) {
-                $this->insertRecord($this->preparePropertiesForSysFileReference($properties), 'sys_file_reference');
-            }
+        foreach ($this->jsonArray['records']['sys_file_reference'] ?? [] as $properties) {
+            $this->insertRecord($this->preparePropertiesForSysFileReference($properties), 'sys_file_reference');
         }
     }
 
@@ -226,22 +222,20 @@ class Import
      */
     protected function importFiles(): void
     {
-        if (is_array($this->jsonArray['files'])) {
-            foreach ($this->jsonArray['files'] as $properties) {
-                if (!empty($properties['uri'])) {
-                    $this->importFileFromUri(
-                        $properties['uri'],
-                        $properties['path'],
-                        $this->configuration['overwriteFiles']
-                    );
-                }
-                if (!empty($properties['base64'])) {
-                    $this->importFileFromBase64(
-                        $properties['base64'],
-                        $properties['path'],
-                        $this->configuration['overwriteFiles']
-                    );
-                }
+        foreach ($this->jsonArray['files'] ?? [] as $properties) {
+            if (!empty($properties['uri'])) {
+                $this->importFileFromUri(
+                    $properties['uri'],
+                    $properties['path'],
+                    $this->configuration['overwriteFiles']
+                );
+            }
+            if (!empty($properties['base64'])) {
+                $this->importFileFromBase64(
+                    $properties['base64'],
+                    $properties['path'],
+                    $this->configuration['overwriteFiles']
+                );
             }
         }
     }
@@ -269,13 +263,11 @@ class Import
      */
     protected function importMmRecords(): void
     {
-        if (is_array($this->jsonArray['mm'])) {
-            foreach ($this->jsonArray['mm'] as $tableMm => $records) {
-                if (DatabaseUtility::isTableExisting($tableMm)) {
-                    foreach ($records as $record) {
-                        $connection = DatabaseUtility::getConnectionForTable($tableMm);
-                        $connection->insert($tableMm, $this->getNewPropertiesForMmRelation($record, $tableMm));
-                    }
+        foreach ($this->jsonArray['mm'] ?? [] as $tableMm => $records) {
+            if (DatabaseUtility::isTableExisting($tableMm)) {
+                foreach ($records as $record) {
+                    $connection = DatabaseUtility::getConnectionForTable($tableMm);
+                    $connection->insert($tableMm, $this->getNewPropertiesForMmRelation($record, $tableMm));
                 }
             }
         }
@@ -315,7 +307,7 @@ class Import
     protected function getMmConfigurationForRecord(array $properties, string $tableMm): array
     {
         $configurationMm = [];
-        foreach ((array)$this->configuration['relations'] as $configurations) {
+        foreach ($this->configuration['relations'] ?? [] as $configurations) {
             foreach ($configurations as $configuration) {
                 if ($configuration['table'] === $tableMm) {
                     if (!empty($configuration['additional'])) {
@@ -467,11 +459,11 @@ class Import
     protected function setJson(): void
     {
         $content = file_get_contents($this->file);
-        $array = json_decode($content, true);
-        if ($array === null) {
+        $jsonArray = json_decode($content, true);
+        if ($jsonArray === null) {
             throw new ConfigurationException('No data in in given json file', 1569913542);
         }
-        $this->jsonArray = $array;
+        $this->jsonArray = $jsonArray;
         $this->setPidForFirstPage();
     }
 
@@ -482,7 +474,7 @@ class Import
      */
     protected function setPidForFirstPage(): void
     {
-        foreach ($this->jsonArray['records']['pages'] as $properties) {
+        foreach ($this->jsonArray['records']['pages'] ?? [] as $properties) {
             $oldPid = (int)$properties['pid'];
             $this->mappingService->setNewPid($this->pid, $oldPid);
             break;

@@ -183,7 +183,7 @@ class Export
      */
     protected function extendPagesWithTranslations(): void
     {
-        foreach ($this->jsonArray['records']['pages'] as $pageProperties) {
+        foreach ($this->jsonArray['records']['pages'] ?? [] as $pageProperties) {
             if ((int)$pageProperties['uid'] > 0) {
                 $records = $this->getRecordsFromPageAndTable(
                     (int)$pageProperties['uid'],
@@ -204,9 +204,9 @@ class Export
      */
     protected function extendWithOtherTables(): void
     {
-        foreach (TcaUtility::getTableNamesToExport($this->configuration['excludedTables']) as $table) {
+        foreach (TcaUtility::getTableNamesToExport($this->configuration['excludedTables'] ?? []) as $table) {
             $rows = [];
-            foreach ((array)$this->jsonArray['records']['pages'] as $pageProperties) {
+            foreach ($this->jsonArray['records']['pages'] ?? [] as $pageProperties) {
                 $pid = (int)$pageProperties['uid'];
                 $rows = array_merge($rows, $this->getRecordsFromPageAndTable($pid, $table));
             }
@@ -225,7 +225,7 @@ class Export
      */
     protected function extendWithFiles(): void
     {
-        foreach ((array)$this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
+        foreach ($this->jsonArray['records']['sys_file_reference'] ?? [] as $referenceProperties) {
             $fileIdentifier = (int)$referenceProperties['uid_local'];
             $this->extendWithFilesBasic($fileIdentifier);
         }
@@ -256,7 +256,7 @@ class Export
      */
     protected function extendWithMmRelations(): void
     {
-        foreach ((array)$this->configuration['relations'] as $table => $configurations) {
+        foreach ($this->configuration['relations'] ?? [] as $table => $configurations) {
             if (DatabaseUtility::isTableExisting($table)) {
                 foreach ($configurations as $configuration) {
                     $tableMm = $configuration['table'];
@@ -264,7 +264,7 @@ class Export
                         $queryBuilder = DatabaseUtility::getQueryBuilderForTable($tableMm, true);
                         $whereClause = $this->getWhereClauseForExtensionWithMmRelations($configuration, $table);
                         if ($whereClause !== '') {
-                            $rows = (array)$queryBuilder
+                            $rows = $queryBuilder
                                 ->select('*')
                                 ->from($tableMm)
                                 ->where($whereClause)
@@ -349,6 +349,11 @@ class Export
             ->fetchAllAssociative();
     }
 
+    /**
+     * @return array
+     * @throws ExceptionDbal
+     * @throws ExceptionDbalDriver
+     */
     protected function getPageIdentifiersForExport(): array
     {
         $treeService = GeneralUtility::makeInstance(TreeService::class);
@@ -377,7 +382,7 @@ class Export
     protected function getIdentifiersForTable(string $tableName): array
     {
         $identifiers = [];
-        foreach ((array)$this->getJsonArray()['records'][$tableName] as $record) {
+        foreach ($this->getJsonArray()['records'][$tableName] ?? [] as $record) {
             if (!empty($record['uid'])) {
                 $identifiers[] = (int)$record['uid'];
             }
