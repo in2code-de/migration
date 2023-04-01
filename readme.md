@@ -1,5 +1,9 @@
 # TYPO3 Migration Framework
 
+> :warning: **TYPO3 12 compatibility**\
+> See [EAP page (DE)](https://www.in2code.de/agentur/typo3-extensions/early-access-programm/) or [EAP page (EN)](https://www.in2code.de/en/agency/typo3-extensions/early-access-program/) for more information how to get access to a TYPO3 12 version
+
+
 ## Description
 
 This extension (**EXT:migration**) is a helper extension for your TYPO3 updates and migrations based
