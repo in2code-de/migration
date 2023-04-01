@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Importer;
 
@@ -35,7 +36,7 @@ abstract class AbstractImporter
      */
     protected array $mappingDefault = [
         'uid' => 'uid',
-        'pid' => 'pid'
+        'pid' => 'pid',
     ];
 
     /**
@@ -90,7 +91,7 @@ abstract class AbstractImporter
      */
     protected array $sql = [
         'start' => [],
-        'end' => []
+        'end' => [],
     ];
 
     /**
@@ -211,7 +212,7 @@ abstract class AbstractImporter
             $variables = [
                 'properties' => $properties,
                 'propertiesOld' => $propertiesOld,
-                'tableName' => $this->tableName
+                'tableName' => $this->tableName,
             ];
             $properties[$propertyName] = StringUtility::parseString($propertyValue, $variables);
         }
@@ -308,7 +309,7 @@ abstract class AbstractImporter
             'disable' => 'disable',
             'starttime' => 'starttime',
             'endtime' => 'endtime',
-            'cruser_id' => 'cruser_id'
+            'cruser_id' => 'cruser_id',
         ];
         foreach ($additionalDefaults as $key => $value) {
             if (

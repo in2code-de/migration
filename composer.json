@@ -19,6 +19,27 @@
     "ext-pdo": "*",
     "typo3/cms-core": "^11.5 || ^12.0"
   },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.5",
+    "phpmd/phpmd": "^2.8",
+    "friendsofphp/php-cs-fixer": "^3.10"
+  },
+  "config": {
+    "vendor-dir": ".Build/vendor",
+    "bin-dir": ".Build/bin",
+    "allow-plugins": {
+      "typo3/class-alias-loader": true,
+      "typo3/cms-composer-installers": true
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "mkdir -p .Build/Web/typo3conf/ext/",
+      "[ -L .Build/Web/typo3conf/ext/migration ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/migration"
+    ],
+    "test:php:cs": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --dry-run --config=.project/tests/.php-cs-fixer.php --diff",
+    "test:php:lint": "find *.php Classes Configuration -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l"
+  },
   "replace": {
     "typo3-ter/migration": "self.version"
   },
@@ -29,6 +50,7 @@
   },
   "extra": {
     "typo3/cms": {
+      "web-dir": ".Build/Web",
       "extension-key": "migration"
     }
   }

@@ -65,7 +65,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
             foreach ($this->checkForConfiguration as $key) {
                 if (array_key_exists($key, $this->configuration) === false) {
                     throw new ConfigurationException(
-                        'Missing configuration in property helper ' . get_called_class(),
+                        'Missing configuration in property helper ' . static::class,
                         1568287339
                     );
                 }
@@ -116,7 +116,7 @@ abstract class AbstractPropertyHelper implements PropertyHelperInterface
         foreach ((array)$this->getConfigurationByKey('conditions') as $field => $values) {
             if (!is_string($field) || !is_array($values)) {
                 throw new ConfigurationException(
-                    'Misconfiguration of configuration of ' . get_called_class(),
+                    'Misconfiguration of configuration of ' . static::class,
                     1569407191
                 );
             }

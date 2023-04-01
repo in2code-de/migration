@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Helper;
 
@@ -167,7 +168,8 @@ class FileHelper implements SingletonInterface
     ): void {
         $this->createFolderIfNotExists(GeneralUtility::getFileAbsFileName($targetFolder));
         $pathAndFilename = $this->copyFileToTargetFolder(
-            GeneralUtility::getFileAbsFileName($relativeFile), $targetFolder
+            GeneralUtility::getFileAbsFileName($relativeFile),
+            $targetFolder
         );
         $fileUid = $this->indexFile($pathAndFilename, $storageIdentifier);
         if ($fileUid > 0) {
@@ -206,7 +208,7 @@ class FileHelper implements SingletonInterface
             'uid_foreign' => $recordIdentifier,
             'tablenames' => $tableName,
             'fieldname' => $fieldName,
-            'table_local' => 'sys_file'
+            'table_local' => 'sys_file',
         ];
         return $databaseHelper->createRecord('sys_file_reference', $additionalProperties + $properties);
     }

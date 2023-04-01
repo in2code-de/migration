@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Repository;
 
@@ -171,8 +172,7 @@ class GeneralRepository
     {
         if (array_key_exists($property, $this->configuration['configuration'])) {
             return $this->configuration['configuration'][$property];
-        } else {
-            throw new LogicException('Configuration key does not exist', 1568275508);
         }
+        throw new LogicException('Configuration key does not exist', 1568275508);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
@@ -32,7 +33,7 @@ class GridelementsToContainerParentPropertyHelper extends AbstractPropertyHelper
     {
         $types = $this->getConfigurationByKey('types');
         $properties = [
-            'CType' => $types[$this->getPropertyFromRecordOld('tx_gridelements_backend_layout')]
+            'CType' => $types[$this->getPropertyFromRecordOld('tx_gridelements_backend_layout')],
         ];
         $this->setProperties($properties);
     }

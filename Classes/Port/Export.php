@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Port;
 
@@ -148,8 +149,8 @@ class Export
     {
         $this->jsonArray = [
             'records' => [
-                'pages' => $this->getPageProperties()
-            ]
+                'pages' => $this->getPageProperties(),
+            ],
         ];
         $this->extendPagesWithTranslations();
         $this->extendWithOtherTables();
@@ -300,7 +301,7 @@ class Export
         );
         $fileArray = [
             'path' => $pathAndFilename,
-            'fileIdentifier' => (int)$fileProperties['uid']
+            'fileIdentifier' => (int)$fileProperties['uid'],
         ];
         $absolutePaF = GeneralUtility::getFileAbsFileName($pathAndFilename);
         if ($this->configuration['addFilesToJson'] === true) {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Helper;
 
@@ -91,7 +92,7 @@ class DatabaseHelper implements SingletonInterface
         array $properties,
         array $excludeFields = [
             'tstamp',
-            'crdate'
+            'crdate',
         ]
     ): string {
         $whereString = '';

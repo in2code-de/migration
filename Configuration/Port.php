@@ -1,4 +1,5 @@
 <?php
+
 return [
     /**
      * Exclude tables from ex- and import
@@ -17,7 +18,7 @@ return [
         'sys_filemounts',
         'tx_extensionmanager_domain_model_extension',
         'tx_extensionmanager_domain_model_repository',
-        'sys_category_record_mm'
+        'sys_category_record_mm',
     ],
 
     /**
@@ -40,17 +41,17 @@ return [
          */
         'propertiesWithLinks' => [
             'tt_content' => [
-                'bodytext'
+                'bodytext',
             ],
             'tx_news_domain_model_news' => [
-                'bodytext'
+                'bodytext',
             ],
             'tx_news_domain_model_tag' => [
-                'seo_text'
+                'seo_text',
             ],
             'tx_in2faq_domain_model_question' => [
-                'answer'
-            ]
+                'answer',
+            ],
         ],
 
         /**
@@ -66,81 +67,81 @@ return [
             'pages' => [
                 [
                     'field' => 'shortcut',
-                    'table' => 'pages'
-                ]
+                    'table' => 'pages',
+                ],
             ],
             'tt_content' => [
                 [
                     'field' => 'header_link',
-                    'table' => 'pages'
+                    'table' => 'pages',
                 ],
                 [
                     'field' => 'records',
-                    'table' => 'pages'
+                    'table' => 'pages',
                 ],
                 [
                     'field' => 'pages',
-                    'table' => 'pages'
+                    'table' => 'pages',
                 ],
                 [
                     'field' => 'tx_gridelements_container',
-                    'table' => 'tt_content'
+                    'table' => 'tt_content',
                 ],
                 [
                     'field' => 'tx_news_related_news',
-                    'table' => 'tx_news_domain_model_news'
-                ]
+                    'table' => 'tx_news_domain_model_news',
+                ],
             ],
             'sys_file_reference' => [
                 [
                     'field' => 'link',
-                    'table' => 'pages'
-                ]
+                    'table' => 'pages',
+                ],
             ],
             'tx_powermail_domain_model_mail' => [
                 [
                     'field' => 'feuser',
-                    'table' => 'fe_users'
-                ]
+                    'table' => 'fe_users',
+                ],
             ],
             'tx_powermail_domain_model_answer' => [
                 [
                     'field' => 'field',
-                    'table' => 'tx_powermail_domain_model_field'
+                    'table' => 'tx_powermail_domain_model_field',
                 ],
                 [
                     'field' => 'mail',
-                    'table' => 'tx_powermail_domain_model_mail'
-                ]
+                    'table' => 'tx_powermail_domain_model_mail',
+                ],
             ],
             'tx_powermail_domain_model_page' => [
                 [
                     'field' => 'forms',
-                    'table' => 'tx_powermail_domain_model_form'
-                ]
+                    'table' => 'tx_powermail_domain_model_form',
+                ],
             ],
             'tx_powermail_domain_model_field' => [
                 [
                     'field' => 'pages',
-                    'table' => 'tx_powermail_domain_model_page'
+                    'table' => 'tx_powermail_domain_model_page',
                 ],
                 [
                     'field' => 'content_element',
-                    'table' => 'tt_content'
-                ]
+                    'table' => 'tt_content',
+                ],
             ],
             'tx_news_domain_model_link' => [
                 [
                     'field' => 'parent',
-                    'table' => 'tx_news_domain_model_news'
-                ]
+                    'table' => 'tx_news_domain_model_news',
+                ],
             ],
             'tt_news_cat' => [
                 [
                     'field' => 'parent_category',
-                    'table' => 'tt_news_cat'
-                ]
-            ]
+                    'table' => 'tt_news_cat',
+                ],
+            ],
         ],
 
         /**
@@ -158,139 +159,139 @@ return [
                         // powermail: form selection
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'powermail_pi1'
+                            'list_type' => 'powermail_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.form"]/value',
-                        'table' => 'tx_powermail_domain_model_form'
+                        'table' => 'tx_powermail_domain_model_form',
                     ],
                     [
                         // powermail: where to save mails
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'powermail_pi1'
+                            'list_type' => 'powermail_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.pid"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // powermail: where to save mails
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'powermail_pi1'
+                            'list_type' => 'powermail_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="thx"]/language/field[@index="settings.flexform.thx.redirect"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // tx_news: categories
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'news_pi1'
+                            'list_type' => 'news_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.categories"]/value',
-                        'table' => 'sys_category'
+                        'table' => 'sys_category',
                     ],
                     [
                         // tx_news: startingpoint
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'news_pi1'
+                            'list_type' => 'news_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.startingpoint"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // tx_news: detailPid
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'news_pi1'
+                            'list_type' => 'news_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.detailPid"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // tx_news: listPid
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'news_pi1'
+                            'list_type' => 'news_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.listPid"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // tx_news: backPid
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'news_pi1'
+                            'list_type' => 'news_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.backPid"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // tt_news PIDitemDisplay
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => '9'
+                            'list_type' => '9',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // tt_news backPid
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => '9'
+                            'list_type' => '9',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="backPid"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // tt_news pages
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => '9'
+                            'list_type' => '9',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="pages"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // tt_news pages
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => '9'
+                            'list_type' => '9',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="categorySelection"]/value',
-                        'table' => 'tt_news_cat'
+                        'table' => 'tt_news_cat',
                     ],
                     [
                         // in2faq categories
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'in2faq_pi1'
+                            'list_type' => 'in2faq_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.categories"]/value',
-                        'table' => 'tx_in2faq_domain_model_category'
+                        'table' => 'tx_in2faq_domain_model_category',
                     ],
                     [
                         // in2faq startpid
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'in2faq_pi1'
+                            'list_type' => 'in2faq_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.startpid"]/value',
-                        'table' => 'pages'
+                        'table' => 'pages',
                     ],
                     [
                         // in2faq pi2 filter categories
                         'condition' => [
                             'Ctype' => 'list',
-                            'list_type' => 'in2faq_pi2'
+                            'list_type' => 'in2faq_pi2',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.categoryFilter.categories"]/value',
-                        'table' => 'tx_in2faq_domain_model_category'
-                    ]
-                ]
-            ]
+                        'table' => 'tx_in2faq_domain_model_category',
+                    ],
+                ],
+            ],
         ],
     ],
 
@@ -306,9 +307,9 @@ return [
                 'uid_foreign' => 'pages',
                 'additional' => [
                     'tablenames' => 'pages',
-                    'fieldname' => 'categories'
-                ]
-            ]
+                    'fieldname' => 'categories',
+                ],
+            ],
         ],
         'tt_content' => [
             [
@@ -317,9 +318,9 @@ return [
                 'uid_foreign' => 'tt_content',
                 'additional' => [
                     'tablenames' => 'tt_content',
-                    'fieldname' => 'categories'
-                ]
-            ]
+                    'fieldname' => 'categories',
+                ],
+            ],
         ],
         'tx_news_domain_model_news' => [
             [
@@ -328,39 +329,39 @@ return [
                 'uid_foreign' => 'tx_news_domain_model_news',
                 'additional' => [
                     'tablenames' => 'tx_news_domain_model_news',
-                    'fieldname' => 'categories'
-                ]
+                    'fieldname' => 'categories',
+                ],
             ],
             [
                 'table' => 'tx_news_domain_model_news_related_mm',
                 'uid_local' => 'tx_news_domain_model_news',
-                'uid_foreign' => 'tx_news_domain_model_news'
+                'uid_foreign' => 'tx_news_domain_model_news',
             ],
             [
                 'table' => 'tx_news_domain_model_news_tag_mm',
                 'uid_local' => 'tx_news_domain_model_news',
-                'uid_foreign' => 'tx_news_domain_model_tag'
-            ]
+                'uid_foreign' => 'tx_news_domain_model_tag',
+            ],
         ],
         'tt_news' => [
             [
                 'table' => 'tt_news_cat_mm',
                 'uid_local' => 'tt_news',
-                'uid_foreign' => 'tt_news_cat'
+                'uid_foreign' => 'tt_news_cat',
             ],
             [
                 'table' => 'tt_news_related_mm',
                 'uid_local' => 'tt_news',
-                'uid_foreign' => 'tt_news'
-            ]
+                'uid_foreign' => 'tt_news',
+            ],
         ],
         'tx_in2faq_domain_model_question' => [
             [
                 'table' => 'tx_in2faq_question_category_mm',
                 'uid_local' => 'tx_in2faq_domain_model_question',
-                'uid_foreign' => 'tx_in2faq_domain_model_category'
-            ]
-        ]
+                'uid_foreign' => 'tx_in2faq_domain_model_category',
+            ],
+        ],
     ],
 
     /**
@@ -377,8 +378,8 @@ return [
     'addFilesFromFileadminLinks' => [
         'paths' => [
             // don't forget the trailing slash
-            'fileadmin/'
-        ]
+            'fileadmin/',
+        ],
     ],
 
     /**
@@ -394,5 +395,5 @@ return [
      * to get the resource from original URI.
      * This will also help you if you run into a memory limit issue while exporting.
      */
-    'addFilesToJson' => false
+    'addFilesToJson' => false,
 ];

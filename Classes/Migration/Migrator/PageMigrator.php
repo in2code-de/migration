@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Migrator;
 
@@ -13,7 +14,7 @@ class PageMigrator extends AbstractMigrator implements MigratorInterface
     protected string $tableName = 'pages';
 
     protected array $values = [
-        'hidden' => '1'
+        'hidden' => '1',
     ];
 
     protected array $propertyHelpers = [
@@ -23,14 +24,14 @@ class PageMigrator extends AbstractMigrator implements MigratorInterface
                 'configuration' => [
                     'conditions' => [
                         'deleted' => [
-                            1
-                        ]
+                            1,
+                        ],
                     ],
                     'replace' => [
-                        'value' => '0'
-                    ]
-                ]
-            ]
-        ]
+                        'value' => '0',
+                    ],
+                ],
+            ],
+        ],
     ];
 }

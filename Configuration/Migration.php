@@ -1,4 +1,5 @@
 <?php
+
 return [
     // Default values if not given from CLI
     'configuration' => [
@@ -6,7 +7,7 @@ return [
         'dryrun' => true,
         'limitToRecord' => null,
         'limitToPage' => null,
-        'recursive' => false
+        'recursive' => false,
     ],
 
     // Define your migrations
@@ -14,20 +15,20 @@ return [
         [
             'className' => \In2code\Migration\Migration\Importer\NewsImporter::class,
             'keys' => [
-                'news'
-            ]
+                'news',
+            ],
         ],
         [
             'className' => \In2code\Migration\Migration\Migrator\PageMigrator::class,
             'keys' => [
-                'page'
-            ]
+                'page',
+            ],
         ],
         [
             'className' => \In2code\Migration\Migration\Migrator\ContentMigrator::class,
             'keys' => [
-                'content'
-            ]
-        ]
-    ]
+                'content',
+            ],
+        ],
+    ],
 ];

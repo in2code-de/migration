@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Migrator;
 
@@ -13,7 +14,7 @@ class ContentMigrator extends AbstractMigrator implements MigratorInterface
     protected string $tableName = 'tt_content';
 
     protected array $values = [
-        'editlock' => '0'
+        'editlock' => '0',
     ];
 
     protected array $propertyHelpers = [
@@ -25,22 +26,22 @@ class ContentMigrator extends AbstractMigrator implements MigratorInterface
                         'CType' => [
                             'textpic',
                             'text',
-                            'textmedia'
-                        ]
+                            'textmedia',
+                        ],
                     ],
                     'tags' => [
-                        'a'
+                        'a',
                     ],
                     'search' => [
                         'c-button--button',
-                        'c-button'
+                        'c-button',
                     ],
                     'replace' => [
                         'btn-primary',
-                        'btn'
-                    ]
-                ]
-            ]
-        ]
+                        'btn',
+                    ],
+                ],
+            ],
+        ],
     ];
 }

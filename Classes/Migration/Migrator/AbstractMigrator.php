@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\Migrator;
 
@@ -65,7 +66,7 @@ abstract class AbstractMigrator
      */
     protected array $sql = [
         'start' => [],
-        'end' => []
+        'end' => [],
     ];
 
     /**
@@ -153,7 +154,7 @@ abstract class AbstractMigrator
             }
             $variables = [
                 'properties' => $properties,
-                'tableName' => $this->tableName
+                'tableName' => $this->tableName,
             ];
             $properties[$propertyName] = StringUtility::parseString((string)$propertyValue, $variables);
         }

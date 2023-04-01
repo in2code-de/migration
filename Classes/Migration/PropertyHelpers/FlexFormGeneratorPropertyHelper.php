@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
@@ -64,7 +65,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
 {
     protected array $checkForConfiguration = [
         'condition',
-        'flexFormTemplate'
+        'flexFormTemplate',
     ];
 
     public function manipulate(): void
@@ -80,7 +81,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
             'row' => $this->record,
             'flexForm' => $this->getFlexFormValues((string)$this->getConfigurationByKey('flexFormField')),
             'additionalMapping' => $this->buildFromAdditionalMapping(),
-            'helper' => $this->getHelperClasses()
+            'helper' => $this->getHelperClasses(),
         ];
         return StringUtility::parseString($this->getTemplateContent(), $arguments);
     }

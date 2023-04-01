@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
@@ -25,13 +26,12 @@ namespace In2code\Migration\Migration\PropertyHelpers;
  *              'startField' => 'fieldnameold'
  *          ]
  *      ]
- *
  */
 class ReplacePropertyHelper extends AbstractPropertyHelper implements PropertyHelperInterface
 {
     protected array $checkForConfiguration = [
         'search',
-        'replace'
+        'replace',
     ];
 
     public function manipulate(): void

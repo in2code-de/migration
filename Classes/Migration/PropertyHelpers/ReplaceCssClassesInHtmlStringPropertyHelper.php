@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
@@ -35,7 +36,7 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
         'condition',
         'tags',
         'search',
-        'replace'
+        'replace',
     ];
 
     protected string $xmlDeclaration = '<?xml encoding="utf-8" ?>';

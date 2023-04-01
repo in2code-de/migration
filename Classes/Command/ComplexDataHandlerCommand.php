@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Command;
 
@@ -43,7 +44,7 @@ class ComplexDataHandlerCommand extends Command
     {
         $command = [];
         if ((int)$input->getArgument('value') > 0) {
-            $value = intval($input->getArgument('value'));
+            $value = (int)($input->getArgument('value'));
         } else {
             try {
                 $value = json_decode($input->getArgument('value'), true);

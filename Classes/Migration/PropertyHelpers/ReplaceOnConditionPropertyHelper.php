@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
@@ -48,7 +49,7 @@ class ReplaceOnConditionPropertyHelper extends AbstractPropertyHelper implements
 {
     protected array $checkForConfiguration = [
         'conditions',
-        'replace'
+        'replace',
     ];
 
     public function manipulate(): void

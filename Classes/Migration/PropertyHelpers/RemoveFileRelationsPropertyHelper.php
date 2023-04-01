@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Migration\Migration\PropertyHelpers;
 
@@ -28,7 +29,7 @@ class RemoveFileRelationsPropertyHelper extends AbstractPropertyHelper implement
     protected array $checkForConfiguration = [
         'conditions',
         'tablenames',
-        'fieldname'
+        'fieldname',
     ];
 
     public function manipulate(): void
