@@ -55,7 +55,7 @@ class SlugPropertyHelper extends AbstractPropertyHelper implements PropertyHelpe
                 $this->propertyName,
                 TcaUtility::getTcaOfField($this->getPropertyName(), $this->table)['config']
             );
-            $slug = $slugHelper->generate($this->getProperties(), $this->getPropertyFromRecord('pid'));
+            $slug = $slugHelper->generate($this->getProperties(), (int)$this->getPropertyFromRecord('pid'));
             $uniqueSlug = $slugHelper->buildSlugForUniqueInSite($slug, $this->getRecordState());
             $this->setProperty($uniqueSlug);
             $this->log->addMessage('Set new slug "' . $uniqueSlug . '"');
