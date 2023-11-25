@@ -276,8 +276,7 @@ class Import
             foreach ($this->jsonArray['mm'] as $tableMm => $records) {
                 if (DatabaseUtility::isTableExisting($tableMm)) {
                     foreach ($records as $record) {
-                        $connection = DatabaseUtility::getConnectionForTable($tableMm);
-                        $connection->insert($tableMm, $this->getNewPropertiesForMmRelation($record, $tableMm));
+                        $this->insertRecord($this->getNewPropertiesForMmRelation($record, $tableMm), $tableMm);
                     }
                 }
             }
