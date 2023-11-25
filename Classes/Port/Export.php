@@ -227,9 +227,11 @@ class Export
      */
     protected function extendWithFiles(): void
     {
-        foreach ((array)$this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
-            $fileIdentifier = (int)$referenceProperties['uid_local'];
-            $this->extendWithFilesBasic($fileIdentifier);
+        if(isset($this->jsonArray['records']['sys_file_reference'])){
+            foreach ((array)$this->jsonArray['records']['sys_file_reference'] as $referenceProperties) {
+                $fileIdentifier = (int)$referenceProperties['uid_local'];
+                $this->extendWithFilesBasic($fileIdentifier);
+            }
         }
     }
 
@@ -387,9 +389,11 @@ class Export
     protected function getIdentifiersForTable(string $tableName): array
     {
         $identifiers = [];
-        foreach ((array)$this->getJsonArray()['records'][$tableName] as $record) {
-            if (!empty($record['uid'])) {
-                $identifiers[] = (int)$record['uid'];
+        if(isset($this->getJsonArray()['records'][$tableName])){
+            foreach ((array)$this->getJsonArray()['records'][$tableName] as $record) {
+                if (!empty($record['uid'])) {
+                    $identifiers[] = (int)$record['uid'];
+                }
             }
         }
         return $identifiers;
