@@ -8,20 +8,43 @@ A composer.json file could look like:
 
 ```
 {
-  "name": "in2code/migration-extend",
+  "name": "in2code/migration_extend",
   "type": "typo3-cms-extension",
   "license": "GPL-2.0+",
   "require": {
-    "typo3/cms-core": ">=9.5.0",
-    "in2code/migration": "5.*"
+    "in2code/migration": "^10.0"
   },
   "autoload": {
     "psr-4": {
-      "Vendor\\MigrationExtend\\": "Classes"
+      "In2code\\MigrationExtend\\": "Classes"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "migration_extend"
     }
   }
 }
 
+```
+
+A small `ext_emconf.php` could look like:
+
+```
+<?php
+
+$EM_CONF[$_EXTKEY] = [
+    'title' => 'migration_extend',
+    'description' => 'Migration configuration',
+    'version' => '1.0.0',
+    'constraints' => [
+        'depends' => [
+            'migration' => '*',
+        ],
+        'conflicts' => [],
+        'suggests' => [],
+    ],
+];
 ```
 
 Let's say we want only a very small migration. CSS classes in tt_content.bodytext should be changed with some new
