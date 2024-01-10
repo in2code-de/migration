@@ -174,10 +174,11 @@ abstract class AbstractImporter
             $this->orderBy
         );
         foreach ($records as $propertiesOld) {
-            $this->log->addNote(
-                'Start importing ' . $this->tableName
-                . ' (uid' . $propertiesOld['uid'] . '/pid' . $propertiesOld['pid'] . ') ...'
-            );
+            $note = 'Start importing new record for ' . $this->tableName;
+            if (array_key_exists('uid', $propertiesOld) && array_key_exists('pid', $propertiesOld)) {
+                $note .= ' (uid' . $propertiesOld['uid'] . '/pid' . $propertiesOld['pid'] . ') ...';
+            }
+            $this->log->addNote($note);
             $properties = $this->createPropertiesFromMapping($propertiesOld);
             $properties = $this->createPropertiesFromValues($properties, $propertiesOld);
             $properties = $this->createPropertiesFromPropertyHelpers($properties, $propertiesOld);
