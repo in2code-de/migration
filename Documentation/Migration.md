@@ -411,11 +411,11 @@ CREATE TABLE tt_content
 
 Parameters of the migration:migrate command (overwrite your settins of your Migration.php):
 
-| Parameter name       | Parameter short name  | Values                | Description                                                                    |
-| -------------------- | --------------------- | --------------------- | ------------------------------------------------------------------------------ |
-| --configuration      | -c                    | string                | Path to your configuration file. If not given, default config file is used     |
-| --key                | -k                    | string                | Define which migrators/importers should run. Empty=all will run.               |
-| --dryrun             | -d                    | 0/1                   | Test migration before migrating/importing                                      |
-| --limitToRecord      | -l                    | int                   | Do only a migration/import for record with this uid                            |
-| --limitToPage        | -p                    | int                   | Do only a migration/import for records on this page uid                        |
-| --recursive          | -r                    | 0/1                   | Can combined with limitToPage to also migrate/import records on children pages |
+| Parameter name  | Parameter short name | Values | Description                                                                    |
+|-----------------|----------------------|--------|--------------------------------------------------------------------------------|
+| --configuration | -c                   | string | Path to your configuration file. If not given, default config file is used     |
+| --key           | -k                   | string | Define which migrators/importers should run. Empty=all will run.               |
+| --dryrun        | -d                   | 0/1    | Test migration before migrating/importing                                      |
+| --limitToRecord | -l                   | int    | Do only a migration/import for record with this uid                            |
+| --limitToPage   | -p                   | int    | Do only a migration/import for records on this page uid                        |
+| --recursive     | -r                   | 0/1    | Can combined with limitToPage to also migrate/import records on children pages |
