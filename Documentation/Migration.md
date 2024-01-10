@@ -376,7 +376,16 @@ Examples:
 If you extend your new tables with fields with this names: `_migrated`, `_migrated_uid` and `_migrated_table`, they will
 be filled automatically with useful values - just test
 
+Example ext_tables.sql file to extend a table with new fields:
 
+```
+CREATE TABLE tt_content
+(
+	_migrated       tinyint(4) unsigned DEFAULT '0' NOT NULL,
+	_migrated_uid   int(11) unsigned DEFAULT '0' NOT NULL,
+	_migrated_table varchar(255) DEFAULT '' NOT NULL,
+);
+```
 
 
 ## Example CLI calls
