@@ -134,10 +134,11 @@ abstract class AbstractMigrator
             $this->orderBy
         );
         foreach ($records as $propertiesOriginal) {
-            $this->log->addNote(
-                'Start migrating ' . $this->tableName
-                . ' (uid' . $propertiesOriginal['uid'] . '/pid' . $propertiesOriginal['pid'] . ') ...'
-            );
+            $note = 'Start migrating record in ' . $this->tableName;
+            if (array_key_exists('uid', $propertiesOriginal) && array_key_exists('pid', $propertiesOriginal)) {
+                $note .= ' (uid' . $propertiesOriginal['uid'] . '/pid' . $propertiesOriginal['pid'] . ') ...';
+            }
+            $this->log->addNote($note);
             $properties = $this->manipulatePropertiesWithValues($propertiesOriginal);
             $properties = $this->manipulatePropertiesWithPropertyHelpers($properties, $propertiesOriginal);
             $generalRepository->updateRecord($properties, $this->tableName);
