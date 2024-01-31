@@ -207,7 +207,7 @@ class Export
     {
         foreach (TcaUtility::getTableNamesToExport($this->configuration['excludedTables'] ?? []) as $table) {
             $rows = [];
-            foreach ($this->jsonArray['records']['pages'] ?? [] as $pageProperties) {
+            foreach (($this->jsonArray['records']['pages'] ?? []) as $pageProperties) {
                 $pid = (int)$pageProperties['uid'];
                 $rows = array_merge($rows, $this->getRecordsFromPageAndTable($pid, $table));
             }
@@ -226,7 +226,7 @@ class Export
      */
     protected function extendWithFiles(): void
     {
-        foreach ($this->jsonArray['records']['sys_file_reference'] ?? [] as $referenceProperties) {
+        foreach (($this->jsonArray['records']['sys_file_reference'] ?? []) as $referenceProperties) {
             $fileIdentifier = (int)$referenceProperties['uid_local'];
             $this->extendWithFilesBasic($fileIdentifier);
         }
@@ -383,7 +383,7 @@ class Export
     protected function getIdentifiersForTable(string $tableName): array
     {
         $identifiers = [];
-        foreach ($this->getJsonArray()['records'][$tableName] ?? [] as $record) {
+        foreach (($this->getJsonArray()['records'][$tableName] ?? []) as $record) {
             if (!empty($record['uid'])) {
                 $identifiers[] = (int)$record['uid'];
             }
