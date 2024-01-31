@@ -182,8 +182,8 @@ class LinkMappingService
         if (!empty($newValue)) {
             $sql = 'update ' . $tableName . ' set '
                 . $fieldName . ' = UpdateXML(' . $fieldName . ', \''
-                . $configuration['selection'] . '\', concat(\'<value index="vDEF">\', \''
-                . $newValue . '\', \'</value>\' )) WHERE uid=' . $identifier;
+                . $configuration['selection'] . '\', concat(\'<value index="vDEF">\', '
+                . $connection->quote($newValue) . ', \'</value>\' )) WHERE uid=' . $identifier;
         }
         $connection->executeQuery($sql);
     }
