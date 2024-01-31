@@ -104,6 +104,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State   | Description                                                                                                            |
 |-------------|------------|---------|------------------------------------------------------------------------------------------------------------------------|
+| 11.0.1      | 2024-01-31 | Bugfix  | Fix some smaller issues (e.g. missing array keys, etc...)                                                              |
 | 11.0.0      | 2024-01-10 | Task    | Support TYPO3 12 and 11, some bugfixes                                                                                 |
 | 10.0.0      | 2023-03-17 | Task    | Some smaller PHP 8 related fixes, first code cleanup for TYPO3 12 (e.g. ObjectUtility::getObjectManager() was removed) |
 | 9.0.0       | 2022-09-08 | Feature | Add property helpers for gridelements to container migration                                                           |
