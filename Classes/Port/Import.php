@@ -135,6 +135,16 @@ class Import
      */
     public function import(): int
     {
+        /** @var ImportBeforeEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ImportBeforeEvent($this->jsonArray, $this->pid, $this->file, $this->configuration)
+        );
+
+        $this->jsonArray = $event->getJsonArray();
+        $this->pid = $event->getPid();
+        $this->file = $event->getFile();
+        $this->configuration = $event->getConfiguration();
+
         $this->importPages();
         $this->importRecords();
         $this->importFileRecords();
@@ -143,11 +153,7 @@ class Import
         $this->importMmRecords();
         $this->updateLinks();
 
-        /** @var ImportBeforeEvent $event */
-        $event = $this->eventDispatcher->dispatch(
-            new ImportBeforeEvent($this->jsonArray, $this->pid, $this->file, $this->configuration)
-        );
-        return count($event->getJsonArray()['records']['pages']);
+        return count($this->jsonArray['records']['pages']);
     }
 
     /**
