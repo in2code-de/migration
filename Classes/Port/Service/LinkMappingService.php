@@ -234,10 +234,11 @@ class LinkMappingService
     protected function updatePageLinks(string $value): string
     {
         return preg_replace_callback(
-            '~(t3://page\?uid=)(\d+)~',
+            '~(t3://page\?uid=)(\d+)(#?\d*)~',
             [$this, 'updatePageLinksCallback'],
             $value
         );
+
     }
 
     /**
@@ -317,7 +318,7 @@ class LinkMappingService
     }
 
     /**
-     * Replace t3://page?uid=123 => t3://page?uid=234
+     * Replace t3://page?uid=123#567 => t3://page?uid=234#789
      *
      * @param array $match
      * @return string
@@ -326,7 +327,15 @@ class LinkMappingService
     {
         $oldPageIdentifier = (int)$match[2];
         $newPageIdentifier = $this->mappingService->getNewPidFromOldPid($oldPageIdentifier);
-        return $match[1] . $newPageIdentifier;
+
+        // Check if, #section Reference is given
+        $hashValue = '';
+        if(isset($match[3])){
+            $sectionOldPageIdentifier = (int)$match[3];
+            $hashValue =  $this->mappingService->getNewPidFromOldPid($sectionOldPageIdentifier);
+        }
+
+        return $match[1] . $newPageIdentifier . $hashValue;
     }
 
     /**
