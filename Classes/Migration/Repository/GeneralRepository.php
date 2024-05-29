@@ -159,7 +159,7 @@ class GeneralRepository
             if ($this->getConfiguration('limitToPage') > 0) {
                 if ($this->getConfiguration('recursive') === true) {
                     $whereClause .= ' and ' . $field . ' in (';
-                    $whereClause .= $treeService->getAllSubpageIdentifiers((int)$this->getConfiguration('limitToPage'));
+                    $whereClause .= implode(',', $treeService->getAllSubpageIdentifiers((int)$this->getConfiguration('limitToPage')));
                     $whereClause .= ')';
                 } else {
                     $whereClause .= ' and ' . $field . '=' . (int)$this->getConfiguration('limitToPage');
