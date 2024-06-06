@@ -134,6 +134,32 @@ return [
                     'table' => 'tt_content',
                 ],
             ],
+            'tx_powermailcond_domain_model_conditioncontainer' => [
+                [
+                    'field' => 'form',
+                    'table' => 'tx_powermail_domain_model_form',
+                ],
+            ],
+            'tx_powermailcond_domain_model_condition' => [
+                [
+                    'field' => 'conditioncontainer',
+                    'table' => 'tx_powermailcond_domain_model_conditioncontainer',
+                ],
+                [
+                    'field' => 'target_field',
+                    'table' => 'tx_powermail_domain_model_field',
+                ],
+            ],
+            'tx_powermailcond_domain_model_rule' => [
+                [
+                    'field' => 'conditions',
+                    'table' => 'tx_powermailcond_domain_model_condition',
+                ],
+                [
+                    'field' => 'start_field',
+                    'table' => 'tx_powermail_domain_model_field',
+                ],
+            ],
             'tx_news_domain_model_link' => [
                 [
                     'field' => 'parent',
