@@ -297,7 +297,7 @@ return [
 
     /**
      * Special relations with MM-tables for ex- and import (tables are ignored if they don't exist in the system,
-     * sys_file_reference is handled separately)
+     * sys_file_reference and sys_file_metadata is handled separately)
      */
     'relations' => [
         'pages' => [
@@ -390,8 +390,8 @@ return [
 
     /**
      * Decide if the related files (also linked files) should be added to json file or not. If files are not added,
-     * the json will be much smaller because only the absolute URI is added to json. If you will import the file on the
-     * same system (where an URI like /var/www/domain.org/public/fileadmin/file.pdf) is available, the import will try
+     * the json will be much smaller because only the absolute URI is added to json. If you import the file on the
+     * same system (where a URI like /var/www/domain.org/public/fileadmin/file.pdf) is available, the import will try
      * to get the resource from original URI.
      * This will also help you if you run into a memory limit issue while exporting.
      */

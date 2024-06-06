@@ -148,6 +148,7 @@ class Import
         $this->importPages();
         $this->importRecords();
         $this->importFileRecords();
+        $this->importFileMetadata();
         $this->importFileReferenceRecords();
         $this->importFiles();
         $this->importMmRecords();
@@ -176,7 +177,7 @@ class Import
     protected function importRecords(): void
     {
         $excludedTables = array_merge(
-            ['pages', 'sys_file', 'sys_file_reference'],
+            ['pages', 'sys_file', 'sys_file_reference', 'sys_file_metadata'],
             $this->configuration['excludedTables']
         );
         foreach (array_keys($this->jsonArray['records'] ?? []) as $tableName) {
@@ -207,6 +208,19 @@ class Import
             } else {
                 $this->insertRecord($properties, 'sys_file');
             }
+        }
+    }
+
+    /**
+     * @return void
+     * @throws ExceptionDbal
+     * @throws ExceptionDbalDriver
+     */
+    protected function importFileMetadata(): void
+    {
+        foreach ($this->jsonArray['records']['sys_file_metadata'] ?? [] as $properties) {
+            $properties['file'] = $this->mappingService->getNewFromOld($properties['file'], 'sys_file');
+            $this->insertRecord($properties, 'sys_file_metadata');
         }
     }
 

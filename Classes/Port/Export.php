@@ -157,6 +157,7 @@ class Export
         $this->extendWithFiles();
         $this->extendWithFilesFromLinks();
         $this->extendWithMmRelations();
+        $this->extendWithMetadata();
     }
 
     /**
@@ -179,7 +180,6 @@ class Export
      * Extend page records with more page records with sys_language_uid>0
      *
      * @return void
-     * @throws ExceptionDbalDriver
      * @throws ExceptionDbal
      */
     protected function extendPagesWithTranslations(): void
@@ -252,7 +252,6 @@ class Export
      * Try to find mm relations that should be added
      *
      * @return void
-     * @throws ExceptionDbalDriver
      * @throws ExceptionDbal
      */
     protected function extendWithMmRelations(): void
@@ -279,6 +278,15 @@ class Export
                     }
                 }
             }
+        }
+    }
+
+    protected function extendWithMetadata(): void
+    {
+        $this->jsonArray['records']['sys_file_metadata'] = [];
+        foreach ($this->jsonArray['files'] ?? [] as $file) {
+            $this->jsonArray['records']['sys_file_metadata'][] =
+                $this->getPropertiesFromMetadataByFileIdentifier($file['fileIdentifier']);
         }
     }
 
@@ -325,7 +333,18 @@ class Export
             ->select('*')
             ->from($tableName)
             ->where('uid=' . $identifier)
-            ->execute()
+            ->executeQuery()
+            ->fetchAssociative();
+    }
+
+    protected function getPropertiesFromMetadataByFileIdentifier(int $fileIdentifier): array
+    {
+        $queryBuilder = DatabaseUtility::getQueryBuilderForTable('sys_file_metadata', true);
+        return (array)$queryBuilder
+            ->select('*')
+            ->from('sys_file_metadata')
+            ->where('file=' . $fileIdentifier)
+            ->executeQuery()
             ->fetchAssociative();
     }
 
@@ -346,7 +365,7 @@ class Export
             ->select('*')
             ->from($tableName)
             ->where('pid=' . $pageIdentifier . $addWhere)
-            ->execute()
+            ->executeQuery()
             ->fetchAllAssociative();
     }
 
