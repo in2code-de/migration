@@ -102,6 +102,12 @@ return [
                     'table' => 'pages',
                 ],
             ],
+            'sys_category' => [
+                [
+                    'field' => 'parent',
+                    'table' => 'sys_category',
+                ],
+            ],
             'tx_powermail_domain_model_mail' => [
                 [
                     'field' => 'feuser',
