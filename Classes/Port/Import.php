@@ -284,9 +284,8 @@ class Import
      */
     protected function importMmRecords(): void
     {
-        $excludedTables = array_merge(['sys_file_reference'], $this->configuration['excludedTables']);
         foreach ($this->jsonArray['mm'] ?? [] as $tableMm => $records) {
-            if (DatabaseUtility::isTableExisting($tableMm) && in_array($tableMm, $excludedTables) === false) {
+            if (DatabaseUtility::isTableExisting($tableMm)) {
                 foreach ($records as $record) {
                     $this->insertRecord($this->getNewPropertiesForMmRelation($record, $tableMm), $tableMm);
                 }
