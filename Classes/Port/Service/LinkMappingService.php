@@ -226,7 +226,7 @@ class LinkMappingService
     }
 
     /**
-     * Search for t3://page?uid=123
+     * Search for t3://page?uid=123#456
      *
      * @param string $value
      * @return string
@@ -238,7 +238,6 @@ class LinkMappingService
             [$this, 'updatePageLinksCallback'],
             $value
         );
-
     }
 
     /**
@@ -329,13 +328,13 @@ class LinkMappingService
         $newPageIdentifier = $this->mappingService->getNewPidFromOldPid($oldPageIdentifier);
 
         // Check if, #section Reference is given
-        $hashValue = '';
-        if(isset($match[3])){
-            $sectionOldPageIdentifier = (int)$match[3];
-            $hashValue =  $this->mappingService->getNewPidFromOldPid($sectionOldPageIdentifier);
+        $section = '';
+        if (($match[3] ?? '') !== '') {
+            $contentIdentifier = (int)substr($match[3], 1);
+            $section = '#' . $this->mappingService->getNewFromOld($contentIdentifier, 'tt_content');
         }
 
-        return $match[1] . $newPageIdentifier . $hashValue;
+        return $match[1] . $newPageIdentifier . $section;
     }
 
     /**
