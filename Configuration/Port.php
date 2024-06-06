@@ -120,13 +120,13 @@ return [
             ],
             'tx_powermail_domain_model_page' => [
                 [
-                    'field' => 'forms',
+                    'field' => 'form',
                     'table' => 'tx_powermail_domain_model_form',
                 ],
             ],
             'tx_powermail_domain_model_field' => [
                 [
-                    'field' => 'pages',
+                    'field' => 'page',
                     'table' => 'tx_powermail_domain_model_page',
                 ],
                 [
