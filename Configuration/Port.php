@@ -212,7 +212,7 @@ return [
                     [
                         // tx_news: categories
                         'condition' => [
-                            'Ctype' => 'news_pi1',
+                            'Ctype' => 'news_newsliststicky',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.categories"]/value',
                         'table' => 'sys_category',
@@ -220,8 +220,7 @@ return [
                     [
                         // tx_news: startingpoint
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'news_pi1',
+                            'Ctype' => 'news_newsliststicky',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.startingpoint"]/value',
                         'table' => 'pages',
@@ -229,8 +228,7 @@ return [
                     [
                         // tx_news: detailPid
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'news_pi1',
+                            'Ctype' => 'news_newsliststicky',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.detailPid"]/value',
                         'table' => 'pages',
@@ -238,8 +236,7 @@ return [
                     [
                         // tx_news: listPid
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'news_pi1',
+                            'Ctype' => 'news_newsliststicky',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.listPid"]/value',
                         'table' => 'pages',
@@ -247,74 +244,90 @@ return [
                     [
                         // tx_news: backPid
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'news_pi1',
+                            'Ctype' => 'news_newsliststicky',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.backPid"]/value',
                         'table' => 'pages',
                     ],
                     [
-                        // tt_news PIDitemDisplay
+                        // tx_news: categories
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => '9',
+                            'Ctype' => 'news_newsdetail',
                         ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="PIDitemDisplay"]/value',
+                        'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.categories"]/value',
+                        'table' => 'sys_category',
+                    ],
+                    [
+                        // tx_news: startingpoint
+                        'condition' => [
+                            'Ctype' => 'news_newsdetail',
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.startingpoint"]/value',
                         'table' => 'pages',
                     ],
                     [
-                        // tt_news backPid
+                        // tx_news: detailPid
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => '9',
+                            'Ctype' => 'news_newsdetail',
                         ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="backPid"]/value',
+                        'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.detailPid"]/value',
                         'table' => 'pages',
                     ],
                     [
-                        // tt_news pages
+                        // tx_news: listPid
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => '9',
+                            'Ctype' => 'news_newsdetail',
                         ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="s_misc"]/language/field[@index="pages"]/value',
+                        'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.listPid"]/value',
                         'table' => 'pages',
                     ],
                     [
-                        // tt_news pages
+                        // tx_news: backPid
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => '9',
+                            'Ctype' => 'news_newsdetail',
                         ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="categorySelection"]/value',
-                        'table' => 'tt_news_cat',
-                    ],
-                    [
-                        // in2faq categories
-                        'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'in2faq_pi1',
-                        ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.categories"]/value',
-                        'table' => 'tx_in2faq_domain_model_category',
-                    ],
-                    [
-                        // in2faq startpid
-                        'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'in2faq_pi1',
-                        ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.startpid"]/value',
+                        'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.backPid"]/value',
                         'table' => 'pages',
                     ],
                     [
-                        // in2faq pi2 filter categories
+                        // tx_news: categories
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'in2faq_pi2',
+                            'Ctype' => 'news_newssearchresult',
                         ],
-                        'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.categoryFilter.categories"]/value',
-                        'table' => 'tx_in2faq_domain_model_category',
+                        'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.categories"]/value',
+                        'table' => 'sys_category',
+                    ],
+                    [
+                        // tx_news: startingpoint
+                        'condition' => [
+                            'Ctype' => 'news_newssearchresult',
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.startingpoint"]/value',
+                        'table' => 'pages',
+                    ],
+                    [
+                        // tx_news: detailPid
+                        'condition' => [
+                            'Ctype' => 'news_newssearchresult',
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.detailPid"]/value',
+                        'table' => 'pages',
+                    ],
+                    [
+                        // tx_news: listPid
+                        'condition' => [
+                            'Ctype' => 'news_newssearchresult',
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.listPid"]/value',
+                        'table' => 'pages',
+                    ],
+                    [
+                        // tx_news: backPid
+                        'condition' => [
+                            'Ctype' => 'news_newssearchresult',
+                        ],
+                        'selection' => '//T3FlexForms/data/sheet[@index="additional"]/language/field[@index="settings.backPid"]/value',
+                        'table' => 'pages',
                     ],
                 ],
             ],
