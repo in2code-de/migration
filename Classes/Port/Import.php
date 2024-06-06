@@ -379,7 +379,7 @@ class Import
      */
     protected function insertRecord(array $properties, string $tableName): void
     {
-        $oldIdentifier = (int)$properties['uid'];
+        $oldIdentifier = (int)($properties['uid'] ?? 0);
         $connection = DatabaseUtility::getConnectionForTable($tableName);
         $properties = $this->prepareProperties($properties, $tableName);
         if (DatabaseUtility::isFieldExistingInTable('_imported', $tableName)) {
