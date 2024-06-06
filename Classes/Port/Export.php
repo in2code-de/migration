@@ -185,7 +185,7 @@ class Export
     protected function extendPagesWithTranslations(): void
     {
         foreach ($this->jsonArray['records']['pages'] ?? [] as $pageProperties) {
-            if ((int)$pageProperties['uid'] > 0) {
+            if ((int)($pageProperties['uid'] ?? 0) > 0) {
                 $records = $this->getRecordsFromPageAndTable(
                     (int)$pageProperties['uid'],
                     'pages',
@@ -208,7 +208,7 @@ class Export
         foreach (TcaUtility::getTableNamesToExport($this->configuration['excludedTables'] ?? []) as $table) {
             $rows = [];
             foreach (($this->jsonArray['records']['pages'] ?? []) as $pageProperties) {
-                $pid = (int)$pageProperties['uid'];
+                $pid = (int)($pageProperties['uid'] ?? 0);
                 $rows = array_merge($rows, $this->getRecordsFromPageAndTable($pid, $table));
             }
             if ($rows !== []) {
