@@ -100,6 +100,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State   | Description                                                                                                                                                                                                   |
 |-------------|------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 11.2.0      | 2024-06-06 | Feature | Extend default configuration with newer news plugins, container and powermail_cond settings, prevent duplicate mm table entries, support sections in links now, prevent some missing array key errors         |
 | 11.1.0      | 2024-06-06 | Task    | sys_file_metadata records should also be importend and exported, move "beforeEvent" really before import data is generated, prevent some missing array key errors, prevent array to string conversion message |
 | 11.0.1      | 2024-01-31 | Bugfix  | Fix some smaller issues (e.g. missing array keys, etc...)                                                                                                                                                     |
 | 11.0.0      | 2024-01-10 | Task    | Support TYPO3 12 and 11, some bugfixes                                                                                                                                                                        |
