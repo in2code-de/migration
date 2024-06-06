@@ -172,6 +172,18 @@ return [
                     'table' => 'tt_news_cat',
                 ],
             ],
+            'tx_calendarize_domain_model_event' => [
+                [
+                    'field' => 'calendarize',
+                    'table' => 'tx_calendarize_domain_model_configuration',
+                ],
+            ],
+            'tx_calendarize_domain_model_configuration' => [
+                [
+                    'field' => 'content_elements',
+                    'table' => 'tt_content',
+                ],
+            ],
         ],
 
         /**
@@ -382,23 +394,15 @@ return [
                 'uid_foreign' => 'tx_news_domain_model_tag',
             ],
         ],
-        'tt_news' => [
+        'tx_calendarize_domain_model_event' => [
             [
-                'table' => 'tt_news_cat_mm',
-                'uid_local' => 'tt_news',
-                'uid_foreign' => 'tt_news_cat',
-            ],
-            [
-                'table' => 'tt_news_related_mm',
-                'uid_local' => 'tt_news',
-                'uid_foreign' => 'tt_news',
-            ],
-        ],
-        'tx_in2faq_domain_model_question' => [
-            [
-                'table' => 'tx_in2faq_question_category_mm',
-                'uid_local' => 'tx_in2faq_domain_model_question',
-                'uid_foreign' => 'tx_in2faq_domain_model_category',
+                'table' => 'sys_category_record_mm',
+                'uid_local' => 'sys_category',
+                'uid_foreign' => 'tx_calendarize_domain_model_event',
+                'additional' => [
+                    'tablenames' => 'tx_calendarize_domain_model_event',
+                    'fieldname' => 'categories',
+                ],
             ],
         ],
     ],
