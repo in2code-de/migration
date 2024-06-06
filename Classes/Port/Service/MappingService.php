@@ -61,7 +61,7 @@ class MappingService
             && ($this->mapping[$tableName][$old] ?? '') === '') {
             return $old;
         }
-        return (int)$this->mapping[$tableName][$old];
+        return (int)($this->mapping[$tableName][$old] ?? 0);
     }
 
     public function getNewPidFromOldPid(int $old): int
@@ -70,7 +70,7 @@ class MappingService
             && ($this->mapping[self::TABLE_NAME_PAGES][$old] ?? '') === '') {
             return $old;
         }
-        return (int)$this->mapping[self::TABLE_NAME_PAGES][$old];
+        return (int)($this->mapping[self::TABLE_NAME_PAGES][$old] ?? 0);
     }
 
     public function isTableExisting(string $tableName): bool
