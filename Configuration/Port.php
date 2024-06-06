@@ -88,6 +88,10 @@ return [
                     'table' => 'tt_content',
                 ],
                 [
+                    'field' => 'tx_container_parent',
+                    'table' => 'tt_content',
+                ],
+                [
                     'field' => 'tx_news_related_news',
                     'table' => 'tx_news_domain_model_news',
                 ],
