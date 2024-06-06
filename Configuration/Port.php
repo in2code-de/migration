@@ -162,8 +162,7 @@ return [
                     [
                         // powermail: form selection
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'powermail_pi1',
+                            'Ctype' => 'powermail_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.form"]/value',
                         'table' => 'tx_powermail_domain_model_form',
@@ -171,8 +170,7 @@ return [
                     [
                         // powermail: where to save mails
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'powermail_pi1',
+                            'Ctype' => 'powermail_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="main"]/language/field[@index="settings.flexform.main.pid"]/value',
                         'table' => 'pages',
@@ -180,8 +178,7 @@ return [
                     [
                         // powermail: where to save mails
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'powermail_pi1',
+                            'Ctype' => 'powermail_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="thx"]/language/field[@index="settings.flexform.thx.redirect"]/value',
                         'table' => 'pages',
@@ -189,8 +186,7 @@ return [
                     [
                         // tx_news: categories
                         'condition' => [
-                            'Ctype' => 'list',
-                            'list_type' => 'news_pi1',
+                            'Ctype' => 'news_pi1',
                         ],
                         'selection' => '//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="settings.categories"]/value',
                         'table' => 'sys_category',
