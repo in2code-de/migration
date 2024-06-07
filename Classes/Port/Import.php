@@ -287,7 +287,10 @@ class Import
         foreach ($this->jsonArray['mm'] ?? [] as $tableMm => $records) {
             if (DatabaseUtility::isTableExisting($tableMm)) {
                 foreach ($records as $record) {
-                    $this->insertRecord($this->getNewPropertiesForMmRelation($record, $tableMm), $tableMm);
+                    $propertiesNew = $this->getNewPropertiesForMmRelation($record, $tableMm);
+                    if ($propertiesNew['uid_local'] !== 0 && $propertiesNew['uid_foreign'] !== 0) {
+                        $this->insertRecord($this->getNewPropertiesForMmRelation($record, $tableMm), $tableMm);
+                    }
                 }
             }
         }
