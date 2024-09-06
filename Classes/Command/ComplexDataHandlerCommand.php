@@ -54,7 +54,7 @@ class ComplexDataHandlerCommand extends Command
             }
         }
 
-        if ((is_array($value)) === false) {
+        if ($value === 0 && (is_array($value)) === false) {
             $output->writeln('value is 0 or can not be decoded as array');
             return parent::FAILURE;
         }
