@@ -53,7 +53,7 @@ class Start
                 );
             }
             /** @var MigratorInterface $migration */
-            $migration = GeneralUtility::makeInstance($migration['className'], $configuration);
+            $migration = GeneralUtility::makeInstance($migration['className'], $configuration, $migration);
             $migration->start();
         }
     }
