@@ -268,7 +268,7 @@ class Export
                                 ->select('*')
                                 ->from($tableMm)
                                 ->where($whereClause)
-                                ->execute()
+                                ->executeQuery()
                                 ->fetchAllAssociative();
                             if (empty($this->jsonArray['mm'][$tableMm])) {
                                 $this->jsonArray['mm'][$tableMm] = [];

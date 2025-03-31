@@ -88,7 +88,7 @@ class ImportCommand extends AbstractPortCommand
             ->select('uid')
             ->from('pages')
             ->where('uid=' . (int)$pid)
-            ->execute()
+            ->executeQuery()
             ->fetchOne() > 0;
     }
 }

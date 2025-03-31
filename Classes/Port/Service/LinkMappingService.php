@@ -366,7 +366,7 @@ class LinkMappingService
             ->select('*')
             ->from($tableName)
             ->where('uid=' . $identifier)
-            ->execute()
+            ->executeQuery()
             ->fetchAllAssociative();
         if (!empty($rows[0]['uid'])) {
             return $rows[0];

@@ -10,6 +10,7 @@ use In2code\Migration\Exception\FileOrFolderCouldNotBeCreatedException;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\StringUtility;
 use Throwable;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -96,9 +97,9 @@ class FileHelper implements SingletonInterface
             ->from('sys_file')
             ->where(
                 $queryBuilder->expr()->eq('identifier', $queryBuilder->createNamedParameter($identifier)),
-                $queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter($storage, \PDO::PARAM_INT))
+                $queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter($storage, Connection::PARAM_INT))
             )
-            ->execute()
+            ->executeQuery()
             ->fetchOne();
     }
 

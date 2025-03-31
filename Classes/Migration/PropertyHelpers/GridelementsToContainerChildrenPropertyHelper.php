@@ -7,7 +7,7 @@ use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
 use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Utility\DatabaseUtility;
-use PDO;
+use TYPO3\CMS\Core\Database\Connection;
 
 /**
  * Class GridelementsToContainerChildrenPropertyHelper
@@ -86,10 +86,10 @@ class GridelementsToContainerChildrenPropertyHelper extends AbstractPropertyHelp
                 ->where(
                     $queryBuilder->expr()->eq(
                         'uid',
-                        $queryBuilder->createNamedParameter($parentIdentifier, PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($parentIdentifier, Connection::PARAM_INT)
                     )
                 )
-                ->execute()
+                ->executeQuery()
                 ->fetchOne();
         }
         return null;

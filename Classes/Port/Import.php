@@ -419,7 +419,7 @@ class Import
             ->select('uid')
             ->from('sys_file')
             ->where('storage=' . $storage . ' and identifier="' . $identifier . '"')
-            ->execute()
+            ->executeQuery()
             ->fetchOne();
     }
 

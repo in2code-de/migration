@@ -40,7 +40,7 @@ class RemoveFileRelationsPropertyHelper extends AbstractPropertyHelper implement
             $whereClause .= ' and fieldname="' . $this->getConfigurationByKey('fieldname') . '"';
         }
         $queryBuilder = DatabaseUtility::getQueryBuilderForTable('sys_file_reference');
-        $queryBuilder->delete('sys_file_reference')->where($whereClause)->execute();
+        $queryBuilder->delete('sys_file_reference')->where($whereClause)->executeQuery();
     }
 
     /**

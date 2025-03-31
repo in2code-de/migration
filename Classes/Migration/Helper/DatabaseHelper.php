@@ -146,7 +146,7 @@ class DatabaseHelper implements SingletonInterface
             ->select('pid')
             ->from('pages')
             ->where('uid=' . (int)$pageIdentifier)
-            ->execute()
+            ->executeQuery()
             ->fetchOne();
     }
 }
