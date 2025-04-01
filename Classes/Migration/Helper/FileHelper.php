@@ -214,6 +214,29 @@ class FileHelper implements SingletonInterface
         return $databaseHelper->createRecord('sys_file_reference', $additionalProperties + $properties);
     }
 
+    public function updateFileRelation(
+        string $tableName,
+        string $fieldName,
+        int $recordIdentifier,
+        array $newProperties
+    ): void {
+        $queryBuilder = DatabaseUtility::getQueryBuilderForTable('sys_file_reference');
+        $rows = $queryBuilder
+            ->select('*')
+            ->from('sys_file_reference')
+            ->where(
+                $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($tableName)),
+                $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($fieldName)),
+                $queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($recordIdentifier, Connection::PARAM_INT)),
+            )
+            ->executeQuery()
+            ->fetchAllAssociative();
+        foreach ($rows as $row) {
+            $connection = DatabaseUtility::getConnectionForTable('sys_file_reference');
+            $connection->update('sys_file_reference', $newProperties, $row);
+        }
+    }
+
     /**
      * @param string $file like /var/www/uploads/file1.mp3
      * @param string $targetFolder relative path like fileadmin/folder/
