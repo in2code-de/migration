@@ -54,7 +54,7 @@ class ImportCommand extends AbstractPortCommand
     {
         $importService = GeneralUtility::makeInstance(
             Import::class,
-            $input->getArgument('file'),
+            GeneralUtility::getFileAbsFileName($input->getArgument('file')),
             (int)$input->getArgument('pid'),
             $this->getCompleteConfiguration($input->getArgument('configuration'))
         );
