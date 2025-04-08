@@ -193,7 +193,7 @@ abstract class AbstractMigrator
                     $propertiesOld,
                     $propertyName,
                     $this->tableName,
-                    (array)$helperConfiguration['configuration'],
+                    $helperConfiguration['configuration'] ?? [],
                     $this->configuration['configuration'] ?? []
                 );
                 $helperClass->initialize();
