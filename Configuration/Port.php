@@ -62,6 +62,8 @@ return [
          *  - "123" (link to page 123)
          *  - "123,124" (link to two pages)
          *  - "t3://page?uid=123" (link to page 123)
+         *  - "t3://file?uid=123" (file with uid 123)
+         *  - "fileadmin/file.pdf" (file.pdf)
          */
         'propertiesWithRelations' => [
             'pages' => [

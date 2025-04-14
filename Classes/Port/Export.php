@@ -242,7 +242,7 @@ class Export
     protected function extendWithFilesFromLinks(): void
     {
         $linkRelationService = GeneralUtility::makeInstance(LinkRelationService::class, $this->configuration);
-        $identifiers = $linkRelationService->getFileIdentifiersFromLinks($this->jsonArray);
+        $identifiers = $linkRelationService->getFileIdentifiers($this->jsonArray);
         foreach ($identifiers as $fileIdentifier) {
             $this->extendWithFilesBasic($fileIdentifier);
         }

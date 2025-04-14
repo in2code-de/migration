@@ -63,17 +63,40 @@ class LinkRelationService
         $this->configuration = $configuration;
     }
 
-    public function getFileIdentifiersFromLinks(array $jsonArray): array
+    public function getFileIdentifiers(array $jsonArray): array
+    {
+        return array_merge(
+            $this->getFileIdentifiersFromLinks($jsonArray),
+            $this->getFileIdentifiersFromRelations($jsonArray)
+        );
+    }
+
+    protected function getFileIdentifiersFromLinks(array $jsonArray): array
     {
         $identifiers = [];
         foreach ($this->getPropertiesWithLinks() as $table => $fields) {
-            if (!empty($jsonArray['records'][$table])) {
-                foreach ($jsonArray['records'][$table] as $row) {
-                    foreach ($fields as $field) {
-                        if (!empty($row[$field])) {
-                            $identifiers = array_merge($identifiers, $this->searchForFileLinks($row[$field]));
-                            $identifiers = array_merge($identifiers, $this->searchForClassicFileLinks($row[$field]));
-                        }
+            foreach ($jsonArray['records'][$table] ?? [] as $row) {
+                foreach ($fields as $field) {
+                    if (!empty($row[$field])) {
+                        $identifiers = array_merge($identifiers, $this->searchForFileLinks($row[$field]));
+                        $identifiers = array_merge($identifiers, $this->searchForClassicFileLinks($row[$field]));
+                    }
+                }
+            }
+        }
+        return $identifiers;
+    }
+
+    protected function getFileIdentifiersFromRelations(array $jsonArray): array
+    {
+        $identifiers = [];
+        foreach ($this->getPropertiesWithRelations() as $table => $configurations) {
+            foreach ($jsonArray['records'][$table] ?? [] as $row) {
+                foreach ($configurations as $configuration) {
+                    $field = $configuration['field'] ?? '';
+                    if ($field !== '' && ($row[$field] ?? '') !== '') {
+                        $identifiers = array_merge($identifiers, $this->searchForFileLinks((string)$row[$field]));
+                        $identifiers = array_merge($identifiers, $this->searchForClassicFileLinks((string)$row[$field]));
                     }
                 }
             }
@@ -142,6 +165,11 @@ class LinkRelationService
 
     protected function getPropertiesWithLinks(): array
     {
-        return (array)$this->configuration['linkMapping']['propertiesWithLinks'];
+        return $this->configuration['linkMapping']['propertiesWithLinks'] ?? [];
+    }
+
+    protected function getPropertiesWithRelations(): array
+    {
+        return $this->configuration['linkMapping']['propertiesWithRelations'] ?? [];
     }
 }
