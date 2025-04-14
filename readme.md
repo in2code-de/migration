@@ -100,6 +100,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State   | Description                                                                                                                                                                                                   |
 |-------------|------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 11.3.0      | 2025-04-14 | Feature | Support file relations in normal record fields (defined in propertiesWithRelations configuration)                                                                                                             |
 | 11.2.1      | 2024-06-06 | Bugfix  | Fix column name for FlexForm configuration in Port.php, don't add mm-entries with zero-values to prevent garbage and duplication-errors in mysql                                                              |
 | 11.2.0      | 2024-06-06 | Feature | Extend default configuration with newer news plugins, container and powermail_cond settings, prevent duplicate mm table entries, support sections in links now, prevent some missing array key errors         |
 | 11.1.0      | 2024-06-06 | Task    | sys_file_metadata records should also be importend and exported, move "beforeEvent" really before import data is generated, prevent some missing array key errors, prevent array to string conversion message |
