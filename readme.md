@@ -100,6 +100,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State   | Description                                                                                                                                                                                                   |
 |-------------|------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 12.2.0      | 2025-04-02 | Feature | Respect also _migrated=1 for Migrators now                                                                                                                                                                    |
 | 12.1.0      | 2025-04-02 | Feature | Add new (Property)Helper class for updating file relations, resolve EXT:path correct for imports                                                                                                              |
 | 12.0.0      | 2025-04-01 | Task    | Support TYPO3 13 (+12) and drop support for TYPO3 11                                                                                                                                                          |
 | 11.2.1      | 2024-06-06 | Bugfix  | Fix column name for FlexForm configuration in Port.php, don't add mm-entries with zero-values to prevent garbage and duplication-errors in mysql                                                              |
