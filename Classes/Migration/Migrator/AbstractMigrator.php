@@ -141,6 +141,7 @@ abstract class AbstractMigrator
             $this->log->addNote($note);
             $properties = $this->manipulatePropertiesWithValues($propertiesOriginal);
             $properties = $this->manipulatePropertiesWithPropertyHelpers($properties, $propertiesOriginal);
+            $properties = $this->genericChanges($properties);
             $generalRepository->updateRecord($properties, $this->tableName);
         }
         $this->executeSqlEnd();
@@ -199,6 +200,14 @@ abstract class AbstractMigrator
                 $helperClass->initialize();
                 $properties = $helperClass->returnRecord();
             }
+        }
+        return $properties;
+    }
+
+    protected function genericChanges(array $properties): array
+    {
+        if (DatabaseUtility::isFieldExistingInTable('_migrated', $this->tableName)) {
+            $properties['_migrated'] = 1;
         }
         return $properties;
     }
