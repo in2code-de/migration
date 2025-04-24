@@ -323,8 +323,9 @@ class FileHelper implements SingletonInterface
      * @param string $path absolute path
      * @return void
      * @throws FileOrFolderCouldNotBeCreatedException
+     * @api
      */
-    protected function createFolderIfNotExists(string $path): void
+    public function createFolderIfNotExists(string $path): void
     {
         if (is_dir($path) === false) {
             try {
