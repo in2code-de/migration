@@ -388,8 +388,8 @@ class Import
             $properties['_imported'] = $oldIdentifier;
         }
         $connection->insert($tableName, $properties);
-        $newIdentifier = (int)$connection->lastInsertId($tableName);
         if ($oldIdentifier > 0) {
+            $newIdentifier = (int)$connection->lastInsertId($tableName);
             $this->mappingService->setNew($newIdentifier, $oldIdentifier, $tableName);
         }
     }
