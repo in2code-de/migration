@@ -66,11 +66,7 @@ class MappingService
 
     public function getNewPidFromOldPid(int $old): int
     {
-        if ($this->configuration['keepNotMatchingIdentifiers'] === true
-            && ($this->mapping[self::TABLE_NAME_PAGES][$old] ?? '') === '') {
-            return $old;
-        }
-        return (int)($this->mapping[self::TABLE_NAME_PAGES][$old] ?? 0);
+        return $this->getNewFromOld($old, self::TABLE_NAME_PAGES);
     }
 
     public function isTableExisting(string $tableName): bool
