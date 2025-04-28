@@ -5,17 +5,12 @@ namespace In2code\Migration\Events;
 
 final class ExportBeforeEvent
 {
-    private array $jsonArray;
-    private int $pid;
-    private int $recursive;
-    private array $configuration;
-
-    public function __construct(array $jsonArray, int $pid, int $recursive, array $configuration)
-    {
-        $this->jsonArray = $jsonArray;
-        $this->pid = $pid;
-        $this->recursive = $recursive;
-        $this->configuration = $configuration;
+    public function __construct(
+        private array $jsonArray,
+        private readonly int $pid,
+        private readonly int $recursive,
+        private readonly array $configuration
+    ) {
     }
 
     public function getJsonArray(): array

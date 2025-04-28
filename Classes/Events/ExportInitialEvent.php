@@ -5,15 +5,8 @@ namespace In2code\Migration\Events;
 
 final class ExportInitialEvent
 {
-    private int $pid;
-    private int $recursive;
-    private array $configuration;
-
-    public function __construct(int $pid, int $recursive, array $configuration)
+    public function __construct(private int $pid, private int $recursive, private readonly array $configuration)
     {
-        $this->pid = $pid;
-        $this->recursive = $recursive;
-        $this->configuration = $configuration;
     }
 
     public function getPid(): int
@@ -41,11 +34,5 @@ final class ExportInitialEvent
     public function getConfiguration(): array
     {
         return $this->configuration;
-    }
-
-    public function setConfiguration(array $configuration): self
-    {
-        $this->configuration = $configuration;
-        return $this;
     }
 }

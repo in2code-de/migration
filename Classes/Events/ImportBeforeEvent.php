@@ -5,17 +5,12 @@ namespace In2code\Migration\Events;
 
 final class ImportBeforeEvent
 {
-    private array $jsonArray;
-    private int $pid;
-    private string $file;
-    private array $configuration;
-
-    public function __construct(array $jsonArray, int $pid, string $file, array $configuration)
-    {
-        $this->jsonArray = $jsonArray;
-        $this->pid = $pid;
-        $this->file = $file;
-        $this->configuration = $configuration;
+    public function __construct(
+        private array $jsonArray,
+        private int $pid,
+        private string $file,
+        private readonly array $configuration
+    ) {
     }
 
     public function getJsonArray(): array
@@ -51,10 +46,5 @@ final class ImportBeforeEvent
     public function getConfiguration(): array
     {
         return $this->configuration;
-    }
-
-    public function setConfiguration(array $configuration): void
-    {
-        $this->configuration = $configuration;
     }
 }

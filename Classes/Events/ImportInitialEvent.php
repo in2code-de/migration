@@ -5,15 +5,8 @@ namespace In2code\Migration\Events;
 
 final class ImportInitialEvent
 {
-    private string $file;
-    private int $pid;
-    private array $configuration;
-
-    public function __construct(string $file, int $pid, array $configuration)
+    public function __construct(private string $file, private int $pid, private readonly array $configuration)
     {
-        $this->file = $file;
-        $this->pid = $pid;
-        $this->configuration = $configuration;
     }
 
     public function getFile(): string
@@ -41,11 +34,5 @@ final class ImportInitialEvent
     public function getConfiguration(): array
     {
         return $this->configuration;
-    }
-
-    public function setConfiguration(array $configuration): self
-    {
-        $this->configuration = $configuration;
-        return $this;
     }
 }
