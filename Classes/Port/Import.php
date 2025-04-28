@@ -6,6 +6,8 @@ namespace In2code\Migration\Port;
 use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
 use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Events\ImportBeforeEvent;
+use In2code\Migration\Events\ImportFilesFromContentEvent;
+use In2code\Migration\Events\ImportFilesFromUriEvent;
 use In2code\Migration\Events\ImportInitialEvent;
 use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Exception\FileNotFoundException;
@@ -262,19 +264,41 @@ class Import
     }
 
     /**
-     * @param string $uri Absolute URI like /var/www/fileadmin/start.pdf
-     * @param string $path Relative target path like fileadmin/folder/
+     * @param string $uri Absolute start path like "/var/www/fileadmin/start.pdf"
+     * @param string $path Relative target path like "fileadmin/folder/"
      * @param bool $overwriteFiles
      * @return void
      */
     protected function importFileFromUri(string $uri, string $path, bool $overwriteFiles): void
     {
-        FileUtility::copyFile($uri, GeneralUtility::getFileAbsFileName($path), $overwriteFiles);
+        /** @var ImportFilesFromUriEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ImportFilesFromUriEvent($uri, $path, $overwriteFiles, $this->configuration)
+        );
+        FileUtility::copyFile(
+            $event->getUri(),
+            GeneralUtility::getFileAbsFileName($event->getPath()),
+            $event->isOverwriteFiles()
+        );
     }
 
+    /**
+     * @param string $base64content File content as base64
+     * @param string $path Relative target path like "fileadmin/folder/"
+     * @param bool $overwriteFiles
+     * @return bool
+     */
     protected function importFileFromBase64(string $base64content, string $path, bool $overwriteFiles): bool
     {
-        return FileUtility::writeFileFromBase64Code($path, $base64content, $overwriteFiles);
+        /** @var ImportFilesFromContentEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ImportFilesFromContentEvent($base64content, $path, $overwriteFiles, $this->configuration)
+        );
+        return FileUtility::writeFileFromBase64Code(
+            $event->getPath(),
+            $event->getBase64content(),
+            $event->isOverwriteFiles()
+        );
     }
 
     /**
