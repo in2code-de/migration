@@ -100,6 +100,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State   | Description                                                                                                                                                                                                   |
 |-------------|------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 12.3.0      | 2025-04-28 | Feature | New events for file import manipulation, make createFolderIfNotExists() public, prevent exception when importing MM tables, code cleanup                                                                      |
 | 12.2.0      | 2025-04-02 | Feature | Respect also _migrated=1 for Migrators now                                                                                                                                                                    |
 | 12.1.0      | 2025-04-02 | Feature | Add new (Property)Helper class for updating file relations, resolve EXT:path correct for imports                                                                                                              |
 | 12.0.0      | 2025-04-01 | Task    | Support TYPO3 13 (+12) and drop support for TYPO3 11                                                                                                                                                          |
