@@ -14,12 +14,20 @@ class TreeService
 {
     const TABLE_NAME = 'pages';
 
+    private int $recursive;
+
+    public function __construct(int $recursive = 0)
+    {
+        $this->recursive = $recursive;
+    }
+
     /**
      * Successor of TYPO3\CMS\Core\Database\QueryGenerator->getTreeList as it was removed in TYPO3 12
      *
      * @param int $pageIdentifier Start page identifier
      * @param bool $addStart Add start page identifier to list
      * @param bool $addHidden Should records with pages.hidden=1 be added?
+     * @param int $currentLevel
      * @return array
      * @throws ExceptionDbalDriver
      * @throws ExceptionDbal
@@ -27,14 +35,20 @@ class TreeService
     public function getAllSubpageIdentifiers(
         int $pageIdentifier,
         bool $addStart = true,
-        bool $addHidden = true
+        bool $addHidden = true,
+        int $currentLevel = 1
     ): array {
         $identifiers = [];
         if ($addStart === true) {
             $identifiers[] = $pageIdentifier;
         }
-        foreach ($this->getChildrenPageIdentifiers($pageIdentifier, $addHidden) as $identifier) {
-            $identifiers = array_merge($identifiers, $this->getAllSubpageIdentifiers($identifier, true, $addHidden));
+        if ($this->recursive === 0 || $currentLevel < $this->recursive) {
+            foreach ($this->getChildrenPageIdentifiers($pageIdentifier, $addHidden) as $identifier) {
+                $identifiers = array_merge(
+                    $identifiers,
+                    $this->getAllSubpageIdentifiers($identifier, true, $addHidden, $currentLevel + 1)
+                );
+            }
         }
         return $identifiers;
     }

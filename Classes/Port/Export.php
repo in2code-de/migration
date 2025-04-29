@@ -376,7 +376,7 @@ class Export
      */
     protected function getPageIdentifiersForExport(): array
     {
-        $treeService = GeneralUtility::makeInstance(TreeService::class);
+        $treeService = GeneralUtility::makeInstance(TreeService::class, $this->recursive);
         return $treeService->getAllSubpageIdentifiers($this->pid);
     }
 
