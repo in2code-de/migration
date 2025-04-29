@@ -445,4 +445,11 @@ return [
      * This will also help you if you run into a memory limit issue while exporting.
      */
     'addFilesToJson' => false,
+
+    /**
+     * Should and can be used together with addFilesToJson=false setting.
+     * Try to download assets from an online available source. This feature is activated if string is not empty.
+     * URL must be with trailing slash - like: "https://domain.org/"
+     */
+    'importFilesFromOnlineResource' => '',
 ];

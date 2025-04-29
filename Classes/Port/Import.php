@@ -7,6 +7,7 @@ use Doctrine\DBAL\Driver\Exception as ExceptionDbalDriver;
 use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Events\ImportBeforeEvent;
 use In2code\Migration\Events\ImportFilesFromContentEvent;
+use In2code\Migration\Events\ImportFilesFromOnlineSourceEvent;
 use In2code\Migration\Events\ImportFilesFromUriEvent;
 use In2code\Migration\Events\ImportInitialEvent;
 use In2code\Migration\Exception\ConfigurationException;
@@ -16,6 +17,7 @@ use In2code\Migration\Port\Service\MappingService;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class Import
@@ -246,19 +248,23 @@ class Import
     protected function importFiles(): void
     {
         foreach ($this->jsonArray['files'] ?? [] as $properties) {
-            if (!empty($properties['uri'])) {
-                $this->importFileFromUri(
-                    $properties['uri'],
-                    $properties['path'],
-                    $this->configuration['overwriteFiles']
-                );
-            }
-            if (!empty($properties['base64'])) {
-                $this->importFileFromBase64(
-                    $properties['base64'],
-                    $properties['path'],
-                    $this->configuration['overwriteFiles']
-                );
+            if (($this->configuration['importFilesFromOnlineResource'] ?? '') === '') {
+                if (!empty($properties['uri'])) {
+                    $this->importFileFromUri(
+                        $properties['uri'],
+                        $properties['path'],
+                        $this->configuration['overwriteFiles']
+                    );
+                }
+                if (!empty($properties['base64'])) {
+                    $this->importFileFromBase64(
+                        $properties['base64'],
+                        $properties['path'],
+                        $this->configuration['overwriteFiles']
+                    );
+                }
+            } else {
+                $this->importFileFromOnlineSource($properties['path'], $this->configuration['overwriteFiles']);
             }
         }
     }
@@ -299,6 +305,28 @@ class Import
             $event->getBase64content(),
             $event->isOverwriteFiles()
         );
+    }
+
+    protected function importFileFromOnlineSource(string $path, bool $overwriteFiles): void
+    {
+        /** @var ImportFilesFromOnlineSourceEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ImportFilesFromOnlineSourceEvent($path, $overwriteFiles, $this->configuration)
+        );
+        if ($event->isToLoadFromSource() === false) {
+            return;
+        }
+        $requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
+        $response = $requestFactory->request($event->getOnlineSource(), 'GET');
+        if ($response->getStatusCode() === 200) {
+            $fileContent = $response->getBody()->getContents();
+            $base64Content = base64_encode($fileContent);
+            FileUtility::writeFileFromBase64Code(
+                $event->getPath(),
+                $base64Content,
+                $event->isOverwriteFiles()
+            );
+        }
     }
 
     /**
