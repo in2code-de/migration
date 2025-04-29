@@ -50,7 +50,7 @@ class FileUtility
         }
     }
 
-    protected static function createFolderIfNotExists(string $pathAndFilename): void
+    public static function createFolderIfNotExists(string $pathAndFilename): void
     {
         $path = self::getPathFromPathAndFilename($pathAndFilename);
         if (is_dir($path) === false) {

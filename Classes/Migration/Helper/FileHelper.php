@@ -8,6 +8,7 @@ use Doctrine\DBAL\Exception as ExceptionDbal;
 use In2code\Migration\Exception\FileNotFoundException;
 use In2code\Migration\Exception\FileOrFolderCouldNotBeCreatedException;
 use In2code\Migration\Utility\DatabaseUtility;
+use In2code\Migration\Utility\FileUtility;
 use In2code\Migration\Utility\StringUtility;
 use Throwable;
 use TYPO3\CMS\Core\Database\Connection;
@@ -167,7 +168,7 @@ class FileHelper implements SingletonInterface
         array $additionalProperties = [],
         int $storageIdentifier = 1
     ): void {
-        $this->createFolderIfNotExists(GeneralUtility::getFileAbsFileName($targetFolder));
+        FileUtility::createFolderIfNotExists(GeneralUtility::getFileAbsFileName($targetFolder));
         $pathAndFilename = $this->copyFileToTargetFolder(
             GeneralUtility::getFileAbsFileName($relativeFile),
             $targetFolder
@@ -317,22 +318,5 @@ class FileHelper implements SingletonInterface
             $pathAndName = '/' . $pathAndName;
         }
         return $pathAndName;
-    }
-
-    /**
-     * @param string $path absolute path
-     * @return void
-     * @throws FileOrFolderCouldNotBeCreatedException
-     * @api
-     */
-    public function createFolderIfNotExists(string $path): void
-    {
-        if (is_dir($path) === false) {
-            try {
-                GeneralUtility::mkdir_deep($path);
-            } catch (Throwable $exception) {
-                throw new FileOrFolderCouldNotBeCreatedException('Folder ' . $path . ' cannot be created', 1569334703);
-            }
-        }
     }
 }
