@@ -113,7 +113,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
                     $mappingConfiguration['keyField'],
                     $this->getConfigurationByKey('flexFormField')
                 );
-                $value = $this->resolveValueByMapping($value, (array)$mappingConfiguration['mapping']);
+                $value = $this->resolveValueByMapping($value, $mappingConfiguration['mapping'] ?? []);
                 $additionalMapping[$variableName] = $value;
             }
         }
@@ -203,7 +203,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
         return $value;
     }
 
-    protected function resolveValueByMapping(string $value, array $mapping = []): string
+    protected function resolveValueByMapping(string $value, array $mapping): string
     {
         if (array_key_exists($value, $mapping)) {
             $value = $mapping[$value];
