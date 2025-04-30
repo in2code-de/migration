@@ -61,7 +61,12 @@ return [
         'dryrun' => true,
         'limitToRecord' => null,
         'limitToPage' => 1,
-        'recursive' => true
+        'recursive' => true,
+        'messageTypes' => [
+            'message',
+            'note',
+            'error',
+        ],
     ],
 
     // Define your migrations

@@ -8,6 +8,11 @@ return [
         'limitToRecord' => null,
         'limitToPage' => null,
         'recursive' => false,
+        'messageTypes' => [
+            'message',
+            'note',
+            'error',
+        ],
     ],
 
     // Define your migrations

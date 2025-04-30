@@ -23,9 +23,10 @@ class Start
      */
     public function start(InputInterface $input, OutputInterface $output): void
     {
-        GeneralUtility::makeInstance(Log::class)->setOutput($output);
-
         $configuration = $this->getConfiguration($input);
+        GeneralUtility::makeInstance(Log::class)
+            ->setOutput($output)
+            ->setMessageTypes($configuration['configuration']['messageTypes'] ?? null);
         $this->startMigrators($configuration);
     }
 

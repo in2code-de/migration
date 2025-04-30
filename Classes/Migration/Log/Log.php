@@ -9,13 +9,14 @@ use TYPO3\CMS\Core\SingletonInterface;
 class Log implements SingletonInterface
 {
     protected int $counter = 1;
-
     protected float $starttime = 0.00;
     protected float $executionTime = 0.00;
-
-    protected bool $errorsOnly = false;
-
     protected ?OutputInterface $output = null;
+    protected array $messageTypes = [
+        'message',
+        'note',
+        'error',
+    ];
 
     public function __construct()
     {
@@ -34,23 +35,33 @@ class Log implements SingletonInterface
         return $this;
     }
 
+    public function setMessageTypes(?array $messageTypes): self
+    {
+        if ($messageTypes !== null) {
+            $this->messageTypes = $messageTypes;
+        }
+        return $this;
+    }
+
     public function addMessage(string $message, array $properties = [], string $tableName = ''): void
     {
-        if (!$this->errorsOnly) {
+        if (in_array('message', $this->messageTypes)) {
             $this->writeLine('[OK] ' . $this->buildPrefix($properties, $tableName) . '"' . $message . '"');
         }
     }
 
     public function addNote(string $message, array $properties = [], string $tableName = ''): void
     {
-        if (!$this->errorsOnly) {
+        if (in_array('note', $this->messageTypes)) {
             $this->writeLine('[NOTE] ' . $this->buildPrefix($properties, $tableName) . '"' . $message . '"');
         }
     }
 
     public function addError(string $message, array $properties = [], string $tableName = ''): void
     {
-        $this->writeLine('[ERROR] ' . $this->buildPrefix($properties, $tableName) . '"' . $message . '"');
+        if (in_array('error', $this->messageTypes)) {
+            $this->writeLine('[ERROR] ' . $this->buildPrefix($properties, $tableName) . '"' . $message . '"');
+        }
     }
 
     protected function buildPrefix(array $properties = [], string $tableName = ''): string
