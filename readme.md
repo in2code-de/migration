@@ -100,6 +100,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State     | Description                                                                                                                                                                                                   |
 |-------------|------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 12.5.0      | 2025-04-30 | Feature   | Filter by type of message in migration                                                                                                                                                                        |
 | 12.4.0      | 2025-04-29 | Feature   | Import: Allow to load assets from an online source                                                                                                                                                            |
 | 12.3.1      | 2025-04-29 | Bugfix    | Merge duplicate occurrences of the function createFolderIfNotExists() to one place, and make it really public                                                                                                 |
 | 12.3.0      | 2025-04-28 | Feature   | New events for file import manipulation, make createFolderIfNotExists() public, prevent exception when importing MM tables, code cleanup                                                                      |
