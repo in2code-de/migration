@@ -499,7 +499,7 @@ class Import
         }
         if (DatabaseUtility::isFieldExistingInTable('pid', $tableName) === true) {
             $newPid = $this->mappingService->getNewPidFromOldPid((int)$properties['pid']);
-            if ($newPid > 0) {
+            if ($newPid > 0 || $properties['pid'] === $this->getFirstPid()) {
                 $properties['pid'] = $newPid;
             }
         }
@@ -549,11 +549,13 @@ class Import
      */
     protected function setPidForFirstPage(): void
     {
-        foreach ($this->jsonArray['records']['pages'] ?? [] as $properties) {
-            $oldPid = (int)$properties['pid'];
-            $this->mappingService->setNewPid($this->pid, $oldPid);
-            break;
-        }
+        $this->mappingService->setNewPid($this->pid, $this->getFirstPid());
+    }
+
+    protected function getFirstPid(): int
+    {
+        $properties = reset($this->jsonArray['records']['pages']);
+        return $properties['pid'] ?? 0;
     }
 
     /**
