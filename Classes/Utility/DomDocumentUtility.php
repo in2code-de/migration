@@ -29,6 +29,7 @@ class DomDocumentUtility
      */
     public static function stripMainTagsFromHtml(string $html): string
     {
-        return str_replace(['<html>', '</html>', '<body>', '</body>', '<?xml encoding="utf-8" ?>'], '', $html);
+        $html = str_replace(['<html>', '</html>', '<body>', '</body>', '<?xml encoding="utf-8" ?>'], '', $html);
+        return trim($html);
     }
 }
