@@ -39,16 +39,17 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
         'replace',
     ];
 
-    protected string $xmlDeclaration = '<?xml encoding="utf-8" ?>';
-
     public function manipulate(): void
     {
         $dom = new \DOMDocument();
         try {
+            $previousErrorSetting = libxml_use_internal_errors(true);
             $dom->loadHTML(
                 DomDocumentUtility::wrapHtmlWithMainTags($this->getProperty()),
                 LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
             );
+            $this->logErrors($previousErrorSetting);
+
             foreach ($this->getConfigurationByKey('tags') as $tagName) {
                 $tags = $dom->getElementsByTagName($tagName);
                 /** @var \DOMElement $tag */
@@ -69,7 +70,7 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
                 }
             }
             $this->setProperty(DomDocumentUtility::stripMainTagsFromHtml($dom->saveHTML()));
-        } catch (\Exception $exception) {
+        } catch (\Throwable $exception) {
             $this->log->addError($exception->getMessage());
         }
     }
@@ -96,5 +97,17 @@ class ReplaceCssClassesInHtmlStringPropertyHelper extends AbstractPropertyHelper
             }
         }
         return $isFitting;
+    }
+
+    protected function logErrors(bool $previousErrorSetting): void
+    {
+        $errors = libxml_get_errors();
+        foreach ($errors as $error) {
+            if ($error->level === LIBXML_ERR_FATAL) {
+                $this->log->addWarning('XML Parse Error: ' . $error->message);
+            }
+        }
+        libxml_clear_errors();
+        libxml_use_internal_errors($previousErrorSetting);
     }
 }
