@@ -15,6 +15,7 @@ class Log implements SingletonInterface
     protected array $messageTypes = [
         'message',
         'note',
+        'warning',
         'error',
     ];
 
@@ -54,6 +55,13 @@ class Log implements SingletonInterface
     {
         if (in_array('note', $this->messageTypes)) {
             $this->writeLine('[NOTE] ' . $this->buildPrefix($properties, $tableName) . '"' . $message . '"');
+        }
+    }
+
+    public function addWarning(string $message, array $properties = [], string $tableName = ''): void
+    {
+        if (in_array('warning', $this->messageTypes)) {
+            $this->writeLine('[WARNING] ' . $this->buildPrefix($properties, $tableName) . '"' . $message . '"');
         }
     }
 

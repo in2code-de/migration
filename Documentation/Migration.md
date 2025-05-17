@@ -65,6 +65,7 @@ return [
         'messageTypes' => [
             'message',
             'note',
+            'warning',
             'error',
         ],
     ],
