@@ -141,9 +141,12 @@ class DatabaseUtility
      */
     protected static function getPathFromStorage(int $storage): string
     {
+        if ($storage === 0) {
+            return '';
+        }
         $sql = 'select ExtractValue(configuration, \'//T3FlexForms/data/sheet[@index="sDEF"]/language/field[@index="basePath"]/value\') path from sys_file_storage where uid = "' . $storage . '"';
         $connection = self::getConnectionForTable('sys_file_storage');
         $path = $connection->executeQuery($sql)->fetchOne();
-        return (string)$path;
+        return rtrim((string)$path, '/') . '/';
     }
 }
