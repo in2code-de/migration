@@ -9,7 +9,7 @@ $EM_CONF[$_EXTKEY] = [
     'dependencies' => 'extbase, fluid',
     'state' => 'stable',
     'author_company' => 'in2code GmbH',
-    'version' => '11.3.1',
+    'version' => '11.3.2',
     'autoload' => [
         'psr-4' => ['In2code\\Migration\\' => 'Classes'],
     ],
