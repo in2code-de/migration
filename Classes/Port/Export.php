@@ -301,23 +301,25 @@ class Export
     protected function extendWithFilesBasic(int $fileIdentifier): void
     {
         $fileProperties = $this->getPropertiesFromIdentifierAndTable($fileIdentifier, 'sys_file');
-        $this->jsonArray['records']['sys_file'][(int)$fileProperties['uid']] = $fileProperties;
+        if ($fileProperties !== []) {
+            $this->jsonArray['records']['sys_file'][(int)$fileProperties['uid']] = $fileProperties;
 
-        $pathAndFilename = DatabaseUtility::getFilePathAndNameByStorageAndIdentifier(
-            (int)$fileProperties['storage'],
-            $fileProperties['identifier']
-        );
-        $fileArray = [
-            'path' => $pathAndFilename,
-            'fileIdentifier' => (int)$fileProperties['uid'],
-        ];
-        $absolutePaF = GeneralUtility::getFileAbsFileName($pathAndFilename);
-        if ($this->configuration['addFilesToJson'] === true) {
-            $fileArray['base64'] = FileUtility::getBase64CodeFromFile($absolutePaF);
-        } else {
-            $fileArray['uri'] = $absolutePaF;
+            $pathAndFilename = DatabaseUtility::getFilePathAndNameByStorageAndIdentifier(
+                (int)$fileProperties['storage'],
+                $fileProperties['identifier']
+            );
+            $fileArray = [
+                'path' => $pathAndFilename,
+                'fileIdentifier' => (int)$fileProperties['uid'],
+            ];
+            $absolutePaF = GeneralUtility::getFileAbsFileName($pathAndFilename);
+            if ($this->configuration['addFilesToJson'] === true) {
+                $fileArray['base64'] = FileUtility::getBase64CodeFromFile($absolutePaF);
+            } else {
+                $fileArray['uri'] = $absolutePaF;
+            }
+            $this->jsonArray['files'][(int)$fileProperties['uid']] = $fileArray;
         }
-        $this->jsonArray['files'][(int)$fileProperties['uid']] = $fileArray;
     }
 
     /**
@@ -329,23 +331,31 @@ class Export
     protected function getPropertiesFromIdentifierAndTable(int $identifier, string $tableName): array
     {
         $queryBuilder = DatabaseUtility::getQueryBuilderForTable($tableName, true);
-        return (array)$queryBuilder
+        $row = $queryBuilder
             ->select('*')
             ->from($tableName)
             ->where('uid=' . $identifier)
             ->executeQuery()
             ->fetchAssociative();
+        if ($row === false) {
+            $row = [];
+        }
+        return $row;
     }
 
     protected function getPropertiesFromMetadataByFileIdentifier(int $fileIdentifier): array
     {
         $queryBuilder = DatabaseUtility::getQueryBuilderForTable('sys_file_metadata', true);
-        return (array)$queryBuilder
+        $row = $queryBuilder
             ->select('*')
             ->from('sys_file_metadata')
             ->where('file=' . $fileIdentifier)
             ->executeQuery()
             ->fetchAssociative();
+        if ($row === false) {
+            $row = [];
+        }
+        return $row;
     }
 
     /**
