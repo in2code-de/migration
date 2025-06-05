@@ -210,7 +210,6 @@ class FileHelper implements SingletonInterface
             'uid_foreign' => $recordIdentifier,
             'tablenames' => $tableName,
             'fieldname' => $fieldName,
-            'table_local' => 'sys_file',
         ];
         return $databaseHelper->createRecord('sys_file_reference', $additionalProperties + $properties);
     }
