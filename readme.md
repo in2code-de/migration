@@ -100,6 +100,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State   | Description                                                                                                                                                                                                   |
 |-------------|------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 12.7.0      | 2025-06-10 | Feature | Allow manipulating of values while runtime with Queue class                                                                                                                                                   |
 | 12.6.0      | 2025-05-17 | Feature | Add new message type "warning" to migration log, allow imports to PID 0 now any pages, suppress errors when parsing invalid HTML with ReplaceCssClassesInHtmlStringPropertyHelper                             |
 | 12.5.1      | 2025-05-06 | Bugfix  | Show class name if there is a misconfiguration in migrator/importer classes, Don't add empty lines when using ReplaceCssClassesInHtmlStringPropertyHelper class                                               |
 | 12.5.0      | 2025-04-30 | Feature | Filter by type of message in migration                                                                                                                                                                        |
