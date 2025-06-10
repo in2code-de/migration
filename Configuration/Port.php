@@ -84,6 +84,10 @@ return [
                     'table' => 'pages',
                 ],
                 [
+                    'field' => 'l18n_parent',
+                    'table' => 'tt_content',
+                ],
+                [
                     'field' => 'tx_gridelements_container',
                     'table' => 'tt_content',
                 ],
