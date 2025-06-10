@@ -37,7 +37,7 @@ class DatabaseHelper implements SingletonInterface
         $connection = DatabaseUtility::getConnectionForTable($tableName);
         $sql = 'select * from ' . $tableName . ' where '
             . $this->buildWhereClauseFromPropertiesArray($row, ['tstamp', 'crdate', 'uid']);
-        $existingRow = $connection->executeQuery($sql)->fetch();
+        $existingRow = $connection->executeQuery($sql)->fetchOne();
         if ($existingRow === false) {
             $row = $this->addTimeFieldsToRow($row, $tableName);
             $connection->insert($tableName, $row);
