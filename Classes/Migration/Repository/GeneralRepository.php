@@ -64,16 +64,11 @@ class GeneralRepository
             );
         }
         if ($this->getConfiguration('dryrun') === false) {
-            $propertiesFromQueue = $this->queue->getFromQueue($tableName, (int)$properties['uid']);
-            if ($propertiesFromQueue !== []) {
-                $properties = $propertiesFromQueue;
-            } else {
-                $properties = $this->queue->updatePropertiesWithPropertiesFromQueue(
-                    $tableName,
-                    (int)$properties['uid'],
-                    $properties
-                );
-            }
+            $properties = $this->queue->updatePropertiesWithPropertiesFromQueue(
+                $tableName,
+                (int)$properties['uid'],
+                $properties
+            );
 
             $connection = DatabaseUtility::getConnectionForTable($tableName);
             $connection->update($tableName, $properties, ['uid' => (int)$properties['uid']]);
@@ -87,16 +82,11 @@ class GeneralRepository
     {
         if ($this->getConfiguration('dryrun') === false) {
             if (($properties['uid'] ?? 0) > 0) {
-                $propertiesFromQueue = $this->queue->getFromQueue($tableName, (int)$properties['uid']);
-                if ($propertiesFromQueue !== []) {
-                    $properties = $propertiesFromQueue;
-                } else {
-                    $properties = $this->queue->updatePropertiesWithPropertiesFromQueue(
-                        $tableName,
-                        (int)$properties['uid'],
-                        $properties
-                    );
-                }
+                $properties = $this->queue->updatePropertiesWithPropertiesFromQueue(
+                    $tableName,
+                    (int)$properties['uid'],
+                    $properties
+                );
             }
 
             $connection = DatabaseUtility::getConnectionForTable($tableName);
