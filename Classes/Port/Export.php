@@ -14,6 +14,7 @@ use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
 use In2code\Migration\Utility\TcaUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\Restriction\EndTimeRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\StartTimeRestriction;
@@ -186,11 +187,7 @@ class Export
     {
         foreach ($this->jsonArray['records']['pages'] ?? [] as $pageProperties) {
             if ((int)($pageProperties['uid'] ?? 0) > 0) {
-                $records = $this->getRecordsFromPageAndTable(
-                    (int)$pageProperties['uid'],
-                    'pages',
-                    ' and sys_language_uid>0'
-                );
+                $records = $this->getPageTranslations((int)$pageProperties['uid']);
                 $this->jsonArray['records']['pages'] = array_merge($this->jsonArray['records']['pages'], $records);
             }
         }
@@ -365,6 +362,28 @@ class Export
             ->select('*')
             ->from($tableName)
             ->where('pid=' . $pageIdentifier . $addWhere)
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    /**
+     * @param int $pageIdentifier
+     * @return array
+     * @throws ExceptionDbal
+     */
+    protected function getPageTranslations(int $pageIdentifier): array
+    {
+        $queryBuilder = DatabaseUtility::getQueryBuilderForTable('pages');
+        $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(StartTimeRestriction::class);
+        $queryBuilder->getRestrictions()->removeByType(EndTimeRestriction::class);
+        return $queryBuilder
+            ->select('*')
+            ->from('pages')
+            ->where(
+                $queryBuilder->expr()->eq('l10n_parent', $queryBuilder->createNamedParameter($pageIdentifier, Connection::PARAM_INT)),
+                $queryBuilder->expr()->gt('sys_language_uid', 0),
+            )
             ->executeQuery()
             ->fetchAllAssociative();
     }
