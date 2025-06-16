@@ -64,12 +64,6 @@ class GeneralRepository
             );
         }
         if ($this->getConfiguration('dryrun') === false) {
-            $properties = $this->queue->updatePropertiesWithPropertiesFromQueue(
-                $tableName,
-                (int)$properties['uid'],
-                $properties
-            );
-
             $connection = DatabaseUtility::getConnectionForTable($tableName);
             $connection->update($tableName, $properties, ['uid' => (int)$properties['uid']]);
             $this->log->addMessage('Record updated', $properties, $tableName);
@@ -81,14 +75,6 @@ class GeneralRepository
     public function insertRecord(array $properties, string $tableName): void
     {
         if ($this->getConfiguration('dryrun') === false) {
-            if (($properties['uid'] ?? 0) > 0) {
-                $properties = $this->queue->updatePropertiesWithPropertiesFromQueue(
-                    $tableName,
-                    (int)$properties['uid'],
-                    $properties
-                );
-            }
-
             $connection = DatabaseUtility::getConnectionForTable($tableName);
             $connection->insert($tableName, $properties);
             $this->log->addMessage('Record inserted', $properties, $tableName);

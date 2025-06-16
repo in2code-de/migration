@@ -9,6 +9,7 @@ use In2code\Migration\Exception\ConfigurationException;
 use In2code\Migration\Migration\Log\Log;
 use In2code\Migration\Migration\PropertyHelpers\PropertyHelperInterface;
 use In2code\Migration\Migration\Repository\GeneralRepository;
+use In2code\Migration\Migration\Repository\Queue;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\StringUtility;
 use LogicException;
@@ -106,11 +107,14 @@ abstract class AbstractMigrator
 
     protected ?Log $log = null;
 
+    protected ?Queue $queue = null;
+
     public function __construct(array $configuration)
     {
         $this->configuration = $configuration;
         $this->checkProperties();
         $this->log = GeneralUtility::makeInstance(Log::class);
+        $this->queue = GeneralUtility::makeInstance(Queue::class);
     }
 
     /**
@@ -139,10 +143,20 @@ abstract class AbstractMigrator
                 $note .= ' (uid' . $propertiesOriginal['uid'] . '/pid' . $propertiesOriginal['pid'] . ') ...';
             }
             $this->log->addNote($note);
+            if (array_key_exists('uid', $propertiesOriginal)) {
+                $propertiesOriginal = $this->queue->updatePropertiesWithPropertiesFromQueue(
+                    $this->tableName,
+                    (int)$propertiesOriginal['uid'],
+                    $propertiesOriginal
+                );
+            }
             $properties = $this->manipulatePropertiesWithValues($propertiesOriginal);
             $properties = $this->manipulatePropertiesWithPropertyHelpers($properties, $propertiesOriginal);
             $properties = $this->genericChanges($properties);
             $generalRepository->updateRecord($properties, $this->tableName);
+            if (array_key_exists('uid', $propertiesOriginal)) {
+                $this->queue->addToQueue($this->tableName, $properties['uid'], $properties);
+            }
         }
         $this->executeSqlEnd();
         $this->finalMessage($records);
