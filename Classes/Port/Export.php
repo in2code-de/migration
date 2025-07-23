@@ -368,12 +368,14 @@ class Export
         $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
         $queryBuilder->getRestrictions()->removeByType(StartTimeRestriction::class);
         $queryBuilder->getRestrictions()->removeByType(EndTimeRestriction::class);
-        return $queryBuilder
+        $queryBuilder
             ->select('*')
             ->from($tableName)
-            ->where('pid=' . $pageIdentifier . $addWhere)
-            ->executeQuery()
-            ->fetchAllAssociative();
+            ->where('pid=' . $pageIdentifier . $addWhere);
+        if (DatabaseUtility::isFieldExistingInTable('sys_language_uid', $tableName)) {
+            $queryBuilder->addOrderBy('sys_language_uid', 'asc');
+        }
+        return $queryBuilder->executeQuery()->fetchAllAssociative();
     }
 
     /**
