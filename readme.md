@@ -100,6 +100,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State   | Description                                                                                                                                                                                                   |
 |-------------|------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 12.8.3      | 2025-07-23 | Bugfix  | Use correct orderings in export.json file: Default language before localized records                                                                                                                          |
 | 12.8.2      | 2025-06-27 | Bugfix  | Fix page relations with sections for imports                                                                                                                                                                  |
 | 12.8.1      | 2025-06-16 | Bugfix  | Use correct page translations when exporting                                                                                                                                                                  |
 | 12.7.0      | 2025-06-10 | Feature | Allow manipulating of values while runtime with Queue class                                                                                                                                                   |
