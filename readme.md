@@ -100,6 +100,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State   | Description                                                                                                                                                                                                   |
 |-------------|------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 11.3.4      | 2025-07-23 | Bugfix  | Use correct orderings in export.json file: Default language before localized records                                                                                                                          |
 | 11.3.3      | 2025-06-16 | Bugfix  | Use correct page translations when exporting, allow files outside storage, don't use old field sys_file_reference.table_local any more                                                                        |
 | 11.3.2      | 2025-06-05 | Bugfix  | Prevent export errors when non-existing files are linked                                                                                                                                                      |
 | 11.3.1      | 2025-04-29 | Bugfix  | Support recursive level when exporting pages again                                                                                                                                                            |
