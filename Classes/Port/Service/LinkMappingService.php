@@ -179,7 +179,7 @@ class LinkMappingService
             . $tableName . ' where uid=' . $identifier;
         $value = (string)$connection->executeQuery($sql)->fetchOne();
         $newValue = $this->updateValueWithSimpleLinks($value, $configuration['table']);
-        if (!empty($newValue)) {
+        if ($newValue !== '') {
             $sql = 'update ' . $tableName . ' set '
                 . $fieldName . ' = UpdateXML(' . $fieldName . ', \''
                 . $configuration['selection'] . '\', concat(\'<value index="vDEF">\', '
