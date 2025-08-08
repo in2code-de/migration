@@ -87,14 +87,18 @@ See documenation for a detailed description of all CLI commands
 
 * [Migration and Import](Documentation/Migration.md)
 * [Port (Import and Export)](Documentation/Port.md) 
-* [Helpers](Documentation/Helper.md) 
-
-
+* [Helpers](Documentation/Helper.md)
 
 ## Breaking changes
 
 * Update to 7.6.0: This is only a small breaking change because constructors in extended with a configuration array now. If you are using own propertyHelpers and you overwrote __construct(), you have also to pass the new variable now. 
 
+## Early Access Programm for TYPO3 14 support
+
+:information_source: **TYPO3 14 compatibility**
+> See [EAP page (DE)](https://www.in2code.de/agentur/typo3-extensions/early-access-programm/) or
+> [EAP page (EN)](https://www.in2code.de/en/agency/typo3-extensions/early-access-program/) for more information how
+> to get access to a TYPO3 14 version
 
 ## Changelog
 
