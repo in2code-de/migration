@@ -34,6 +34,11 @@ class TcaUtility
         return $tables;
     }
 
+    public static function getRootLevelConfiguration(string $tableName): int
+    {
+        return (int)($GLOBALS['TCA'][$tableName]['ctrl']['rootLevel'] ?? 0);
+    }
+
     protected static function getAllTableNames(): array
     {
         return array_keys($GLOBALS['TCA']);

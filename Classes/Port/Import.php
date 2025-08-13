@@ -16,6 +16,7 @@ use In2code\Migration\Port\Service\LinkMappingService;
 use In2code\Migration\Port\Service\MappingService;
 use In2code\Migration\Utility\DatabaseUtility;
 use In2code\Migration\Utility\FileUtility;
+use In2code\Migration\Utility\TcaUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -497,7 +498,8 @@ class Import
         if (DatabaseUtility::isFieldExistingInTable('tstamp', $tableName) === true) {
             $properties['tstamp'] = time();
         }
-        if (DatabaseUtility::isFieldExistingInTable('pid', $tableName) === true) {
+        if (DatabaseUtility::isFieldExistingInTable('pid', $tableName) === true
+            && TcaUtility::getRootLevelConfiguration($tableName) !== 1) {
             $newPid = $this->mappingService->getNewPidFromOldPid((int)$properties['pid']);
             if ($newPid > 0 || $properties['pid'] === $this->getFirstPid()) {
                 $properties['pid'] = $newPid;
