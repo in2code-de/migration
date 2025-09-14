@@ -104,6 +104,7 @@ See documenation for a detailed description of all CLI commands
 
 | Version     | Date       | State   | Description                                                                                                                                                                                                   |
 |-------------|------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 12.8.5      | 2025-09-14 | Bugfix  | Support anchor links for imports again, sys_file_metadata is also imported on root now                                                                                                                        |
 | 12.8.4      | 2025-08-04 | Bugfix  | Allow 0 as relation value in FlexForms when importing (for keepNotMatchingIdentifiers=false)                                                                                                                  |
 | 12.8.3      | 2025-07-23 | Bugfix  | Use correct orderings in export.json file: Default language before localized records                                                                                                                          |
 | 12.8.2      | 2025-06-27 | Bugfix  | Fix page relations with sections for imports                                                                                                                                                                  |
