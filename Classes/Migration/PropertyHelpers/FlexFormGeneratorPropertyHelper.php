@@ -100,7 +100,7 @@ class FlexFormGeneratorPropertyHelper extends AbstractPropertyHelper implements 
     protected function getFlexFormValues(string $field = 'pi_flexform'): array
     {
         $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
-        return (array)$flexFormService->convertFlexFormContentToArray($this->getPropertyFromRecord($field));
+        return (array)$flexFormService->convertFlexFormContentToArray($this->getPropertyFromRecord($field) ?? '');
     }
 
     protected function buildFromAdditionalMapping(): array
