@@ -174,6 +174,7 @@ abstract class AbstractImporter
             $this->orderBy
         );
         foreach ($records as $propertiesOld) {
+            $this->log->addNote(static::class);
             $note = 'Start importing new record for ' . $this->tableName;
             if (array_key_exists('uid', $propertiesOld) && array_key_exists('pid', $propertiesOld)) {
                 $note .= ' (uid' . $propertiesOld['uid'] . '/pid' . $propertiesOld['pid'] . ') ...';

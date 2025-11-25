@@ -138,6 +138,7 @@ abstract class AbstractMigrator
             $this->orderBy
         );
         foreach ($records as $propertiesOriginal) {
+            $this->log->addNote(static::class);
             $note = 'Start migrating record in ' . $this->tableName;
             if (array_key_exists('uid', $propertiesOriginal) && array_key_exists('pid', $propertiesOriginal)) {
                 $note .= ' (uid' . $propertiesOriginal['uid'] . '/pid' . $propertiesOriginal['pid'] . ') ...';
